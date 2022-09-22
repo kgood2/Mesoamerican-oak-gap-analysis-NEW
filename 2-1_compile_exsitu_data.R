@@ -128,9 +128,9 @@ remove.network.dups <- function(df,rm_inst_names,file_name){
 #     warning to see if there is an obvious formatting issue
 raw_2021 <- read.exsitu.csv(file.path(main_dir,"inputs",
                                       "exsitu_standard_column_names","2021_2022"), "2021/2022")
-raw_2020 <- read.exsitu.csv(file.path(main_dir,"inputs"
+raw_2020 <- read.exsitu.csv(file.path(main_dir,"inputs",
                                       "exsitu_standard_column_names","2020"), "2020")
-raw_2019 <- read.exsitu.csv(file.path(main_dir,"inputs"
+raw_2019 <- read.exsitu.csv(file.path(main_dir,"inputs",
                                       "exsitu_standard_column_names","2019"), "2019")
 raw_2018 <- read.exsitu.csv(file.path(main_dir,"inputs",
                                       "exsitu_standard_column_names","2018"), "2018")
