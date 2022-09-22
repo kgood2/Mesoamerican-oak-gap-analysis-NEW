@@ -493,6 +493,30 @@ unique(all_data9[which(all_data9$inst_short=="SHHG" | all_data9$inst_short=="Sir
 unique(all_data9[which(all_data9$inst_short=="TBG" | all_data9$inst_short=="TulsaBG"),c(143,34,40,35)])
 unique(all_data9[which(all_data9$inst_short=="UCBG" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
 
+# look at institutions and species in the PCNQuercus file
+unique(all_data9[which(all_data9$filename=="PCNQuercus"),c(143,34,40,35)])
+
+# once you know the institutions in the PCNQuercus file, you can check each of them to see what’s in their institution file compared to the PCNQuercus file
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="AUDavisArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="BartlettArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="BoyceThompsonArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="ChicagoBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="CornellBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="DenverBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="HoldenArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="LandisArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="MissouriBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="MorrisArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="MortonArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="MtAuburnCemetery"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="NewYorkBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="RanchoSantaAnaBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="ScottArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="StarhillForestArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="UCDavisArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="UWashingtonBG"),c(143,34,40,35)])
+
 ################################################################################
 # 4. Standardize important columns
 ################################################################################
