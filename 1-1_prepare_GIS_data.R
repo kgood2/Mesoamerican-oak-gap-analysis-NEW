@@ -2,6 +2,7 @@
 
 ## 1-1_prepare_gis_data.R
 ### Authors: Shannon M. Still & Emily Beckman ### Date: 08/04/2020
+# Kate Good # Date: 9/22/22
 
 ### DESCRIPTION:
 # Adds GlobalTreeSearch (GTS) and IUCN Red List (RL) country-level
