@@ -39,7 +39,7 @@ rm(my.packages)
 
 # either set manually:
 #  main_dir <- "/Volumes/GoogleDrive/My Drive/Conservation Consortia/Ex situ analysis"
-main_dir <- "/Volumes/GoogleDrive-103729429307302508433/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
+main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
 #  script_dir <- "./Documents/GitHub/OccurrencePoints/scripts"
 
 # or use 0-1_set_workingdirectory.R script:
@@ -127,15 +127,15 @@ remove.network.dups <- function(df,rm_inst_names,file_name){
 ##    number if one isn't given
 ## Warnings are usually ok here, but you can look at the file causing the
 #     warning to see if there is an obvious formatting issue
-raw_2021 <- read.exsitu.csv(file.path(main_dir,"inputs","raw_occurrence",
+raw_2021 <- read.exsitu.csv(file.path(main_dir,
                                       "exsitu_standard_column_names","2021_2022"), "2021/2022")
-raw_2020 <- read.exsitu.csv(file.path(main_dir,"inputs","raw_occurrence",
+raw_2020 <- read.exsitu.csv(file.path(main_dir,
                                       "exsitu_standard_column_names","2020"), "2020")
-raw_2019 <- read.exsitu.csv(file.path(main_dir,"inputs","raw_occurrence",
+raw_2019 <- read.exsitu.csv(file.path(main_dir,
                                       "exsitu_standard_column_names","2019"), "2019")
-raw_2018 <- read.exsitu.csv(file.path(main_dir,"inputs","raw_occurrence",
+raw_2018 <- read.exsitu.csv(file.path(main_dir,
                                       "exsitu_standard_column_names","2018"), "2018")
-raw_2017 <- read.exsitu.csv(file.path(main_dir,"inputs","raw_occurrence",
+raw_2017 <- read.exsitu.csv(file.path(main_dir,
                                       "exsitu_standard_column_names","2017"), "2017")
 
 # stack all data
@@ -481,6 +481,17 @@ all_data9 <- all_data8 %>% filter(!is.na(list))
 nrow(all_data9) #30731
 unique(all_data9$hybrid) # should be NA
 sort(unique(all_data9$inst_short))
+
+# compare species in the new file and old file for an institution
+unique(all_data9[which(all_data9$inst_short=="ABG" | all_data9$inst_short=="AtlantaBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="CBG" | all_data9$inst_short=="ChicagoBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="JCRA" | all_data9$inst_short=="JCRaulstonArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="RanchoSantaAnaBG" | all_data9$inst_short=="CalBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="SDBG" | all_data9$inst_short=="SanDiegoBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="SBBG" | all_data9$inst_short=="SantaBarbaraBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="SHHG" | all_data9$inst_short=="SirHarloldHillierG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="TBG" | all_data9$inst_short=="TulsaBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="UCBG" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
 
 ################################################################################
 # 4. Standardize important columns
