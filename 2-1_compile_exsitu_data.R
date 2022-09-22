@@ -25,12 +25,13 @@
 # Load libraries
 ################################################################################
 
-#rm(list=ls())
+rm(list=ls())
 my.packages <- c('plyr', 'tidyverse', 'data.table', 'textclean',
                  'measurements', 'naniar','CoordinateCleaner','rnaturalearth',
                  'rnaturalearthdata','maps','raster','spatialEco','geonames')
 # install.packages (my.packages) #Turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
+install.packages("naniar")
 rm(my.packages)
 
 ################################################################################
@@ -211,7 +212,7 @@ nrow(all_data) #96841
 # Network 2
 #network_rm <- c("HackfallsArb")
 #all_data <- remove.network.dups(all_data,network_rm,"CultivatedOaks")
-nrow(all_data) #95244
+#nrow(all_data) #95244
 
 ### CHECK ALL INSTITUTIONS ARE HERE ###
 sort(unique(all_data$inst_short)) #158
@@ -344,11 +345,13 @@ all_data4$genus_new <- all_data4$genus
 
 # remove cultivars with no specific epithet (by looking for quotation mark in
 #   species name)
+
 all_data5 <- all_data4 %>%
   filter(!grepl("\"",species_new) & !grepl("\'",species_new))
 nrow(all_data5) #38748
 # see records removed:
 sort(unique(anti_join(all_data4,all_data5)$taxon_full_name))
+
 
 ### CHECK TO MAKE SURE NO GOOD SPECIES WILL BE REMOVED DUE TO TYPOS ###
 sort(unique(all_data5[which(grepl("[A-Z]",all_data5$species_new)),]$species_new))
@@ -433,7 +436,7 @@ taxon_list <- read.csv(file.path(main_dir, "inputs", "taxa_list",
                                  "target_taxa_with_syn.csv"),
                        header = T, na.strings = c("","NA"),colClasses = "character")
 taxon_list <- taxon_list %>%
-  select(taxon_name,species_name_acc,list)
+  dplyr::select(taxon_name,species_name_acc,list)
 head(taxon_list)
 
 # rename some taxon name columns to preserve originals
@@ -481,6 +484,10 @@ all_data9 <- all_data8 %>% filter(!is.na(list))
 nrow(all_data9) #30731
 unique(all_data9$hybrid) # should be NA
 sort(unique(all_data9$inst_short))
+
+#identify column names to run edit end of script below, if needed
+# want: taxon_full_name, filename, inst_short, submission_year
+colnames(all_data9)
 
 # compare species in the new file and old file for an institution
 unique(all_data9[which(all_data9$inst_short=="ABG" | all_data9$inst_short=="AtlantaBG"),c(143,34,40,35)])
