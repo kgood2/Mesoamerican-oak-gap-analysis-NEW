@@ -31,21 +31,16 @@ my.packages <- c('plyr', 'tidyverse', 'data.table', 'textclean',
                  'rnaturalearthdata','maps','raster','spatialEco','geonames')
 # install.packages (my.packages) #Turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
-# install.packages("naniar")
+# install.packages("naniar") # when running above script you may get an error that naniar cant be loaded. Load separately
+# library(nanier)
 rm(my.packages)
 
 ################################################################################
 # Set working directory
 ################################################################################
 
-# either set manually:
-#  main_dir <- "/Volumes/GoogleDrive/My Drive/Conservation Consortia/Ex situ analysis"
 main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
-#  script_dir <- "./Documents/GitHub/OccurrencePoints/scripts"
 
-# or use 0-1_set_workingdirectory.R script:
-# source("./Documents/GitHub/OccurrencePoints/scripts/0-1_set_workingdirectory.R")
-# source('scripts/0-1_set_workingdirectory.R')
 
 # OPTIONAL, depending on workflow: set target genus/genera name (for file reading and writing)
 #target_genus <- "Acer"
@@ -249,17 +244,6 @@ all_data2$genus <- mgsub(all_data2$genus,
 target_genera <- c("Quercus")
 all_data3 <- all_data2 %>% filter(genus %in% target_genera)
 nrow(all_data2); nrow(all_data3) #95244 ; 45057
-
-### CHECK OUT THE HYBRID COLUMN ###
-# standardize a bit
-#sort(unique(all_data3$hybrid))
-#all_data3$hybrid <- mgsub(all_data3$hybrid,
-#  c("_","^1$","XH","Hybrid"," hybrid","\\*","^A$","^H$","X","^H ","Ex ","ExE","^\\("),
-#  " x ",fixed=F)
-#all_data3$hybrid <- str_squish(all_data3$hybrid)
-# make sure everything has an " x " in it somewhere (important later)
-#all_data3$hybrid <- mgsub(all_data3$hybrid,
-#  c("^hispanica$"),c("x hispanica"),fixed=F)
 
 # create concatenated taxon_full_name column
 all_data3 <- tidyr::unite(all_data3, "taxon_full_name_concat",
