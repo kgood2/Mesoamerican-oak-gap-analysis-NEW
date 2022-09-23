@@ -484,6 +484,7 @@ unique(all_data9[which(all_data9$inst_short=="SBBG" | all_data9$inst_short=="San
 unique(all_data9[which(all_data9$inst_short=="SHHG" | all_data9$inst_short=="SirHarloldHillierG"),c(143,34,40,35)])
 unique(all_data9[which(all_data9$inst_short=="TBG" | all_data9$inst_short=="TulsaBG"),c(143,34,40,35)])
 unique(all_data9[which(all_data9$inst_short=="UCBG" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="CinZooBG" | all_data9$inst_short=="CincinnatiZooBG"),c(143,34,40,35)])
 
 
 # look at institutions and species in the PCNQuercus file
@@ -501,9 +502,14 @@ unique(all_data9[which(all_data9$inst_short=="UCalBGBerkeley" | (all_data9$filen
 unique(all_data9[which(all_data9$inst_short=="UCDavisArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UCDavisArb")),c(143,34,40,35)])
 unique(all_data9[which(all_data9$inst_short=="UWashingtonBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UWashingtonBG")),c(143,34,40,35)])
 
+# look at institutions and species in the ACoombes file
+unique(all_data9[which(all_data9$filename=="ACoombes"),c(143,34,40,35)])
 
-
-
+## look at ACoombes file and compare to institutions in parent file
+unique(all_data9[which(all_data9$inst_short=="ArbBergerette" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ArbBergerette")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="ArbPouyouleix" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ArbPouyouleix")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="ChevithorneBarton" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ChevithorneBarton")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="RoyalBGKew" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="RoyalBGKew")),c(143,34,40,35)])
 ################################################################################
 # 4. Standardize important columns
 ################################################################################
