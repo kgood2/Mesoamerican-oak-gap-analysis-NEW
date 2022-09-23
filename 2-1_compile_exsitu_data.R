@@ -31,7 +31,7 @@ my.packages <- c('plyr', 'tidyverse', 'data.table', 'textclean',
                  'rnaturalearthdata','maps','raster','spatialEco','geonames')
 # install.packages (my.packages) #Turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
-install.packages("naniar")
+# install.packages("naniar")
 rm(my.packages)
 
 ################################################################################
@@ -485,67 +485,40 @@ nrow(all_data9) #30731
 unique(all_data9$hybrid) # should be NA
 sort(unique(all_data9$inst_short))
 
-#identify column names to run edit end of script below, if needed
+#identify column names to edit end of script below, if needed
 # want: taxon_full_name, filename, inst_short, submission_year
 colnames(all_data9)
 
 # compare species in the new file and old file for an institution
-compareA <- unique(all_data9[which(all_data9$inst_short=="ABG" | all_data9$inst_short=="AtlantaBG"),c(143,34,40,35)])
-compareB <- unique(all_data9[which(all_data9$inst_short=="CBG" | all_data9$inst_short=="ChicagoBG"),c(143,34,40,35)])
-compareC <- unique(all_data9[which(all_data9$inst_short=="JCRA" | all_data9$inst_short=="JCRaulstonArb"),c(143,34,40,35)])
-compareD <- unique(all_data9[which(all_data9$inst_short=="RanchoSantaAnaBG" | all_data9$inst_short=="CalBG"),c(143,34,40,35)])
-compareE <- unique(all_data9[which(all_data9$inst_short=="SDBG" | all_data9$inst_short=="SanDiegoBG"),c(143,34,40,35)])
-compareF <- unique(all_data9[which(all_data9$inst_short=="SBBG" | all_data9$inst_short=="SantaBarbaraBG"),c(143,34,40,35)])
-compareG <- unique(all_data9[which(all_data9$inst_short=="SHHG" | all_data9$inst_short=="SirHarloldHillierG"),c(143,34,40,35)])
-compareH <- unique(all_data9[which(all_data9$inst_short=="TBG" | all_data9$inst_short=="TulsaBG"),c(143,34,40,35)])
-compareI <- unique(all_data9[which(all_data9$inst_short=="UCBG" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
+# if the same species are in the old and new dataset, you can just use the new
+unique(all_data9[which(all_data9$inst_short=="ABG" | all_data9$inst_short=="AtlantaBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="CBG" | all_data9$inst_short=="ChicagoBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="JCRA" | all_data9$inst_short=="JCRaulstonArb"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="RanchoSantaAnaBG" | all_data9$inst_short=="CalBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="SDBG" | all_data9$inst_short=="SanDiegoBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="SBBG" | all_data9$inst_short=="SantaBarbaraBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="SHHG" | all_data9$inst_short=="SirHarloldHillierG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="TBG" | all_data9$inst_short=="TulsaBG"),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="UCBG" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
 
-write.csv(compareA, file.path(main_dir,"outputs",
-                              paste0("ABG_AtlantaBG", Sys.Date(), ".csv")),row.names = F)
-write.csv(compareB, file.path(main_dir,"outputs",
-                              paste0("CBG_ChicagoBG", Sys.Date(), ".csv")),row.names = F)
-write.csv(compareC, file.path(main_dir,"outputs",
-                              paste0("JCRA_JCRaulstonArb", Sys.Date(), ".csv")),row.names = F)
-write.csv(compareD, file.path(main_dir,"outputs",
-                              paste0("RanchoSantaAnaBG_CalBG", Sys.Date(), ".csv")),row.names = F)
-write.csv(compareE, file.path(main_dir,"outputs",
-                              paste0("SDBG_SanDiegoBG", Sys.Date(), ".csv")),row.names = F)
-write.csv(compareF, file.path(main_dir,"outputs",
-                              paste0("SBBG_SantaBarbaraBG", Sys.Date(), ".csv")),row.names = F)
-write.csv(compareG, file.path(main_dir,"outputs",
-                              paste0("SHHG_SirHarloldHillierG", Sys.Date(), ".csv")),row.names = F)
-write.csv(compareH, file.path(main_dir,"outputs",
-                              paste0("TBG_TulsaBG", Sys.Date(), ".csv")),row.names = F)
-write.csv(compareI, file.path(main_dir,"outputs",
-                              paste0("UCBG_UCalBGBerkeley", Sys.Date(), ".csv")),row.names = F)
 
 # look at institutions and species in the PCNQuercus file
 unique(all_data9[which(all_data9$filename=="PCNQuercus"),c(143,34,40,35)])
 
 # once you know the institutions in the PCNQuercus file, you can check each of them to see what’s in their institution file compared to the PCNQuercus file
-compare1 <- unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="BartlettArb"),c(143,34,40,35)])
-compare2 <- unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="ChicagoBG"),c(143,34,40,35)])
-compare3 <- unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="DenverBG"),c(143,34,40,35)])
-compare4 <- unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="RanchoSantaAnaBG"),c(143,34,40,35)])
-compare5 <- unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="StarhillForestArb"),c(143,34,40,35)])
-compare6 <- unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
-compare6 <- unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="UCDavisArb"),c(143,34,40,35)])
-compare7 <- unique(all_data9[which(all_data9$filename=="PCNQuercus" | all_data9$inst_short=="UWashingtonBG"),c(143,34,40,35)])
+# if there is only “PCNQuercus” in the filename column, then there are no target species in the new dataset
+# if there is another filename (e.g. BartlettArb), then those target species are in the new file
+unique(all_data9[which(all_data9$inst_short=="BartlettArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="BartlettArb")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="ChicagoBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="ChicagoBG")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="DevnerBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="DenverBG")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="RanchoSantaAnaBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="RanchoSantaAnaBG")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="StarhillForestArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="StarhillForestArb")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="UCalBGBerkeley" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UCalBerkeley")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="UCDavisArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UCDavisArb")),c(143,34,40,35)])
+unique(all_data9[which(all_data9$inst_short=="UWashingtonBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UWashingtonBG")),c(143,34,40,35)])
 
-write.csv(compare1, file.path(main_dir,"outputs",
-                              paste0("BartlettArb_", Sys.Date(), ".csv")),row.names = F)
-write.csv(compare2, file.path(main_dir,"outputs",
-                              paste0("ChicagoBG_", Sys.Date(), ".csv")),row.names = F)
-write.csv(compare3, file.path(main_dir,"outputs",
-                              paste0("DenverBG_", Sys.Date(), ".csv")),row.names = F)
-write.csv(compare4, file.path(main_dir,"outputs",
-                              paste0("RanchoSantaAnaBG_", Sys.Date(), ".csv")),row.names = F)
-write.csv(compare5, file.path(main_dir,"outputs",
-                              paste0("StarhillForestArb_", Sys.Date(), ".csv")),row.names = F)
-write.csv(compare6, file.path(main_dir,"outputs",
-                              paste0("UCalBGBerkeley_", Sys.Date(), ".csv")),row.names = F)
-write.csv(compare7, file.path(main_dir,"outputs",
-                              paste0("UWashingtonBG_", Sys.Date(), ".csv")),row.names = F)
+
+
 
 ################################################################################
 # 4. Standardize important columns
