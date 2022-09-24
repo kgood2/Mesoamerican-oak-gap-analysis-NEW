@@ -602,6 +602,7 @@ sort(unique(all_data11$num_indiv))
 all_data11$num_indiv <- mgsub(all_data11$num_indiv,c("*"," in terra","+"), "")
 sort(unique(all_data11$num_indiv))
 # change type to numeric and replace NA with 1
+# Warning NAs introduced by coercion ok
 all_data11$num_indiv <- as.numeric(all_data11$num_indiv)
 all_data11$num_indiv[which(is.na(all_data11$num_indiv))] <- 1
 
@@ -637,6 +638,7 @@ all_data11[which(grepl("_",all_data11$acc_num)),]$acc_num
 all_data11[which(grepl("/[1-9]$",all_data11$acc_num)),]$acc_num
 
 # remove individual-specific identifiers (to combine dup accessions)
+# warning message okay, expected x pieces. Additional pieces discarded
 all_data11 <- all_data11 %>%
   separate("acc_num","acc_num",
            sep="\\*|_|/[1-9]$",remove=F) %>%
@@ -777,6 +779,9 @@ all_data12$long_dd <- str_squish(all_data12$long_dd)
 all_data12[which(all_data12$lat_dd == "19.1520. 96.9522"),]$lat_dd <- "19.1520"
 all_data12[which(all_data12$long_dd == "19.1520. 96.9522"),]$long_dd <- "96.9522"
 
+all_data12[which(all_data12$lat_dd == "19.84702. 97.59248"),]$lat_dd <- "19.84702"
+all_data12[which(all_data12$long_dd == "19.84702. 97.59248"),]$long_dd <- "97.59248"
+
 # convert degrees-minutes-seconds (dms) to decimal degrees (dd)
 #   [d, m, and s must be in the same cell, with 1 space between each value]
 #   format = ## ## ## (DMS) OR ## ##.### (DM)
@@ -886,6 +891,7 @@ geo_pts <- geo_pts %>% dplyr::select(UID,country.name) %>%
 all_data12 <- full_join(all_data12,geo_pts)
 
 # add gps_det (gps determination) column
+# used for geolocating
 all_data12$gps_det <- NA
 all_data12$gps_det[which(all_data12$prov_type == "H")] <- "H"
 all_data12$gps_det[which(!is.na(all_data12$lat_dd) &
@@ -996,9 +1002,10 @@ all_data13 <- all_data12 %>%
 #  sum_num_acc = n()) %>%
 #ungroup() %>%
 #distinct(inst_short,species_name_acc,prov_type,all_locality,.keep_all=T) %>%
-dplyr::select(
+
+all.data13 <- all.data13 %>% dplyr::select(
   # grouping data
-  inst_short,species_name_acc,prov_type,all_locality,
+  inst_short, species_name_acc,prov_type,all_locality,
   # key data
   UID,gps_det,flag,lat_dd,long_dd,
   # locality
@@ -1020,7 +1027,7 @@ head(as.data.frame(all_data13))
 
 # write file
 write.csv(all_data13, file.path(main_dir,"outputs",
-                                paste0("ExSitu_Compiled_Standardized_", Sys.Date(), ".csv")),row.names = F)
+                                paste0("ExSitu_Compiled_Standardized_KG_", Sys.Date(), ".csv")),row.names = F)
 
 
 
