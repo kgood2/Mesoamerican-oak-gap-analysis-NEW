@@ -26,9 +26,9 @@
 ################################################################################
 
 rm(list=ls())
-my.packages <- c('plyr', 'tidyverse', 'data.table', 'textclean',
-                 'measurements', 'naniar','CoordinateCleaner','rnaturalearth',
-                 'rnaturalearthdata','maps','raster','spatialEco','geonames')
+my.packages <- c('plyr', 'tidyverse', 'textclean', 'spatialEco',
+                 'maps', 'measurements', 'CoordinateCleaner', 'rnaturalearth', 'raster')
+select <- dplyr::select
 # install.packages (my.packages) #Turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
 # install.packages("naniar") # when running above script you may get an error that naniar cant be loaded. Load separately
@@ -253,7 +253,7 @@ all_data3 <- tidyr::unite(all_data3, "taxon_full_name_concat",
 # when blank, fill taxon_full_name column with concatenated full name
 all_data3[is.na(all_data3$taxon_full_name),]$taxon_full_name <-
   all_data3[is.na(all_data3$taxon_full_name),]$taxon_full_name_concat
-unique(all_data3$taxon_full_name)
+# unique(all_data3$taxon_full_name)
 
 # standardize common hybrid signifiers in taxon_full_name
 all_data3$taxon_full_name <- mgsub(all_data3$taxon_full_name,
@@ -263,7 +263,7 @@ all_data3$taxon_full_name <- str_squish(all_data3$taxon_full_name)
 # write copy of all data
 # select columns
 #all_data_export1 <- all_data3 %>%
-#  dplyr::select(inst_short,taxon_full_name,genus,species,infra_rank,infra_name,
+#  select(inst_short,taxon_full_name,genus,species,infra_rank,infra_name,
 #    hybrid,cultivar,prov_type,orig_lat,orig_long,country,state,municipality,
 #    locality,assoc_sp,acc_num,lin_num,orig_source,rec_as,num_indiv,germ_type,
 #    garden_loc,coll_num,coll_name,coll_year,taxon_det,notes,taxon_full_name_orig)
@@ -420,17 +420,20 @@ taxon_list <- read.csv(file.path(main_dir, "inputs", "taxa_list",
                                  "target_taxa_with_syn.csv"),
                        header = T, na.strings = c("","NA"),colClasses = "character")
 taxon_list <- taxon_list %>%
-  dplyr::select(taxon_name,species_name_acc,list)
+  select(taxon_name,species_name_acc,list)
 head(taxon_list)
 
 # rename some taxon name columns to preserve originals
-setnames(all_data6,
-         old = c("genus","species","infra_rank","infra_name"),
-         new = c("genus_orig","species_orig","infra_rank_orig","infra_name_orig"))
-setnames(all_data6,
-         old = c("genus_new","species_new","infra_rank_new","infra_name_new",
-                 "taxon_full_name"),
-         new = c("genus","species","infra_rank","infra_name","taxon_name"))
+all_data6 <- all_data6 %>%
+  rename(genus_orig = genus,
+         species_orig = species,
+         infra_rank_orig = infra_rank,
+         infra_name_orig = infra_name) %>%
+  rename(genus = genus_new,
+         species = species_new,
+         infra_rank = infra_rank_new,
+         infra_name = infra_name_new,
+         taxon_name = taxon_full_name)
 
 # join dataset to taxa list
 # join by taxon name
@@ -466,7 +469,12 @@ write.csv(sort(unique(check$taxon_full_name)), file.path(main_dir,"outputs",
 # keep only matched names
 all_data9 <- all_data8 %>% filter(!is.na(list))
 nrow(all_data9) #30731
-unique(all_data9$hybrid) # should be NA
+# can check to see which target species have data
+unique(sort(all_data9$taxon_full_name))
+# should be NA:
+unique(all_data9$hybrid)
+
+#look at institutions remaining and the files they are in
 sort(unique(all_data9$inst_short))
 
 #identify column names to edit end of script below, if needed
@@ -517,7 +525,7 @@ unique(all_data9[which(all_data9$inst_short=="RoyalBGKew" | (all_data9$filename=
 ################################################################################
 
 # keep only necessary columns
-all_data10 <- all_data9 %>% dplyr::select(
+all_data10 <- all_data9 %>% select(
   # key data
   inst_short,submission_year,species_name_acc,#target_species,
   #rl_year,rl_category,
@@ -538,7 +546,7 @@ all_data10 <- all_data9 %>% dplyr::select(
 inst_data <- read.csv(file.path(main_dir,"inputs",#"respondent_institution_data_table",
                                 "respondent_institution_data_table.csv"),stringsAsFactors = F)
 str(inst_data)
-inst_data <- inst_data %>% dplyr::select(inst_short,inst_lat,inst_long,inst_country)
+inst_data <- inst_data %>% select(inst_short,inst_lat,inst_long,inst_country)
 all_data11 <- left_join(all_data10,inst_data)
 str(all_data11)
 
@@ -621,6 +629,7 @@ nrow(all_data11) #30653
 ## c) Combine duplicates (same institution and accession number)
 ##
 
+#save original accession number for reference, before editing
 all_data11$orig_acc_num <- all_data11$acc_num
 
 # combine duplicates (same acc num)
@@ -724,7 +733,7 @@ all_data12 <- all_data12 %>%
   mutate(num_indiv = sum(as.numeric(num_indiv))) %>%
   distinct(UID,.keep_all=T) %>%
   ungroup() %>%
-  dplyr::select(c("UID",all_of(nms)))
+  select(c("UID",all_of(nms)))
 nrow(all_data12) #24919
 
 ##
@@ -826,13 +835,24 @@ all_data12$long_dd <- as.numeric(all_data12$long_dd)
 # if coords are both 0, set to NA
 zero <- which(all_data12$lat_dd == 0 & all_data12$long_dd == 0)
 all_data12$lat_dd[zero] <- NA; all_data12$long_dd[zero] <- NA
-# flag non-numeric and not available coordinates and lat > 90, lat < -90,
+# flag non-numeric and NA coordinates and lat > 90, lat < -90,
 # lon > 180, and lon < -180
 coord_test <- cc_val(all_data12, lon = "long_dd",lat = "lat_dd",
                      value = "flagged", verbose = TRUE) #Flagged 20670 records.
+# see which values are flagged
+as.data.frame(unique(all_data12[!coord_test,c("lat_dd","long_dd")]))
+# optionally, see more information on flagged points
+#as.data.frame(all_data12[!coord_test & !is.na(all_data12$lat_dd),])
+
+
 # try switching lat and long for invalid points and check validity again
 all_data12[!coord_test,c("lat_dd","long_dd")] <-
   all_data12[!coord_test,c("long_dd","lat_dd")]
+coord_test <- cc_val(all_data12,lon = "long_dd",lat = "lat_dd",
+                     value = "flagged",verbose = TRUE) #Flagged 20663 records.
+# try making long negative for invalid points and check validity again
+all_data12[!coord_test,"long_dd"] <-
+  all_data12[!coord_test,"long_dd"]*-1
 coord_test <- cc_val(all_data12,lon = "long_dd",lat = "lat_dd",
                      value = "flagged",verbose = TRUE) #Flagged 20663 records.
 # make coords NA if they are still flagged
@@ -882,11 +902,11 @@ geo_pts[which(geo_pts$country.name == "Antarctica"),c("lat_dd","long_dd")]<-
   geo_pts[which(geo_pts$country.name == "Antarctica"),c("long_dd","lat_dd")]
 # round 2: add country-level information to check if lat-long in right spot
 geo_pts <- geo_pts %>%
-  dplyr::select(-country.name,-country.iso_a2,-country.iso_a3,-country.continent)
+  select(-country.name,-country.iso_a2,-country.iso_a3,-country.continent)
 geo_pts_spatial <- SpatialPointsDataFrame(geo_pts[,c("long_dd",
                                                      "lat_dd")], geo_pts, proj4string = CRS(proj4string4poly))
 geo_pts <- point.in.poly(geo_pts_spatial, adm0.poly, sp=TRUE)@data
-geo_pts <- geo_pts %>% dplyr::select(UID,country.name) %>%
+geo_pts <- geo_pts %>% select(UID,country.name) %>%
   rename(latlong_country = country.name)
 all_data12 <- full_join(all_data12,geo_pts)
 
@@ -1003,7 +1023,7 @@ all_data13 <- all_data12 %>%
 #ungroup() %>%
 #distinct(inst_short,species_name_acc,prov_type,all_locality,.keep_all=T) %>%
 
-all.data13 <- all.data13 %>% dplyr::select(
+all.data13 <- all.data13 %>% select(
   # grouping data
   inst_short, species_name_acc,prov_type,all_locality,
   # key data
@@ -1091,7 +1111,7 @@ all_data14 <- all_data12 %>%
     list,species_name_acc,taxon_full_name,
     .keep_all=T) %>%
   # reorder columns
-  dplyr::select(
+  select(
     ## GeoLocate
     locality.string,country,state,county,latitude,longitude,
     correction.status,precision,error.polygon,multiple.results,uncertainty,
@@ -1179,14 +1199,14 @@ sort(unique(post_geo$longitude))
 # keep only edited columns
 geolocated <- post_geo %>%
   rename(UID = UID_CAT) %>%
-  dplyr::select(country,state,county,latitude,longitude,precision,
+  select(country,state,county,latitude,longitude,precision,
                 uncertainty,gps_det,prov_type,UID) #multiple.results
 head(as.data.frame(geolocated),n = 40)
 
 ## for Quercus, because geolocated before changed UID system
 # bind itial export together, to join UID to geolocated data
 #pre_geo <- Reduce(rbind.fill, sp_split)
-#pre_geo <- pre_geo %>% dplyr::select(UID_CAT)
+#pre_geo <- pre_geo %>% select(UID_CAT)
 # add UID to geolocated rows and separate to accession level again
 #geolocated <- cbind(post_geo,pre_geo)
 
@@ -1202,7 +1222,7 @@ yes_geo <- all_data13 %>% filter(UID %in% geolocated2$UID)
 # should be character(0)
 setdiff(geolocated2$UID,yes_geo$UID)
 # add gelocated rows to data
-yes_geo <- yes_geo %>% dplyr::select(-prov_type,-gps_det,-lat_dd,
+yes_geo <- yes_geo %>% select(-prov_type,-gps_det,-lat_dd,
                                      -long_dd,-county,-state,-country,-coord_precision)
 yes_geo <- full_join(yes_geo,geolocated2)
 # bind all data together (geolocated and garden origin)
@@ -1219,7 +1239,7 @@ unique(all_data15$gps_det)
 all_data15 <- all_data15 %>%
   arrange(species_name_acc,UID) %>%
   rename(gps_notes = flag) %>%
-  dplyr::select(
+  select(
     # key data
     UID,inst_short,submission_year,species_name_acc,target_species,
     prov_type,gps_det,lat_dd,long_dd,coord_precision,precision,gps_notes,
