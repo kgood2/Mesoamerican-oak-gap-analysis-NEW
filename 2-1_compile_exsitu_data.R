@@ -154,7 +154,7 @@ all_data <- as.data.frame(lapply(all_data,replace_non_ascii),stringsAsFactors=F)
 sort(colnames(all_data))
 
 # remove ï.. at start of some column names
-colnames(all_data) <- gsub("^ï..","",colnames(all_data))
+colnames(all_data) <- gsub("^ï..","2",colnames(all_data))
 
 # remove "dead" and "removed" individuals from condition column 
 # table(all_data$condition)
@@ -175,7 +175,7 @@ all_data <- all_data[!(all_data$filename == "CultivatedOaks" & all_data$inst_sho
 unique(all_data$filename[all_data$genus_species!=""])
 ## IF NEEDED: merge similar columns (you may not need to do this if no schema
 ##  mistakes were made when manually editing column names)
-all_data <- tidyr::unite(all_data,"taxon_full_name", c("taxon_full_name","sp_full_name","taxon_name"),
+all_data <- tidyr::unite(all_data,"taxon_full_name", c("taxon_full_name","2taxon_full_name","sp_full_name","taxon_name"),
   sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"infra_name", c("infra_name","Infraspecific.Epithet"),
   sep=";",remove=T,na.rm=T)
@@ -195,8 +195,8 @@ all_data <- tidyr::unite(all_data,"coll_name", c("coll_name","Collector.Name"),
   sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"rec_as", c("rec_as","Germplasm.type.received"),
   sep=";",remove=T,na.rm=T)
-# all_data <- tidyr::unite(all_data,"inst_short", c("inst_short"),
-   # sep=";",remove=T,na.rm=T)
+ all_data <- tidyr::unite(all_data,"inst_short", c("inst_short","2inst_short"),
+    sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"cultivar", c("cultivar","trade_name"),
   sep=" / ",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"num_indiv", c("num_indiv","num_plants","no_plants"),
@@ -252,8 +252,8 @@ all_data <- tidyr::unite(all_data,"garden_loc", c("garden_loc","loc"),
 # prov_type,rec_as,species,state,submission_year,taxon_det,taxon_full_name
 
 # fill in inst_short column with filename if none provided
-all_data$inst_short[is.na(all_data$inst_short)] <-
-  all_data$filename[is.na(all_data$inst_short)]
+all_data$inst_short[all_data$inst_short==""] <-
+  all_data$filename[all_data$inst_short==""]
 nrow(all_data) #96841
 # remove rows with no inst_short
 all_data <- all_data[!(all_data$inst_short==""),]
