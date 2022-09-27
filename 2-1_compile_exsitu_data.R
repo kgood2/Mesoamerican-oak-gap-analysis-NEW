@@ -157,10 +157,15 @@ sort(colnames(all_data))
 colnames(all_data) <- gsub("^ï..","",colnames(all_data))
 
 # remove "dead" and "removed" individuals from condition column 
-table(all_data$condition)
-nrow(all_data)
-all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
-nrow(all_data)
+# table(all_data$condition)
+# nrow(all_data)
+# all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
+# nrow(all_data)
+
+#remove institutions in parent file if they also have their own, newer file. 
+all_data <- all_data[!(all_data$filename == "PCNQuercus" & all_data$inst_short == "RanchoSantaAnaBG"),]
+all_data <- all_data[!(all_data$filename == "PCNQuercus" & all_data$inst_short == "MortonArb"),]
+all_data <- all_data[!(all_data$filename == "CultivatedOaks" & all_data$inst_short == "ArbPouyouleix"),]
 
 ## IF NEEDED: separate column into multiple
 #all_data <- all_data %>% separate("specific",
@@ -190,8 +195,8 @@ all_data <- tidyr::unite(all_data,"coll_name", c("coll_name","Collector.Name"),
   sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"rec_as", c("rec_as","Germplasm.type.received"),
   sep=";",remove=T,na.rm=T)
-# all_data <- tidyr::unite(all_data,"inst_short", c("inst_short","ï..inst_short"),
-  # sep=";",remove=T,na.rm=T)
+# all_data <- tidyr::unite(all_data,"inst_short", c("inst_short"),
+   # sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"cultivar", c("cultivar","trade_name"),
   sep=" / ",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"num_indiv", c("num_indiv","num_plants","no_plants"),
@@ -251,7 +256,8 @@ all_data$inst_short[is.na(all_data$inst_short)] <-
   all_data$filename[is.na(all_data$inst_short)]
 nrow(all_data) #96841
 # remove rows with no inst_short
-all_data <- all_data[which(all_data$inst_short!=""),]
+all_data <- all_data[!(all_data$inst_short==""),]
+# all_data <- all_data[which(all_data$inst_short!=""),]
 nrow(all_data) #96841
 ## IF NEEDED: remove duplicates in network datasets (e.g., PCN) if institution
 ##   submitted their own data separately
@@ -577,6 +583,12 @@ colnames(all_data9)
 ################################################################################
 # 4. Standardize important columns
 ################################################################################
+
+# remove "dead" and "removed" individuals from condition column 
+table(all_data$condition)
+nrow(all_data)
+all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
+nrow(all_data)
 
 # keep only necessary columns
 all_data10 <- all_data9 %>% select(
