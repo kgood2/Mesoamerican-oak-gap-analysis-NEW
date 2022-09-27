@@ -156,6 +156,12 @@ sort(colnames(all_data))
 # remove ï.. at start of some column names
 colnames(all_data) <- gsub("^ï..","",colnames(all_data))
 
+# remove "dead" and "removed" individuals from condition column 
+table(all_data$condition)
+nrow(all_data)
+all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
+nrow(all_data)
+
 ## IF NEEDED: separate column into multiple
 #all_data <- all_data %>% separate("specific",
 #  c("infra_rank_add","infra_name_add"),sep=" ",remove=T,fill="right")
@@ -669,9 +675,6 @@ nrow(all_data11) #30731
 # remove records with no individuals
 all_data11 <- all_data11[which(all_data11$num_indiv > 0),]
 nrow(all_data11) #30653
-# if there is another column that indicates individuals are dead,
-#   look there and remove those records now
-#all_data11 <- all_data11[which(all_data11$condition != "dead"),]
 
 ##
 ## c) Combine duplicates (same institution and accession number)
