@@ -152,6 +152,10 @@ all_data <- as.data.frame(lapply(all_data,replace_non_ascii),stringsAsFactors=F)
 
 # check out column names
 sort(colnames(all_data))
+
+# remove ï.. at start of some column names
+colnames(all_data) <- gsub("^ï..","",colnames(all_data))
+
 ## IF NEEDED: separate column into multiple
 #all_data <- all_data %>% separate("specific",
 #  c("infra_rank_add","infra_name_add"),sep=" ",remove=T,fill="right")
@@ -160,63 +164,59 @@ sort(colnames(all_data))
 unique(all_data$filename[all_data$genus_species!=""])
 ## IF NEEDED: merge similar columns (you may not need to do this if no schema
 ##  mistakes were made when manually editing column names)
-all_data <- tidyr::unite(all_data,"taxon_full_name",
-                         c("taxon_full_name","ï..taxon_full_name","ï..sp_full_name","sp_full_name","ï..taxon_full_name","taxon_name"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"infra_name",
-                         c("infra_name","intra_name","specific_name"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"infra_rank",
-                         c("infra_rank","intra_rank","specific_rank"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"acc_num",
-                         c("acc_num","acc_no","Accession.Number"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"notes",
-                         c("notes","notes_1","notes_2","notes_3","notes_4"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"hybrid",
-                         c("hybrid","Hybrid"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"coll_num",
-                         c("coll_num","cull_no"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"coll_year",
-                         c("coll_year","Collection.Year","aqu_year"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"coll_name",
-                         c("coll_name","Collector.Name"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"rec_as",
-                         c("rec_as","Germplasm.type.received"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"inst_short",
-                         c("inst_short","ï..inst_short"),
-                         sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"taxon_full_name", c("taxon_full_name","ï..taxon_full_name","sp_full_name","ï..taxon_full_name","taxon_name"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"infra_name", c("infra_name","Infraspecific.Epithet"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"infra_rank", c("infra_rank","Infraspecific.Rank"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"acc_num", c("acc_num","acc_no","Accession.Number"),
+   sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"notes", c("notes","notes_1","notes_2","notes_3","notes_4","orig_notes"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"hybrid", c("hybrid","Hybrid"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"coll_num", c("coll_num","coll_no"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"coll_year", c("coll_year","Collection.Year","aqu_year","acq_year"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"coll_name", c("coll_name","Collector.Name"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"rec_as", c("rec_as","Germplasm.type.received"),
+  sep=";",remove=T,na.rm=T)
+# all_data <- tidyr::unite(all_data,"inst_short", c("inst_short","ï..inst_short"),
+  # sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"cultivar", c("cultivar","trade_name"),
-                           sep=" / ",remove=T,na.rm=T)
+  sep=" / ",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"num_indiv", c("num_indiv","num_plants","no_plants"),
-                          sep=";",remove=T,na.rm=T)
+   sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"orig_source", c("orig_source","Original.Source","donor_name","source2","source"),
-                         sep=";",remove=T,na.rm=T)
+    sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"state", c("state","maj_region","Major.Area"),
-                          sep=";",remove=T,na.rm=T)
+    sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"county", c("county","min_region","Minor.Area"),
-                          sep=";",remove=T,na.rm=T)
+    sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"municipality", c("municipality", "other_region"),
-                         sep=";",remove=T,na.rm=T)
-ll_data <- tidyr::unite(all_data,"name_determ", c("name_determ","id_by","uncert_id"),
-                        sep=";",remove=T,na.rm=T)
+    sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"name_determ", c("name_determ","id_by","uncert_id"),
+  sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"condition", c("condition","plant_status"),
-                        sep=";",remove=T,na.rm=T)
+  sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"orig_lat", c("orig_lat","Latitude"),
-                         sep=";",remove=T,na.rm=T)
+  sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"orig_long", c("orig_long","Longitude"),
-                         sep=";",remove=T,na.rm=T)
-all_data <- tidyr::unite(all_data,"locality", c("locality","Locality","loc"),
-                         sep=";",remove=T,na.rm=T)
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"locality", c("locality","Locality","locality_details"),
+  sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"country", c("country","Country"),
-                         sep=";",remove=T,na.rm=T)
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"genus", c("genus","Generic.Epithet"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"species", c("species","Specific.Epithet"),
+  sep=";",remove=T,na.rm=T)
+all_data <- tidyr::unite(all_data,"garden_loc", c("garden_loc","loc"),
+  sep=";",remove=T,na.rm=T)
+
 #all_data <- tidyr::unite(all_data,"inst_short", c("inst_short","ï..inst_short"),
 #  sep=";",remove=T,na.rm=T)
 #all_data <- tidyr::unite(all_data,"num_indiv", c("num_indiv","num_plants"),
