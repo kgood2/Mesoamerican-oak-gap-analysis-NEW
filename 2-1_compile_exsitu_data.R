@@ -164,7 +164,7 @@ colnames(all_data) <- gsub("^ï..","",colnames(all_data))
 unique(all_data$filename[all_data$genus_species!=""])
 ## IF NEEDED: merge similar columns (you may not need to do this if no schema
 ##  mistakes were made when manually editing column names)
-all_data <- tidyr::unite(all_data,"taxon_full_name", c("taxon_full_name","ï..taxon_full_name","sp_full_name","ï..taxon_full_name","taxon_name"),
+all_data <- tidyr::unite(all_data,"taxon_full_name", c("taxon_full_name","sp_full_name","taxon_name"),
   sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"infra_name", c("infra_name","Infraspecific.Epithet"),
   sep=";",remove=T,na.rm=T)
@@ -529,43 +529,43 @@ sort(unique(all_data9$inst_short))
 # want: taxon_full_name, filename, inst_short, submission_year
 colnames(all_data9)
 
-# compare species in the new file and old file for an institution
-# if the same species are in the old and new dataset, you can just use the new
-unique(all_data9[which(all_data9$inst_short=="ABG" | all_data9$inst_short=="AtlantaBG"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="CBG" | all_data9$inst_short=="ChicagoBG"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="JCRA" | all_data9$inst_short=="JCRaulstonArb"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="RanchoSantaAnaBG" | all_data9$inst_short=="CalBG"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="SDBG" | all_data9$inst_short=="SanDiegoBG"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="SBBG" | all_data9$inst_short=="SantaBarbaraBG"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="SHHG" | all_data9$inst_short=="SirHarloldHillierG"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="TBG" | all_data9$inst_short=="TulsaBG"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="UCBG" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="CinZooBG" | all_data9$inst_short=="CincinnatiZooBG"),c(143,34,40,35)])
+## compare species in the new file and old file for an institution
+## if the same species are in the old and new dataset, you can just use the new
+  # unique(all_data9[which(all_data9$inst_short=="ABG" | all_data9$inst_short=="AtlantaBG"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="CBG" | all_data9$inst_short=="ChicagoBG"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="JCRA" | all_data9$inst_short=="JCRaulstonArb"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="RanchoSantaAnaBG" | all_data9$inst_short=="CalBG"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="SDBG" | all_data9$inst_short=="SanDiegoBG"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="SBBG" | all_data9$inst_short=="SantaBarbaraBG"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="SHHG" | all_data9$inst_short=="SirHarloldHillierG"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="TBG" | all_data9$inst_short=="TulsaBG"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="UCBG" | all_data9$inst_short=="UCalBGBerkeley"),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="CinZooBG" | all_data9$inst_short=="CincinnatiZooBG"),c(143,34,40,35)])
 
 
-# look at institutions and species in the PCNQuercus file
-unique(all_data9[which(all_data9$filename=="PCNQuercus"),c(143,34,40,35)])
+## look at institutions and species in the PCNQuercus file
+  #unique(all_data9[which(all_data9$filename=="PCNQuercus"),c(143,34,40,35)])
 
-# once you know the institutions in the PCNQuercus file, you can check each of them to see what’s in their institution file compared to the PCNQuercus file
-# if there is only “PCNQuercus” in the filename column, then there are no target species in the new dataset
-# if there is another filename (e.g. BartlettArb), then those target species are in the new file
-unique(all_data9[which(all_data9$inst_short=="BartlettArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="BartlettArb")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="ChicagoBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="ChicagoBG")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="DevnerBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="DenverBG")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="RanchoSantaAnaBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="RanchoSantaAnaBG")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="StarhillForestArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="StarhillForestArb")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="UCalBGBerkeley" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UCalBerkeley")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="UCDavisArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UCDavisArb")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="UWashingtonBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UWashingtonBG")),c(143,34,40,35)])
+## once you know the institutions in the PCNQuercus file, you can check each of them to see what’s in their institution file compared to the PCNQuercus file
+## if there is only “PCNQuercus” in the filename column, then there are no target species in the new dataset
+## if there is another filename (e.g. BartlettArb), then those target species are in the new file
+  # unique(all_data9[which(all_data9$inst_short=="BartlettArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="BartlettArb")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="ChicagoBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="ChicagoBG")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="DevnerBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="DenverBG")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="RanchoSantaAnaBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="RanchoSantaAnaBG")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="StarhillForestArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="StarhillForestArb")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="UCalBGBerkeley" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UCalBerkeley")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="UCDavisArb" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UCDavisArb")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="UWashingtonBG" | (all_data9$filename=="PCNQuercus" & all_data9$inst_short=="UWashingtonBG")),c(143,34,40,35)])
 
-# look at institutions and species in the ACoombes file
-unique(all_data9[which(all_data9$filename=="ACoombes"),c(143,34,40,35)])
+## look at institutions and species in the ACoombes file
+  # unique(all_data9[which(all_data9$filename=="ACoombes"),c(143,34,40,35)])
 
 ## look at ACoombes file and compare to institutions in parent file
-unique(all_data9[which(all_data9$inst_short=="ArbBergerette" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ArbBergerette")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="ArbPouyouleix" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ArbPouyouleix")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="ChevithorneBarton" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ChevithorneBarton")),c(143,34,40,35)])
-unique(all_data9[which(all_data9$inst_short=="RoyalBGKew" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="RoyalBGKew")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="ArbBergerette" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ArbBergerette")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="ArbPouyouleix" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ArbPouyouleix")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="ChevithorneBarton" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="ChevithorneBarton")),c(143,34,40,35)])
+  # unique(all_data9[which(all_data9$inst_short=="RoyalBGKew" | (all_data9$filename=="ACoombes" & all_data9$inst_short=="RoyalBGKew")),c(143,34,40,35)])
 
 
 ################################################################################
@@ -1071,25 +1071,25 @@ all_data13 <- all_data12 %>%
 #ungroup() %>%
 #distinct(inst_short,species_name_acc,prov_type,all_locality,.keep_all=T) %>%
 
-all.data13 <- all.data13 %>% select(
+  select(
   # grouping data
-  inst_short, species_name_acc,prov_type,all_locality,
+    inst_short, species_name_acc,prov_type,all_locality,
   # key data
-  UID,gps_det,flag,lat_dd,long_dd,
+    UID,gps_det,flag,lat_dd,long_dd,
   # locality
-  locality,municipality,county,state,country,latlong_country,
-  orig_source,notes,orig_lat,orig_long,assoc_sp,
+    locality,municipality,county,state,country,latlong_country,
+    orig_source,notes,orig_lat,orig_long,assoc_sp,
   # source
-  acc_num,lin_num,coll_num,coll_name,coll_year,
+    acc_num,lin_num,coll_num,coll_name,coll_year,
   # material info
-  germ_type,garden_loc,rec_as,taxon_det,#sum_num_indiv,sum_num_acc,
+    germ_type,garden_loc,rec_as,taxon_det,#sum_num_indiv,sum_num_acc,
   # taxon name
-  list,taxon_full_name,genus,#taxon_name_acc,
-  taxon_full_name_orig,taxon_full_name_concat,cultivar,
+    list,taxon_full_name,genus,#taxon_name_acc,
+    taxon_full_name_orig,taxon_full_name_concat,cultivar,
   # species metadata
   #rl_year,rl_category,
   # institution metadata
-  inst_country,inst_lat,inst_long,filename)
+    inst_country,inst_lat,inst_long,filename)
 nrow(all_data13) #13867
 head(as.data.frame(all_data13))
 
