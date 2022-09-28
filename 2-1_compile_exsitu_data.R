@@ -1113,9 +1113,30 @@ write.csv(all_data13, file.path(main_dir,"outputs",
                                 paste0("ExSitu_Compiled_Standardized_KG_", Sys.Date(), ".csv")),row.names = F)
 
 
+# rename columns for new .csv file to use in 3-0_Compile_Occurrence_Points script
+all_data14 <- all_data13 %>%
+  rename(taxon_name = taxon_full_name,
+         species_name = species_name_acc,
+         taxonIdentificationNotes = taxon_det,
+         year = coll_year,
+         basisOfRecord = prov_type,
+         decimalLatitude = lat_dd,
+         decimalLongitude = long_dd,
+         geolocationNotes = flag,
+         locality = all_locality,
+         verbatimLocality = locality,
+         stateProvince = state,
+         datasetName = inst_short,
+         nativeDatabaseID = UID,
+         issue= gps_det)
 
+all_data14 <- tidyr::unite(all_data14,"locationNotes", c("germ_type", "garden_loc"),
+                         sep=";",remove=T,na.rm=T)
+all_data14$database <- "Ex_situ"
 
-
+# write file
+write.csv(all_data14, file.path(main_dir,"inputs","compiled_occurrence",
+                                paste0("ExSitu_", Sys.Date(), ".csv")),row.names = F)
 
 
 
