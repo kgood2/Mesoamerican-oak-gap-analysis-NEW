@@ -46,21 +46,7 @@ count <- dplyr::count
 ################################################################################
 # Set working directory
 ################################################################################
-
-# either set manually:
-#main_dir <- "/Volumes/GoogleDrive/My Drive/Conservation Consortia/R Training/occurrence_points"
-main_dir <- "/Volumes/GoogleDrive-103729429307302508433/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
-#script_dir <- "./Documents/GitHub/OccurrencePoints/scripts"
-
-# or use 0-1_set_workingdirectory.R script:
-#source("./Documents/GitHub/OccurrencePoints/scripts/0-1_set_workingdirectory.R")
-#source('scripts/0-1_set_workingdirectory.R')
-
-################################################################################
-# Load functions
-################################################################################
-#source(file.path(script_dir,"0-2_load_IMLS_functions.R"))
-
+main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
 
 ################################################################################
 ################################################################################
@@ -76,14 +62,14 @@ file_list <- list.files(file.path(main_dir,"inputs","compiled_occurrence"),
                         pattern = ".csv", full.names = T)
 file_dfs <- lapply(file_list, read.csv, header = T, na.strings = c("","NA"),
                    colClasses = "character")
-length(file_dfs) #8
+length(file_dfs) #13
 
 # stack all datasets using rbind.fill, which keeps non-matching columns
 #   and fills with NA; 'Reduce' iterates through list and merges with previous.
 # this may take a few minutes if you have lots of data
 all_data_raw <- Reduce(rbind.fill, file_dfs)
-nrow(all_data_raw) #7131852
-names(all_data_raw) #36
+nrow(all_data_raw) #351043
+names(all_data_raw) #61
 table(all_data_raw$database)
 
 ##add unique identifier
@@ -113,8 +99,9 @@ taxon_list <- taxon_list %>%
   select(taxon_name,genus,species,infra_rank,
          infra_name,list,species_name_acc)
 
-# full join to taxon list
-all_data_raw <- all_data_raw %>% select(-genus)
+# full join to taxon list. Check that output says "Joining by = "taxon_name"
+# if output says it is joining by anything else, it needs to be removed with genus and list below.
+all_data_raw <- all_data_raw %>% select(-genus,-list)
 all_data_raw <- left_join(all_data_raw,taxon_list)
 # join again just by species name if no taxon match
 need_match <- all_data_raw[which(is.na(all_data_raw$list)),]
@@ -347,9 +334,9 @@ geo_pts$coordinateUncertaintyInMeters <-
 geo_pts <- geo_pts %>% arrange(geo_pts$coordinateUncertaintyInMeters)
 # sort by year
 geo_pts <- geo_pts %>% arrange(desc(year))
-# sort by dataset
+# sort by dataset. If you add new datasets, you need to make sure their name is included below. 
 geo_pts$database <- factor(geo_pts$database,
-                           levels = c("BIEN","Maricela","PMA","GBIF","US_Herbaria","iDigBio","GT_USCG","Herbario_TEFH_Hondouras","IUCN_RedList","El_Salvador","Base_Quercus"))
+                           levels = c("BIEN","Maricela","PMA","GBIF","US_Herbaria","iDigBio","GT_USCG","Herbario_TEFH_Hondouras","IUCN_RedList","El_Salvador","Base_Quercus","Ex_situ"))
 geo_pts <- geo_pts %>% arrange(database)
 
 # remove duplicates
