@@ -37,18 +37,7 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
-# either set manually:
-main_dir <- "G:/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
-#script_dir <- "./Documents/GitHub/OccurrencePoints/scripts"
-
-# or use 0-1_set_workingdirectory.R script:
-#source("./Documents/GitHub/OccurrencePoints/scripts/0-1_set_workingdirectory.R")
-#source("scripts/0-1_set_workingdirectory.R")
-
-################################################################################
-# Load functions
-################################################################################
-#source(file.path(script_dir,"0-2_load_IMLS_functions.R"))
+main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
 
 
 ################################################################################
@@ -92,13 +81,13 @@ for(i in 1:length(spp.all)){
   ## palette based on database
   # set database as factor and order appropriately
   spp.now$database <- factor(spp.now$database,
-                             levels = c("BIEN","Maricela","PMA","GBIF","US_Herbaria","iDigBio","GT_USCG","Herbario_TEFH_Hondouras","IUCN_RedList","El_Salvador","Base_Quercus"))
+                             levels = c("BIEN","Maricela","PMA","GBIF","US_Herbaria","iDigBio","GT_USCG","Herbario_TEFH_Hondouras","IUCN_RedList","El_Salvador","Base_Quercus","Ex_situ"))
   spp.now <- spp.now %>% arrange(desc(database))
   # create color palette
-  # slate gray, pink, light green, orange, bright green, blue, yellow, purple, dusty green, teal, dark blue-purple
-  colors <- c("#708090","#ffc0cb","#a8ee90", "#c9a467","#48b06c","#2f68d4","#c1c70c","#9279a6","#7d9e77","#27abb0","#432194")
+  # slate gray, pink, light green, orange, bright green, blue, yellow, purple, dusty green, teal, dark blue-purple, brown
+  colors <- c("#708090","#ffc0cb","#a8ee90", "#c9a467","#48b06c","#2f68d4","#c1c70c","#9279a6","#7d9e77","#27abb0","#432194","#a5682a")
   database.pal <- colorFactor(palette=colors,
-                              levels=c("BIEN","Maricela","PMA","GBIF","US_Herbaria","iDigBio","GT_USCG","Herbario_TEFH_Hondouras","IUCN_RedList","El_Savador","Base_Quercus"))
+                              levels=c("BIEN","Maricela","PMA","GBIF","US_Herbaria","iDigBio","GT_USCG","Herbario_TEFH_Hondouras","IUCN_RedList","El_Savador","Base_Quercus","Ex_situ"))
   
   # create map
   map <- leaflet() %>%
