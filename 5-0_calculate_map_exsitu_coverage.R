@@ -56,7 +56,12 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
-main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
+#Work PC Computer 
+# main_dir <- "G:/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/ occurrence_points"
+
+
+# Home Apple Computer 
+# main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
 
 ################################################################################
 # Load functions
