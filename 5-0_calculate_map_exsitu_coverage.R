@@ -224,6 +224,10 @@ triangle_lg <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle
 few_indiv <- 10
 many_indiv <- 30
 
+# create folder for maps, if not yet created
+if(!dir.exists(file.path(main_dir,"outputs","exsitu_coverage")))
+  dir.create(file.path(main_dir,"outputs","exsitu_coverage"), recursive=T)
+
 ################################################################################
 # Choose target species
 ################################################################################
@@ -236,10 +240,10 @@ head(taxon_list)
 
 # OPTIONAL, depending on your workflow:
 #		read in manual edits to target species maps
-pt_edits <- read.csv(file.path(main_dir, "inputs", "known_distribution",
-                               "manual_point_edits.csv"),
-                     header = T, na.strings = c("","NA"),colClasses = "character")
-head(pt_edits)
+# pt_edits <- read.csv(file.path(main_dir, "inputs", "known_distribution",
+                               # "manual_point_edits.csv"),
+                     # header = T, na.strings = c("","NA"),colClasses = "character")
+# head(pt_edits)
 
 # select target species by...
 # ...OPTION 1 - select threatened (CR, EN, VU) and Near Threatened species
@@ -252,11 +256,11 @@ head(pt_edits)
 #lc_sp <- lc_sp$species_name_acc
 #sort(lc_sp)
 # ...OPTION 3 - manually select target species
-target_sp <- c("Quercus_lobata","Quercus_acerifolia")
+# target_sp <- c("Quercus_lobata","Quercus_acerifolia")
 #"Quercus_acutifolia", "Quercus_costaricensis",
 #"Quercus_hirtifolia", "Quercus_mulleri")
 # ...OPTION 4 - use all the species in your list!
-# target_sp <- unique(taxon_list$species_name_acc)
+target_sp <- unique(taxon_list$species_name_acc)
 
 # read in native dist information to see if using RL (default) or GTS
 native_dist <- read.csv(file.path(main_dir,"inputs","known_distribution",
