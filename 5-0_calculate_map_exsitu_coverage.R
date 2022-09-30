@@ -251,25 +251,29 @@ head(taxon_list)
 # head(pt_edits)
 
 # select target species by...
+
 # ...OPTION 1 - select threatened (CR, EN, VU) and Near Threatened species
 #target_sp <- taxon_list %>% filter(rl_category == "CR" | rl_category == "EN" |
 #																	 rl_category == "VU" | rl_category == "NT")
 #target_sp <- unique(target_sp$species_name_acc)
+
 # ...OPTION 2 - randomly select some Least Concern species
 #lc <- taxon_list %>% filter(is.na(map_flag) & list == "desiderata")
 #lc_sp <- lc[sample(nrow(lc), 29), ]
 #lc_sp <- lc_sp$species_name_acc
 #sort(lc_sp)
+
 # ...OPTION 3 - manually select target species
-# target_sp <- c("Quercus_lobata","Quercus_acerifolia")
+target_sp <- c("Quercus_carmenensis","Quercus_acerifolia")
 #"Quercus_acutifolia", "Quercus_costaricensis",
 #"Quercus_hirtifolia", "Quercus_mulleri")
+
 # ...OPTION 4 - use all the species in your list!
-target_sp <- unique(taxon_list$species_name_acc)
+# target_sp <- unique(taxon_list$species_name_acc)
 
 # added line to replace _ with a space in species name when searching for file
 # to read in occurrence points
-target_sp <- gsub(" ","_",target_sp)
+# target_sp <- gsub(" ","_",target_sp)
 
 
 # read in native dist information to see if using RL (default) or GTS
@@ -442,8 +446,7 @@ for(sp in 1:length(target_sp)){
       eco_sm = NA, eco_md = NA, eco_lg = NA,
       eco_usl4_sm = NA, eco_usl4_md = NA, eco_usl4_lg = NA,
       EOO = hull_area,
-      ### turn the next row off for gap analysis of US oaks 2020
-      #dist_filter = dist_filter_val,
+      dist_filter = dist_filter_val,
       stringsAsFactors=F)
     print("No ex situ points; skipping buffer calculations")
   } else {
@@ -622,7 +625,7 @@ image(seq(1,numberOfColors),1,
     addScaleBar(position = "bottomleft",
                 options = scaleBarOptions(maxWidth = 150)) %>%
     ## pick coords for center of frame and zoom level when map first appears
-    setView(-101, 31, zoom = 4)
+    setView(-99, 19, zoom = 4)
   
   # view map
   coverage_map
@@ -697,7 +700,7 @@ image(seq(1,numberOfColors),1,
     ## add scale bar and set initial map view
     addScaleBar(position = "bottomright",
                 options = scaleBarOptions(maxWidth = 150)) %>%
-    setView(-101, 31, zoom = 4)
+    setView(-99, 19, zoom = 4)
   
   # view map
   coverage_map
@@ -785,7 +788,7 @@ image(seq(1,numberOfColors),1,
   		style='width:22px;height:22px;'> 15+",
       position = "bottomleft") %>%
     ## Set view (long and lat) and zoom level, for when map initially opens
-    setView(-101, 31, zoom = 4)
+    setView(-99, 19, zoom = 4)
   
   # view map
   coverage_map
