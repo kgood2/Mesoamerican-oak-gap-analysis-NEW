@@ -266,6 +266,9 @@ head(taxon_list)
 #"Quercus_hirtifolia", "Quercus_mulleri")
 # ...OPTION 4 - use all the species in your list!
 target_sp <- unique(taxon_list$species_name_acc)
+
+# added line to replace _ with a space in species name when searching for file
+# to read in occurrence points
 target_sp <- gsub(" ","_",target_sp)
 
 
@@ -555,8 +558,17 @@ for(sp in 1:length(target_sp)){
   
   # create ecoregion color palette, based on RColorBrewer palette
   #   can run display.brewer.all() to see options
-  eco_pal <- colorFactor(palette = "Set2", domain = eco_sel$ECO_ID,
-                         reverse = F, na.color = "white")
+  # eco_pal <- colorFactor(palette = "Set3", domain = eco_sel$ECO_ID,
+                         # reverse = F, na.color = "white")
+  
+eco_pal <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
+par(mar =c(0,0,0,0))
+numberOfColors <- 15
+image(seq(1,numberOfColors),1,
+    matrix(seq(1,numberOfColors),numberOfColors,1),
+    col = eco_pal(numberOfColors),
+    axes = FALSE, ann = FALSE)
+
   
   # create map
   coverage_map <- leaflet() %>%
