@@ -61,7 +61,7 @@ rm(my.packages)
 
 
 # Home Apple Computer 
-# main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
+main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
 
 ################################################################################
 # Load functions
@@ -266,6 +266,8 @@ head(taxon_list)
 #"Quercus_hirtifolia", "Quercus_mulleri")
 # ...OPTION 4 - use all the species in your list!
 target_sp <- unique(taxon_list$species_name_acc)
+target_sp <- gsub(" ","_",target_sp)
+
 
 # read in native dist information to see if using RL (default) or GTS
 native_dist <- read.csv(file.path(main_dir,"inputs","known_distribution",
