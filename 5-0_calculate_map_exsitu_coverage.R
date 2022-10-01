@@ -44,7 +44,7 @@
 
 my.packages <- c(
   # for mapping
-  "leaflet","rnaturalearth","Polychrome","polylabelr",#"RColorBrewer"
+  "leaflet","rnaturalearth","Polychrome","polylabelr","RColorBrewer",
   # for calculations
   "dplyr","terra"
 )
@@ -246,8 +246,8 @@ head(taxon_list)
 # OPTIONAL, depending on your workflow:
 #		read in manual edits to target species maps
 # pt_edits <- read.csv(file.path(main_dir, "inputs", "known_distribution",
-                               # "manual_point_edits.csv"),
-                     # header = T, na.strings = c("","NA"),colClasses = "character")
+# "manual_point_edits.csv"),
+# header = T, na.strings = c("","NA"),colClasses = "character")
 # head(pt_edits)
 
 # select target species by...
@@ -264,9 +264,11 @@ head(taxon_list)
 #sort(lc_sp)
 
 # ...OPTION 3 - manually select target species
-target_sp <- c("Quercus_carmenensis","Quercus_acerifolia")
-#"Quercus_acutifolia", "Quercus_costaricensis",
-#"Quercus_hirtifolia", "Quercus_mulleri")
+target_sp <- "Quercus_costaricensis" 
+                #"Quercus_carmenensis",
+               #"Quercus_cupreata","Quercus_delgadoana","Quercus_dumosa","Quercus_furfuracea","Quercus_gulielmi-treleasei",
+               #"Quercus_hinckleyi","Quercus_hintonii","Quercus_hintoniorum","Quercus_hirtifolia","Quercus_insignis","Quercus_meavei",
+               #"Quercus_tomentella","Quercus_vicentensis"
 
 # ...OPTION 4 - use all the species in your list!
 # target_sp <- unique(taxon_list$species_name_acc)
@@ -343,10 +345,10 @@ summary_tbl <- data.frame(
 
 ### CYCLE THROUGH TARGET SPECIES TO CALCULATE EX SITU COVERAGE
 
-for(sp in 1:length(target_sp)){
+# for(sp in 1:length(target_sp)){
   
   ## can test with one species first if you'd like (skip loop line above)
-  #sp <- 1
+  sp <- 1
   
   # print progress
   cat("\nStarting ", target_sp[sp], "\n")
@@ -561,18 +563,22 @@ for(sp in 1:length(target_sp)){
   
   # create ecoregion color palette, based on RColorBrewer palette
   #   can run display.brewer.all() to see options
-  # eco_pal <- colorFactor(palette = "Set3", domain = eco_sel$ECO_ID,
-                         # reverse = F, na.color = "white")
   
-eco_pal <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
-par(mar =c(0,0,0,0))
-numberOfColors <- 15
-image(seq(1,numberOfColors),1,
-    matrix(seq(1,numberOfColors),numberOfColors,1),
-    col = eco_pal(numberOfColors),
-    axes = FALSE, ann = FALSE)
+  NewColors <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
+  eco_pal <- colorFactor(palette = NewColors(15), domain = eco_sel$ECO_ID,
+                         reverse = F, na.color = "white")
+  
+#eco_pal <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
+#par(mar =c(0,0,0,0))
+#numberOfColors <- 15
+#image(seq(1,numberOfColors),1,
+    #matrix(seq(1,numberOfColors),numberOfColors,1),
+    #col = eco_pal(numberOfColors),
+    #axes = FALSE, ann = FALSE)
+#eco_pal(15)
+#eco_pal2 <- eco_pal(15)
+# eco_pal2
 
-  
   # create map
   coverage_map <- leaflet() %>%
     ## background
@@ -625,7 +631,7 @@ image(seq(1,numberOfColors),1,
     addScaleBar(position = "bottomleft",
                 options = scaleBarOptions(maxWidth = 150)) %>%
     ## pick coords for center of frame and zoom level when map first appears
-    setView(-99, 19, zoom = 4)
+    setView(-101, 31, zoom = 4)
   
   # view map
   coverage_map
@@ -798,7 +804,7 @@ image(seq(1,numberOfColors),1,
                           file = file.path(main_dir,"outputs","exsitu_coverage",
                                            paste0(target_sp[sp],"-exsitu_coverage_interactive_map3.html")))
   
-}
+
 
 ## write summary table
 summary_tbl
