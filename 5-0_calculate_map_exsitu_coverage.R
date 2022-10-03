@@ -265,18 +265,18 @@ head(taxon_list)
 #sort(lc_sp)
 
 # ...OPTION 3 - manually select target species
-target_sp <- "Quercus_acutifolia" 
+# target_sp <- "Quercus_acutifolia" 
                 #"Quercus_carmenensis",
                #"Quercus_cupreata","Quercus_delgadoana","Quercus_dumosa","Quercus_furfuracea","Quercus_gulielmi-treleasei",
                #"Quercus_hinckleyi","Quercus_hintonii","Quercus_hintoniorum","Quercus_hirtifolia","Quercus_insignis","Quercus_meavei",
                #"Quercus_tomentella","Quercus_vicentensis"
 
 # ...OPTION 4 - use all the species in your list!
-# target_sp <- unique(taxon_list$species_name_acc)
+target_sp <- unique(taxon_list$species_name_acc)
 
 # added line to replace _ with a space in species name when searching for file
 # to read in occurrence points
-# target_sp <- gsub(" ","_",target_sp)
+target_sp <- gsub(" ","_",target_sp)
 
 
 # read in native dist information to see if using RL (default) or GTS
@@ -346,10 +346,11 @@ summary_tbl <- data.frame(
 
 ### CYCLE THROUGH TARGET SPECIES TO CALCULATE EX SITU COVERAGE
 
-# for(sp in 1:length(target_sp)){
+for(sp in 1:length(target_sp)){
   
   ## can test with one species first if you'd like (skip loop line above)
-  sp <- 1
+  # turn on line below and turn off line above
+  # sp <- 1
   
   # print progress
   cat("\nStarting ", target_sp[sp], "\n")
@@ -440,7 +441,7 @@ summary_tbl <- data.frame(
   print(paste("Number of ex situ individuals:",
               sum(as.numeric(exsitu$establishmentMeans))))
   
-  # check there are ex situ points, if not skip to end (can't do calculations)
+  # check there are ex situ points, if not skip calculations and create Map 1 only without ex situ points
   if(nrow(exsitu) == 0){
     # add text results to summary table
     summary_add <- data.frame(
@@ -452,9 +453,127 @@ summary_tbl <- data.frame(
       dist_filter = dist_filter_val,
       stringsAsFactors=F)
     print("No ex situ points; skipping buffer calculations")
+    
+    summary_tbl[sp,] <- summary_add
+    
+    ### CREATE MAP
+    
+    # create maps to visualze species distribution and ecoregions
+    # 	note that you can comment out any section to remove that element
+    
+    cat("\tMapping ", target_sp[sp])
+    
+    # prep ecoregions for mapping
+    # transform ecoregion polygons to point projection, for mapping
+    eco_ptproj <- project(ecoregions,pt.proj)
+    # select only ecoregions that are within the buffers; otherwise map takes a
+    #		long time to load in browser and colors are not distinct enough
+    inter <- intersect.eco.buff(insitu,50000,pt.proj,pt.proj,eco_ptproj,boundary.poly)
+    codes <- unique(inter$ECO_ID)
+    eco_sel <- eco_ptproj[eco_ptproj$ECO_ID %in% codes,]
+    eco_sel <- sf::st_as_sf(eco_sel)
+    ### !!! other option is to clip ecoregions to countries of interest !!!
+    
+    # prep state labels, if using
+    # find the visual center point of each state (still not perfect), for
+    #		labeling purposes
+    state_bound_sf <- sf::st_as_sf(state_bound)
+    state_centers <- as.data.frame(do.call(rbind, poi(state_bound_sf, precision=0.01)))
+    state_centers$label <- state_bound@data$name_en
+    state_centers$x <- as.numeric(state_centers$x)
+    state_centers$y <- as.numeric(state_centers$y)
+    state_centers
+    
+    # can edit state/province names to better format for map labels
+    state_centers$label <- gsub(" Prefecture","",state_centers$label)
+    state_centers$label <- gsub(" Autonomous Region","",state_centers$label)
+    state_centers$label <- gsub(" Department","",state_centers$label)
+    state_centers$label <- gsub(" Province","",state_centers$label)
+    state_centers$label <- gsub(" District","",state_centers$label)
+    state_centers
+    
+    # prep buffer layers for mapping
+    insitu_buff <- sf::st_as_sf(create.buffers(insitu,med_buff,pt.proj,pt.proj,boundary.poly))
+    
+    ##
+    ## MAP VERSION 1 (Quercus havardii paper version)
+    ##
+    
+    # create ecoregion color palette, based on RColorBrewer palette
+    #   can run display.brewer.all() to see options
+    # eco_pal <- colorFactor(palette = "Set3", domain = eco_sel$ECO_ID,
+    # reverse = F, na.color = "white")
+    
+    eco_pal <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
+    par(mar =c(0,0,0,0))
+    numberOfColors <- 15
+    image(seq(1,numberOfColors),1,
+          matrix(seq(1,numberOfColors),numberOfColors,1),
+          col = eco_pal(numberOfColors),
+          axes = FALSE, ann = FALSE)
+    
+    
+    # create map
+    coverage_map <- leaflet() %>%
+      ## background
+      #	 explore other base layer options here:
+      #	 http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+      addProviderTiles("Esri.WorldGrayCanvas",
+                       options = providerTileOptions(maxZoom = 10)) %>%
+      ## global ecoregions
+      addPolygons(
+        data = eco_sel,
+        fillColor = ~eco_pal(eco_sel$ECO_ID), fillOpacity = 0.6,
+        color = ~eco_pal(eco_sel$ECO_ID), weight = 0.5, opacity = 1) %>%
+      ## state boundaries
+      #	when you add these outlines, ecoregion labels don't pop up anymore...
+      #	 not sure yet how to have both on the map
+      addPolygons(data = state_bound,
+                  fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1) %>%
+      ## in situ buffers
+      addPolygons(data = insitu_buff,
+                  smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#1c1c1b",
+                  fillOpacity = 0.3) %>%
+      
+      ## in situ points
+      addCircleMarkers(data = insitu,
+                       lng = ~decimalLongitude, lat = ~decimalLatitude,
+                       #popup = ~paste("Source(s):", all_source_databases, UID),
+                       radius = 3, fillOpacity = 1, stroke = F, color = "#1c1c1b") %>%
+      
+      # could add another layer that highlights just the Morton points or
+      #		could use a color palette based on the "database" column :)
+      ## title
+      addControl(paste0(gsub("_"," ",target_sp[sp]),
+                        " in situ distribution and representation in ex situ collections"),
+                 position = "topright") %>%
+      ## legend
+      addLegend(labels =
+                  c("Geographic range (occurrence points and 50 km buffers)",
+                    "Populations sampled for ex situ (wild collection locations and 50 km buffers)",
+                    "Background colors show global ecoregions (Olson et al 2001)"),
+                colors = c("#1c1c1b","#b0f6f7","#d6ccb4"), title = "Legend",
+                position = "bottomright", opacity = 0.8) %>%
+      ## scale bar
+      addScaleBar(position = "bottomleft",
+                  options = scaleBarOptions(maxWidth = 150)) %>%
+      ## pick coords for center of frame and zoom level when map first appears
+      setView(-99, 19, zoom = 4)
+    
+    # view map
+    coverage_map
+    
+    # save map
+    # if you have too many points/layers, the map will be too big and can't save
+    htmlwidgets::saveWidget(coverage_map,
+                            file = file.path(main_dir,"outputs","exsitu_coverage",
+                                             paste0(target_sp[sp],"-exsitu_coverage_interactive_map1.html")))
   } else {
     
     ### CALCULATE EX SITU COVERAGE
+    
+      ## For species that have both in situ and ex situ points, first goes through calculations and then 
+      ## creates Maps 1-3
     
     ## Geographic Coverage
     
@@ -516,293 +635,320 @@ summary_tbl <- data.frame(
       EOO = round(hull_area,2),
       dist_filter = dist_filter_val,
       stringsAsFactors=F)
-  }
-  summary_tbl[sp,] <- summary_add
-  
-  ### CREATE MAP
-  
-  # create maps to visualze species distribution and ecoregions
-  # 	note that you can comment out any section to remove that element
-  
-  cat("\tMapping ", target_sp[sp])
-  
-  # prep ecoregions for mapping
-  # transform ecoregion polygons to point projection, for mapping
-  eco_ptproj <- project(ecoregions,pt.proj)
-  # select only ecoregions that are within the buffers; otherwise map takes a
-  #		long time to load in browser and colors are not distinct enough
-  inter <- intersect.eco.buff(insitu,50000,pt.proj,pt.proj,eco_ptproj,boundary.poly)
-  codes <- unique(inter$ECO_ID)
-  eco_sel <- eco_ptproj[eco_ptproj$ECO_ID %in% codes,]
-  eco_sel <- sf::st_as_sf(eco_sel)
-  ### !!! other option is to clip ecoregions to countries of interest !!!
-  
-  # prep state labels, if using
-  # find the visual center point of each state (still not perfect), for
-  #		labeling purposes
-  state_bound_sf <- sf::st_as_sf(state_bound)
-  state_centers <- as.data.frame(do.call(rbind, poi(state_bound_sf, precision=0.01)))
-  state_centers$label <- state_bound@data$name_en
-  state_centers$x <- as.numeric(state_centers$x)
-  state_centers$y <- as.numeric(state_centers$y)
-  state_centers
-  # can edit state/province names to better format for map labels
-  state_centers$label <- gsub(" Prefecture","",state_centers$label)
-  state_centers$label <- gsub(" Autonomous Region","",state_centers$label)
-  state_centers$label <- gsub(" Department","",state_centers$label)
-  state_centers$label <- gsub(" Province","",state_centers$label)
-  state_centers$label <- gsub(" District","",state_centers$label)
-  state_centers
-  
-  # prep buffer layers for mapping
-  insitu_buff <- sf::st_as_sf(create.buffers(insitu,med_buff,pt.proj,pt.proj,boundary.poly))
-  exsitu_buff <- sf::st_as_sf(create.buffers(exsitu,med_buff,pt.proj,pt.proj,boundary.poly))
-  
-  ##
-  ## MAP VERSION 1 (Quercus havardii paper version)
-  ##
-  
-  # create ecoregion color palette, based on colorRampPalette palette
-  #   To see colors, run commented out section below first 
-  
-  # NewColors <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
-  # par(mar =c(0,0,0,0))
-  # numberOfColors <- 15
-  # image(seq(1,numberOfColors),1,
-  # matrix(seq(1,numberOfColors),numberOfColors,1),
-  # col = NewColors(numberOfColors),
-  # axes = FALSE, ann = FALSE)
-  
-  NewColors <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
-  eco_pal <- colorFactor(palette = NewColors(15), domain = eco_sel$ECO_ID,
-                         reverse = F, na.color = "white")
-  
-
-  # create map
-  coverage_map <- leaflet() %>%
-    ## background
-    #	 explore other base layer options here:
-    #	 http://leaflet-extras.github.io/leaflet-providers/preview/index.html
-    addProviderTiles("Esri.WorldGrayCanvas",
-                     options = providerTileOptions(maxZoom = 10)) %>%
-    ## global ecoregions
-    addPolygons(
-      data = eco_sel,
-      fillColor = ~eco_pal(eco_sel$ECO_ID), fillOpacity = 0.6,
-      color = ~eco_pal(eco_sel$ECO_ID), weight = 0.5, opacity = 1) %>%
-    ## state boundaries
-    #	when you add these outlines, ecoregion labels don't pop up anymore...
-    #	 not sure yet how to have both on the map
-    addPolygons(data = state_bound,
-                fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1) %>%
-    ## in situ buffers
-    addPolygons(data = insitu_buff,
-                smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#1c1c1b",
-                fillOpacity = 0.3) %>%
-    ## ex situ buffers
-    addPolygons(data = exsitu_buff,
-                smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#b0f6f7",
-                fillOpacity = 0.3) %>%
-    ## in situ points
-    addCircleMarkers(data = insitu,
-                     lng = ~decimalLongitude, lat = ~decimalLatitude,
-                     #popup = ~paste("Source(s):", all_source_databases, UID),
-                     radius = 3, fillOpacity = 1, stroke = F, color = "#1c1c1b") %>%
-    ## ex situ points
-    addCircleMarkers(data = exsitu,
-                     lng = ~decimalLongitude, lat = ~decimalLatitude,
-                     #popup = ~paste("Garden:", datasetName, UID),
-                     radius = 3, fillOpacity = 1, stroke = F, color = "#b0f6f7") %>%
-    # could add another layer that highlights just the Morton points or
-    #		could use a color palette based on the "database" column :)
-    ## title
-    addControl(paste0(gsub("_"," ",target_sp[sp]),
-                      " in situ distribution and representation in ex situ collections"),
-               position = "topright") %>%
-    ## legend
-    addLegend(labels =
-                c("Geographic range (occurrence points and 50 km buffers)",
-                  "Populations sampled for ex situ (wild collection locations and 50 km buffers)",
-                  "Background colors show global ecoregions (Olson et al 2001)"),
-              colors = c("#1c1c1b","#b0f6f7","#d6ccb4"), title = "Legend",
-              position = "bottomright", opacity = 0.8) %>%
-    ## scale bar
-    addScaleBar(position = "bottomleft",
-                options = scaleBarOptions(maxWidth = 150)) %>%
-    ## pick coords for center of frame and zoom level when map first appears
-    setView(-99, 19, zoom = 4)
-  
-  # view map
-  coverage_map
-  
-  # save map
-  # if you have too many points/layers, the map will be too big and can't save
-  htmlwidgets::saveWidget(coverage_map,
-                          file = file.path(main_dir,"outputs","exsitu_coverage",
-                                           paste0(target_sp[sp],"-exsitu_coverage_interactive_map1.html")))
-  
-  ##
-  ## MAP VERSION 2 (gap analysis of nine genera version)
-  ##
-  
-  # another way to create ecoregion color palette, based on
-  #   manually-selected 'seed colors'
-  eco_pal_colors <- createPalette(length(unique(eco_sel$ECO_ID)),
-                                  seedcolors = c("#ba3c3c","#ba7d3c","#baab3c","#3ca7ba","#3c6aba","#573cba",
-                                                 "#943cba","#ba3ca1","#ba3c55"),range = c(5,42), target = "normal", M=50000)
-  swatch(eco_pal_colors)
-  eco_pal_colors <- as.vector(eco_pal_colors)
-  eco_pal <- colorFactor(eco_pal_colors,eco_sel$ECO_ID)
-  
-  # split ex situ data by number of individuals, to use different symbols
-  exsitu1 <- exsitu %>% arrange(establishmentMeans) %>%
-    filter(establishmentMeans <= few_indiv)
-  exsitu2 <- exsitu %>% arrange(establishmentMeans) %>%
-    filter(establishmentMeans > few_indiv & establishmentMeans < many_indiv)
-  exsitu3 <- exsitu %>% arrange(establishmentMeans) %>%
-    filter(establishmentMeans >= few_indiv)
-  
-  # create map
-  ## can use the maxZoom feature to prevent people from zooming too far
-  coverage_map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
-    ## background
-    addProviderTiles(providers$CartoDB.VoyagerNoLabels) %>%
-    ## species name label
-    addControl(paste0("<b>",gsub("_"," ",target_sp[sp])),
-               position = "topright") %>%
-    ## country boundaries
-    addPolygons(data = sf::st_as_sf(target_countries.pt),
-                fillColor = "#ccc1ab", fillOpacity = 0.4,
-                weight = 2, opacity = 0, color = "#ccc1ab") %>%
-    ## global ecoregions
-    addPolygons(data = eco_sel,
-                fillColor = ~eco_pal(eco_sel$ECO_ID),
-                fillOpacity = 0.9, color = "#757575", weight = 1.5, opacity = 0.8) %>%
-    ## state boundaries
-    addPolygons(data = state_bound, fillColor = "transparent",
-                weight = 1.5, opacity = 0.5, color = "black") %>%
-    ## buffers
-    # in situ
-    addPolygons(data = insitu_buff,
-                fillColor = "#a3a3a3", fillOpacity = 0.45,
-                weight = 1.3, opacity = 0.9, color = "#c4c4c4",
-                smoothFactor = 0) %>%
-    # ex situ
-    addPolygons(data = exsitu_buff,
-                fillColor = "white", fillOpacity = 0.55,
-                weight = 1.3, color = "white", opacity = 0,
-                smoothFactor = 0) %>%
-    ## ex situ points
-    addMarkers(data = exsitu1,
-               lng = ~decimalLongitude, lat = ~decimalLatitude,
-               icon = triangle_sm, popup = exsitu1$UID) %>%
-    addMarkers(data = exsitu2,
-               lng = ~decimalLongitude, lat = ~decimalLatitude,
-               icon = triangle_md, popup = exsitu2$UID) %>%
-    addMarkers(data = exsitu3,
-               lng = ~decimalLongitude, lat = ~decimalLatitude,
-               icon = triangle_lg, popup = exsitu3$UID) %>%
-    ## add scale bar and set initial map view
-    addScaleBar(position = "bottomright",
-                options = scaleBarOptions(maxWidth = 150)) %>%
-    setView(-99, 19, zoom = 4)
-  
-  # view map
-  coverage_map
-  
-  # save map
-  htmlwidgets::saveWidget(coverage_map,
-                          file = file.path(main_dir,"outputs","exsitu_coverage",
-                                           paste0(target_sp[sp],"-exsitu_coverage_interactive_map2.html")))
-  
-  ##
-  ## MAP VERSION 3 (GCC version)
-  ##
-  
-  # we use ecregion color palette created in map version 2
-  
-  # create map
-  coverage_map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
-    ## background
-    addProviderTiles(providers$CartoDB.VoyagerNoLabels) %>%
-    ## species name label
-    addControl(paste0("<b>",gsub("_"," ",target_sp[sp])),
-               position = "topright") %>%
-    ## global ecoregions
-    addPolygons(
-      data = eco_sel,
-      label = ~ECO_NAME, fillColor = ~eco_pal(eco_sel$ECO_ID),
-      fillOpacity = 0.8, color = "#757575", weight = 1.5, opacity = 0.8) %>%
-    ## state boundaries
-    addPolygons(
-      data = state_bound, label = ~name_en, fillColor = "transparent",
-      weight = 1.5, opacity = 0.3, color = "black") %>%
-    ## (optional) add static labels to countries/states
-    #addLabelOnlyMarkers(
-    #	data = state_centers, lng = ~x, lat = ~y, label = ~label,
-    #  labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE,
-    #		style = list("font-weight"="bold","font-size"="13px","color"="black"))) %>%
-    ## buffers
-    ## in situ
-    addPolygons(
-      data = insitu_buff,
-      fillColor = "#a3a3a3", fillOpacity = 0.45,
-      weight = 1.3, opacity = 0.9, color = "#c4c4c4",
-      smoothFactor = 0) %>%
-    ## ex situ
-    addPolygons(
-      data = exsitu_buff,
-      fillColor = "white", fillOpacity = 0.55,
-      weight = 1.3, color = "white", opacity = 0,
-      smoothFactor = 0) %>%
-    ## ex situ points
-    addMarkers(data = exsitu1,
-               lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_sm,
-               popup = exsitu1$inst_short) %>%
-    addMarkers(data = exsitu2,
-               lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_md,
-               popup = exsitu2$inst_short) %>%
-    addMarkers(data = exsitu3,
-               lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_lg,
-               popup = exsitu3$inst_short) %>%
-    ## (optional) in situ points
-    #addCircleMarkers(data = insitu,
-    #	lng = ~decimalLongitude, lat = ~decimalLatitude,
-    #	color = "white", radius = 3, fillOpacity = 1, stroke = F) %>%
-    ## add scale bar
-    addScaleBar(position = "bottomright",
-                options = scaleBarOptions(maxWidth = 150)) %>%
-    ## add legend
-    ##	not perfect, but something! Used https://imgbb.com to host the buffer
-    ##	PNG images! So you could do that for any shape you'd like
-    addControl(
-      html = "<img src='https://i.ibb.co/1dW95pC/Insitu-buffer.png'
+    
+    summary_tbl[sp,] <- summary_add
+    
+    ### CREATE MAP
+    
+    # create maps to visualze species distribution and ecoregions
+    # 	note that you can comment out any section to remove that element
+    
+    cat("\tMapping ", target_sp[sp])
+    
+    # prep ecoregions for mapping
+    # transform ecoregion polygons to point projection, for mapping
+    eco_ptproj <- project(ecoregions,pt.proj)
+    # select only ecoregions that are within the buffers; otherwise map takes a
+    #		long time to load in browser and colors are not distinct enough
+    inter <- intersect.eco.buff(insitu,50000,pt.proj,pt.proj,eco_ptproj,boundary.poly)
+    codes <- unique(inter$ECO_ID)
+    eco_sel <- eco_ptproj[eco_ptproj$ECO_ID %in% codes,]
+    eco_sel <- sf::st_as_sf(eco_sel)
+    ### !!! other option is to clip ecoregions to countries of interest !!!
+    
+    # prep state labels, if using
+    # find the visual center point of each state (still not perfect), for
+    #		labeling purposes
+    state_bound_sf <- sf::st_as_sf(state_bound)
+    state_centers <- as.data.frame(do.call(rbind, poi(state_bound_sf, precision=0.01)))
+    state_centers$label <- state_bound@data$name_en
+    state_centers$x <- as.numeric(state_centers$x)
+    state_centers$y <- as.numeric(state_centers$y)
+    state_centers
+    # can edit state/province names to better format for map labels
+    state_centers$label <- gsub(" Prefecture","",state_centers$label)
+    state_centers$label <- gsub(" Autonomous Region","",state_centers$label)
+    state_centers$label <- gsub(" Department","",state_centers$label)
+    state_centers$label <- gsub(" Province","",state_centers$label)
+    state_centers$label <- gsub(" District","",state_centers$label)
+    state_centers
+    
+    # prep buffer layers for mapping
+    insitu_buff <- sf::st_as_sf(create.buffers(insitu,med_buff,pt.proj,pt.proj,boundary.poly))
+    exsitu_buff <- sf::st_as_sf(create.buffers(exsitu,med_buff,pt.proj,pt.proj,boundary.poly))
+    
+    ##
+    ## MAP VERSION 1 (Quercus havardii paper version)
+    ##
+    
+    # create ecoregion color palette, based on RColorBrewer palette
+    #   can run display.brewer.all() to see options
+    # eco_pal <- colorFactor(palette = "Set3", domain = eco_sel$ECO_ID,
+    # reverse = F, na.color = "white")
+    
+    eco_pal <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
+    par(mar =c(0,0,0,0))
+    numberOfColors <- 15
+    image(seq(1,numberOfColors),1,
+          matrix(seq(1,numberOfColors),numberOfColors,1),
+          col = eco_pal(numberOfColors),
+          axes = FALSE, ann = FALSE)
+    
+    
+    # create map
+    coverage_map <- leaflet() %>%
+      ## background
+      #	 explore other base layer options here:
+      #	 http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+      addProviderTiles("Esri.WorldGrayCanvas",
+                       options = providerTileOptions(maxZoom = 10)) %>%
+      ## global ecoregions
+      addPolygons(
+        data = eco_sel,
+        fillColor = ~eco_pal(eco_sel$ECO_ID), fillOpacity = 0.6,
+        color = ~eco_pal(eco_sel$ECO_ID), weight = 0.5, opacity = 1) %>%
+      ## state boundaries
+      #	when you add these outlines, ecoregion labels don't pop up anymore...
+      #	 not sure yet how to have both on the map
+      addPolygons(data = state_bound,
+                  fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1) %>%
+      ## in situ buffers
+      addPolygons(data = insitu_buff,
+                  smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#1c1c1b",
+                  fillOpacity = 0.3) %>%
+      ## ex situ buffers
+      addPolygons(data = exsitu_buff,
+                  smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#b0f6f7",
+                  fillOpacity = 0.3) %>%
+      ## in situ points
+      addCircleMarkers(data = insitu,
+                       lng = ~decimalLongitude, lat = ~decimalLatitude,
+                       #popup = ~paste("Source(s):", all_source_databases, UID),
+                       radius = 3, fillOpacity = 1, stroke = F, color = "#1c1c1b") %>%
+      ## ex situ points
+      addCircleMarkers(data = exsitu,
+                       lng = ~decimalLongitude, lat = ~decimalLatitude,
+                       #popup = ~paste("Garden:", datasetName, UID),
+                       radius = 3, fillOpacity = 1, stroke = F, color = "#b0f6f7") %>%
+      # could add another layer that highlights just the Morton points or
+      #		could use a color palette based on the "database" column :)
+      ## title
+      addControl(paste0(gsub("_"," ",target_sp[sp]),
+                        " in situ distribution and representation in ex situ collections"),
+                 position = "topright") %>%
+      ## legend
+      addLegend(labels =
+                  c("Geographic range (occurrence points and 50 km buffers)",
+                    "Populations sampled for ex situ (wild collection locations and 50 km buffers)",
+                    "Background colors show global ecoregions (Olson et al 2001)"),
+                colors = c("#1c1c1b","#b0f6f7","#d6ccb4"), title = "Legend",
+                position = "bottomright", opacity = 0.8) %>%
+      ## scale bar
+      addScaleBar(position = "bottomleft",
+                  options = scaleBarOptions(maxWidth = 150)) %>%
+      ## pick coords for center of frame and zoom level when map first appears
+      setView(-99, 19, zoom = 4)
+    
+    # view map
+    coverage_map
+    
+    # save map
+    # if you have too many points/layers, the map will be too big and can't save
+    htmlwidgets::saveWidget(coverage_map,
+                            file = file.path(main_dir,"outputs","exsitu_coverage",
+                                             paste0(target_sp[sp],"-exsitu_coverage_interactive_map1.html")))
+    
+    ##
+    ## MAP VERSION 2 (gap analysis of nine genera version)
+    ##
+    
+    # another way to create ecoregion color palette, based on
+    #   manually-selected 'seed colors'
+    eco_pal_colors <- createPalette(length(unique(eco_sel$ECO_ID)),
+                                    seedcolors = c("#ba3c3c","#ba7d3c","#baab3c","#3ca7ba","#3c6aba","#573cba",
+                                                   "#943cba","#ba3ca1","#ba3c55"),range = c(5,42), target = "normal", M=50000)
+    swatch(eco_pal_colors)
+    eco_pal_colors <- as.vector(eco_pal_colors)
+    eco_pal <- colorFactor(eco_pal_colors,eco_sel$ECO_ID)
+    
+    # split ex situ data by number of individuals, to use different symbols
+    exsitu1 <- exsitu %>% arrange(establishmentMeans) %>%
+      filter(establishmentMeans <= few_indiv)
+    exsitu2 <- exsitu %>% arrange(establishmentMeans) %>%
+      filter(establishmentMeans > few_indiv & establishmentMeans < many_indiv)
+    exsitu3 <- exsitu %>% arrange(establishmentMeans) %>%
+      filter(establishmentMeans >= few_indiv)
+    
+    # create map
+    ## can use the maxZoom feature to prevent people from zooming too far
+    coverage_map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
+      ## background
+      addProviderTiles(providers$CartoDB.VoyagerNoLabels) %>%
+      ## species name label
+      addControl(paste0("<b>",gsub("_"," ",target_sp[sp])),
+                 position = "topright") %>%
+      ## country boundaries
+      addPolygons(data = sf::st_as_sf(target_countries.pt),
+                  fillColor = "#ccc1ab", fillOpacity = 0.4,
+                  weight = 2, opacity = 0, color = "#ccc1ab") %>%
+      ## global ecoregions
+      addPolygons(data = eco_sel,
+                  fillColor = ~eco_pal(eco_sel$ECO_ID),
+                  fillOpacity = 0.9, color = "#757575", weight = 1.5, opacity = 0.8) %>%
+      ## state boundaries
+      addPolygons(data = state_bound, fillColor = "transparent",
+                  weight = 1.5, opacity = 0.5, color = "black") %>%
+      ## buffers
+      # in situ
+      addPolygons(data = insitu_buff,
+                  fillColor = "#a3a3a3", fillOpacity = 0.45,
+                  weight = 1.3, opacity = 0.9, color = "#c4c4c4",
+                  smoothFactor = 0) %>%
+      # ex situ
+      addPolygons(data = exsitu_buff,
+                  fillColor = "white", fillOpacity = 0.55,
+                  weight = 1.3, color = "white", opacity = 0,
+                  smoothFactor = 0) %>%
+      ## ex situ points
+      addMarkers(data = exsitu1,
+                 lng = ~decimalLongitude, lat = ~decimalLatitude,
+                 icon = triangle_sm, popup = exsitu1$UID) %>%
+      addMarkers(data = exsitu2,
+                 lng = ~decimalLongitude, lat = ~decimalLatitude,
+                 icon = triangle_md, popup = exsitu2$UID) %>%
+      addMarkers(data = exsitu3,
+                 lng = ~decimalLongitude, lat = ~decimalLatitude,
+                 icon = triangle_lg, popup = exsitu3$UID) %>%
+      ## add scale bar and set initial map view
+      addScaleBar(position = "bottomright",
+                  options = scaleBarOptions(maxWidth = 150)) %>%
+      setView(-99, 19, zoom = 4)
+    
+    # view map
+    coverage_map
+    
+    # save map
+    htmlwidgets::saveWidget(coverage_map,
+                            file = file.path(main_dir,"outputs","exsitu_coverage",
+                                             paste0(target_sp[sp],"-exsitu_coverage_interactive_map2.html")))
+    
+    ##
+    ## MAP VERSION 3 (GCC version)
+    ##
+    
+    # we use ecregion color palette created in map version 2
+    
+    # create map
+    coverage_map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
+      ## background
+      addProviderTiles(providers$CartoDB.VoyagerNoLabels) %>%
+      ## species name label
+      addControl(paste0("<b>",gsub("_"," ",target_sp[sp])),
+                 position = "topright") %>%
+      ## global ecoregions
+      addPolygons(
+        data = eco_sel,
+        label = ~ECO_NAME, fillColor = ~eco_pal(eco_sel$ECO_ID),
+        fillOpacity = 0.8, color = "#757575", weight = 1.5, opacity = 0.8) %>%
+      ## state boundaries
+      addPolygons(
+        data = state_bound, label = ~name_en, fillColor = "transparent",
+        weight = 1.5, opacity = 0.3, color = "black") %>%
+      ## (optional) add static labels to countries/states
+      #addLabelOnlyMarkers(
+      #	data = state_centers, lng = ~x, lat = ~y, label = ~label,
+      #  labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE,
+      #		style = list("font-weight"="bold","font-size"="13px","color"="black"))) %>%
+      ## buffers
+      ## in situ
+      addPolygons(
+        data = insitu_buff,
+        fillColor = "#a3a3a3", fillOpacity = 0.45,
+        weight = 1.3, opacity = 0.9, color = "#c4c4c4",
+        smoothFactor = 0) %>%
+      ## ex situ
+      addPolygons(
+        data = exsitu_buff,
+        fillColor = "white", fillOpacity = 0.55,
+        weight = 1.3, color = "white", opacity = 0,
+        smoothFactor = 0) %>%
+      ## ex situ points
+      addMarkers(data = exsitu1,
+                 lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_sm,
+                 popup = exsitu1$inst_short) %>%
+      addMarkers(data = exsitu2,
+                 lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_md,
+                 popup = exsitu2$inst_short) %>%
+      addMarkers(data = exsitu3,
+                 lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_lg,
+                 popup = exsitu3$inst_short) %>%
+      ## (optional) in situ points
+      #addCircleMarkers(data = insitu,
+      #	lng = ~decimalLongitude, lat = ~decimalLatitude,
+      #	color = "white", radius = 3, fillOpacity = 1, stroke = F) %>%
+      ## add scale bar
+      addScaleBar(position = "bottomright",
+                  options = scaleBarOptions(maxWidth = 150)) %>%
+      ## add legend
+      ##	not perfect, but something! Used https://imgbb.com to host the buffer
+      ##	PNG images! So you could do that for any shape you'd like
+      addControl(
+        html = "<img src='https://i.ibb.co/1dW95pC/Insitu-buffer.png'
   		style='width:40px;height:40px;'> Species' estimated native distribution<br/>
   		(20 km buffer around in situ occurrence points)<br/>
   		<img src='https://i.ibb.co/SR71N6k/Exsitu-buffer.png'
   		style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
   		(20 km buffer around wild provenance localities)",
-      position = "bottomleft") %>%
-    addControl(
-      html = "Source locality and number of wild provenance<br/>individuals in ex situ collections<br/>
+  		position = "bottomleft") %>%
+      addControl(
+        html = "Source locality and number of wild provenance<br/>individuals in ex situ collections<br/>
   		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
   		style='width:8px;height:8px;'> 1-4
   		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
   		style='width:15px;height:15px;'> 5-14
   		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
   		style='width:22px;height:22px;'> 15+",
-      position = "bottomleft") %>%
-    ## Set view (long and lat) and zoom level, for when map initially opens
-    setView(-99, 19, zoom = 4)
+  		position = "bottomleft") %>%
+      ## Set view (long and lat) and zoom level, for when map initially opens
+      setView(-99, 19, zoom = 4)
+    
+    # view map
+    coverage_map
+    
+    # save map
+    htmlwidgets::saveWidget(coverage_map,
+                            file = file.path(main_dir,"outputs","exsitu_coverage",
+                                             paste0(target_sp[sp],"-exsitu_coverage_interactive_map3.html")))
+    
+}
   
-  # view map
-  coverage_map
+  ## write summary table
+summary_tbl
+write.csv(summary_tbl, file.path(main_dir,"outputs","exsitu_coverage",
+                                   paste0("ExSitu_Coverage_Table_", Sys.Date(), ".csv")),row.names = F)  
   
-  # save map
-  htmlwidgets::saveWidget(coverage_map,
-                          file = file.path(main_dir,"outputs","exsitu_coverage",
-                                           paste0(target_sp[sp],"-exsitu_coverage_interactive_map3.html")))
+  ## Summary Table
   
+  ## Add text results to summary table
+  summary_add <- data.frame(
+    species = gsub("_"," ",target_sp[sp]),
+    geo_sm = geo_coverage_sm,
+    geo_md = geo_coverage_md,
+    geo_lg = geo_coverage_lg,
+    eco_sm = eco_coverage_sm,
+    eco_md = eco_coverage_md,
+    eco_lg = eco_coverage_lg,
+    eco_usl4_sm = ecol4_coverage_sm,
+    eco_usl4_md = ecol4_coverage_md,
+    eco_usl4_lg = ecol4_coverage_lg,
+    EOO = round(hull_area,2),
+    dist_filter = dist_filter_val,
+    stringsAsFactors=F)
+  
+  summary_tbl[sp,] <- summary_add
+  
+  
+}  
 
 
 ## write summary table
