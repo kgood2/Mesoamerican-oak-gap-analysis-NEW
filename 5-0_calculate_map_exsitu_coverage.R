@@ -561,23 +561,21 @@ summary_tbl <- data.frame(
   ## MAP VERSION 1 (Quercus havardii paper version)
   ##
   
-  # create ecoregion color palette, based on RColorBrewer palette
-  #   can run display.brewer.all() to see options
+  # create ecoregion color palette, based on colorRampPalette palette
+  #   To see colors, run commented out section below first 
+  
+  # NewColors <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
+  # par(mar =c(0,0,0,0))
+  # numberOfColors <- 15
+  # image(seq(1,numberOfColors),1,
+  # matrix(seq(1,numberOfColors),numberOfColors,1),
+  # col = NewColors(numberOfColors),
+  # axes = FALSE, ann = FALSE)
   
   NewColors <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
   eco_pal <- colorFactor(palette = NewColors(15), domain = eco_sel$ECO_ID,
                          reverse = F, na.color = "white")
   
-#eco_pal <- colorRampPalette(c("darkolivegreen1","lightsalmon3","plum2","rosybrown1","lightskyblue2","goldenrod1","navajowhite2","snow3"))
-#par(mar =c(0,0,0,0))
-#numberOfColors <- 15
-#image(seq(1,numberOfColors),1,
-    #matrix(seq(1,numberOfColors),numberOfColors,1),
-    #col = eco_pal(numberOfColors),
-    #axes = FALSE, ann = FALSE)
-#eco_pal(15)
-#eco_pal2 <- eco_pal(15)
-# eco_pal2
 
   # create map
   coverage_map <- leaflet() %>%
