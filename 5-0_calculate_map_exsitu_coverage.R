@@ -201,7 +201,8 @@ clip.pt.by.boundary <- function(pts,pt_proj,boundary){
 #		points will be WGS84
 pt.proj <- "+proj=longlat +datum=WGS84"
 #   for calculations we need something in meters, like Equal Earth Projection
-calc.proj <- "+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+# calc.proj <- "+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+calc.proj <- "+proj=aea + lat_1=29.5 + lat_2=45.5 + lat_0=37.5 + lon_0=-96 +x_0=0 +y_0=0 + ellps =GRS80 +datum=NAD83 + units=m +no_defs"
 
 # choose buffer sizes to use
 # buffer size in kilometers = value/1000
@@ -264,7 +265,7 @@ head(taxon_list)
 #sort(lc_sp)
 
 # ...OPTION 3 - manually select target species
-target_sp <- "Quercus_costaricensis" 
+target_sp <- "Quercus_acutifolia" 
                 #"Quercus_carmenensis",
                #"Quercus_cupreata","Quercus_delgadoana","Quercus_dumosa","Quercus_furfuracea","Quercus_gulielmi-treleasei",
                #"Quercus_hinckleyi","Quercus_hintonii","Quercus_hintoniorum","Quercus_hirtifolia","Quercus_insignis","Quercus_meavei",
@@ -629,7 +630,7 @@ summary_tbl <- data.frame(
     addScaleBar(position = "bottomleft",
                 options = scaleBarOptions(maxWidth = 150)) %>%
     ## pick coords for center of frame and zoom level when map first appears
-    setView(-101, 31, zoom = 4)
+    setView(-99, 19, zoom = 4)
   
   # view map
   coverage_map
