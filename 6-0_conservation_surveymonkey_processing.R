@@ -28,8 +28,8 @@
 ## SET UP YOUR WORKSPACE
 
 # set working directory
-main_dir <- "/Volumes/GoogleDrive/My Drive/Conservation Consortia/R Training/Magnolia_ConservationActionQuestionnaire"
-survey_export_file <- "Magnolia_Conservation_Actions_Questionnaire.xlsx"
+main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/2. Conservation"
+survey_export_file <- "Cuestionario de acciones .xlsx"
 
 # load libraries
 library("tidyverse")
@@ -65,21 +65,21 @@ str(respondent_info)
 
 ## ORGANIZE DATA BY QUESTIONN TYPE AND ADD REGION COLUMN
 
-## change the following as needed, based on your quesionnaire:
+## change the following as needed, based on your questionnaire:
 
 # list of regions (in order!)
-regions <- c("Mexico & Central America","Caribbean","South America","East Asia",
-             "South and Southeast Asia")
+regions <- c("México y Centroamérica","Asia occidental","El sudeste de Asia","Europa",
+             "China", "África")
 
 # unique part of each main question asked
-select_sp <- "Select all species from"
-Q1_match <- "Select all conservation activities your institution participates in"
-Q2_match <- "Select what you see as the most urgent conservation activities"
-Q3_match <- "Select what you see as the most significant threats"
+select_sp <- "Seleccione todas las especies"
+Q7_match <- "Seleccione todas las actividades de conservación en las que participa su institución para cada"
+Q8_match <- "Seleccione lo que considere la actividad de conservación más urgente para cada especie"
+Q9_match <- "Seleccione lo que considere la amenaza más importante para las poblaciones"
 
 # create dataframes for collecting results, one for each main question
 # QUESTION1
-Q1_results <- data.frame(
+Q7_results <- data.frame(
   "species" = as.character(NA),
   "Collect and distribute germplasm" = as.character(NA),
   "Conservation horticulture" = as.character(NA),
@@ -100,7 +100,7 @@ Q1_results <- data.frame(
   "respondent_id" = as.double(NA))
 head(Q1_results)
 # QUESTION2
-Q2_results <- data.frame(
+Q8_results <- data.frame(
   "species" = as.character(NA),
   "Collect and distribute germplasm" = as.character(NA),
   "Conservation horticulture" = as.character(NA),
@@ -123,25 +123,25 @@ Q2_results <- data.frame(
   "respondent_id" = as.double(NA))
 head(Q2_results)
 # QUESTION3
-Q3_results <- data.frame(
+Q9_results <- data.frame(
   "species" = as.character(NA),
-  "Agriculture, silviculture, and/or ranching" = as.character(NA),
-  "Climate change" = as.character(NA),
-  "Development, mining, and/or roads" = as.character(NA),
-  "Disturbance regime modification" = as.character(NA),
-  "Inbreeding or introgression" = as.character(NA),
-  "Invasive species competition" = as.character(NA),
-  "Pests or pathogens" = as.character(NA),
-  "Tourism or recreation" = as.character(NA),
-  "Wild harvesting" = as.character(NA),
-  "Unknown" = as.character(NA),
+  "Agricultura, silvicultura y / o ganadería" = as.character(NA),
+  "Cambio climático" = as.character(NA),
+  "Desarrollo, minería y / o carreteras" = as.character(NA),
+  "Modificación del régimen de perturbaciones" = as.character(NA),
+  "Endogamia o introgresión" = as.character(NA),
+  "Competencia de especies invasoras" = as.character(NA),
+  "Plagas o patógenos" = as.character(NA),
+  "Turismo o recreación" = as.character(NA),
+  "Recolección silvestre" = as.character(NA),
+  "Desconocido" = as.character(NA),
   # metadata you want to add
   "region" = as.character(NA),
   "respondent_id" = as.double(NA))
 head(Q3_results)
 
 # create list of results dataframes to cycle through
-results <- list(Q1_results,Q2_results,Q3_results)
+results <- list(Q7_results,Q8_results,Q9_results)
 
 # create list of column numbers to cycle through
 start <- list(
