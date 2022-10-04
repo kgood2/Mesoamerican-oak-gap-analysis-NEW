@@ -78,51 +78,51 @@ Q8_match <- "Seleccione lo que considere la actividad de conservación más urge
 Q9_match <- "Seleccione lo que considere la amenaza más importante para las poblaciones"
 
 # create dataframes for collecting results, one for each main question
-# QUESTION1
+# QUESTION7
 Q7_results <- data.frame(
   "species" = as.character(NA),
-  "Collect and distribute germplasm" = as.character(NA),
-  "Conservation horticulture" = as.character(NA),
-  "Cryopreservation and/or micropropagation" = as.character(NA),
-  "Habitat restoration" = as.character(NA),
-  "Implement protection policies or regulations" = as.character(NA),
-  "Occurrence surveys or population monitoring" = as.character(NA),
-  "Pollen and/or seed banking" = as.character(NA),
-  "Population reinforcement or introduction" = as.character(NA),
-  "Protect and/or manage habitat" = as.character(NA),
-  "Public awareness or education" = as.character(NA),
-  "Research: Climate Change" = as.character(NA),
-  "Research: Genetics" = as.character(NA),
-  "Research: Pests & Pathogens" = as.character(NA),
-  "Research: Taxonomy" = as.character(NA),
+  "Recolectar y distribuir germoplasma" = as.character(NA),
+  "Horticultura de conservación" = as.character(NA),
+  "Criopreservación y / o micropropagación" = as.character(NA),
+  "Restauración del hábitat" = as.character(NA),
+  "Implementar políticas o regulaciones de protección" = as.character(NA),
+  "Encuestas de ocurrencia o monitoreo de población" = as.character(NA),
+  "Banco de polen y / o semillas" = as.character(NA),
+  "Refuerzo o introducción de la población" = as.character(NA),
+  "Proteger y / o gestionar el hábitat" = as.character(NA),
+  "Educación o conciencia pública" = as.character(NA),
+  "Investigación: Cambio climático" = as.character(NA),
+  "Investigación: Genética" = as.character(NA),
+  "Investigación: Plagas y patógenos" = as.character(NA),
+  "Investigación: Taxonomía" = as.character(NA),
   # metadata you want to add
   "region" = as.character(NA),
   "respondent_id" = as.double(NA))
-head(Q1_results)
-# QUESTION2
+head(Q7_results)
+# QUESTION8
 Q8_results <- data.frame(
   "species" = as.character(NA),
-  "Collect and distribute germplasm" = as.character(NA),
-  "Conservation horticulture" = as.character(NA),
-  "Cryopreservation and/or micropropagation" = as.character(NA),
-  "Habitat restoration" = as.character(NA),
-  "Implement protection policies or regulations" = as.character(NA),
-  "Occurrence surveys or population monitoring" = as.character(NA),
-  "Pollen and/or seed banking" = as.character(NA),
-  "Population reinforcement or introduction" = as.character(NA),
-  "Protect and/or manage habitat" = as.character(NA),
-  "Public awareness or education" = as.character(NA),
-  "Research: Genetics" = as.character(NA),
-  "Research: Taxonomy" = as.character(NA),
-  "Research: Climate Change" = as.character(NA),
-  "Research: Pests & Pathogens" = as.character(NA),
-  "Unknown" = as.character(NA),
-  "None (no conservation actions currently needed)" = as.character(NA),
+  "Recolectar y distribuir germoplasma" = as.character(NA),
+  "Horticultura de conservación" = as.character(NA),
+  "Criopreservación y / o micropropagación" = as.character(NA),
+  "Restauración del hábitat" = as.character(NA),
+  "Implementar políticas o regulaciones de protección" = as.character(NA),
+  "Encuestas de ocurrencia o monitoreo de población" = as.character(NA),
+  "Banco de polen y / o semillas" = as.character(NA),
+  "Refuerzo o introducción de la población" = as.character(NA),
+  "Proteger y / o gestionar el hábitat" = as.character(NA),
+  "Educación o conciencia pública" = as.character(NA),
+  "Investigación: Cambio climático" = as.character(NA),
+  "Investigación: Genética" = as.character(NA),
+  "Investigación: Plagas y patógenos" = as.character(NA),
+  "Investigación: Taxonomía" = as.character(NA),
+  "Desconocido" = as.character(NA),
+  "Ninguna (actualmente no se necesitan acciones de conservación)" = as.character(NA),
   # metadata you want to add
   "region" = as.character(NA),
   "respondent_id" = as.double(NA))
-head(Q2_results)
-# QUESTION3
+head(Q8_results)
+# QUESTION9
 Q9_results <- data.frame(
   "species" = as.character(NA),
   "Agricultura, silvicultura y / o ganadería" = as.character(NA),
@@ -138,16 +138,16 @@ Q9_results <- data.frame(
   # metadata you want to add
   "region" = as.character(NA),
   "respondent_id" = as.double(NA))
-head(Q3_results)
+head(Q9_results)
 
 # create list of results dataframes to cycle through
 results <- list(Q7_results,Q8_results,Q9_results)
 
 # create list of column numbers to cycle through
 start <- list(
-  grep(Q1_match,colnames(raw_data)),
-  grep(Q2_match,colnames(raw_data)),
-  grep(Q3_match,colnames(raw_data)),
+  grep(Q7_match,colnames(raw_data)),
+  grep(Q8_match,colnames(raw_data)),
+  grep(Q9_match,colnames(raw_data)),
   ncol(raw_data)+1)
 
 num_sp <- grep(select_sp,colnames(raw_data))
@@ -200,7 +200,7 @@ for(q in 1:length(results)){
 
 # join all questions
 join_all <- results[[1]]
-join_all <- join_all[,c(ncol(join_all),(ncol(join_all)-1),1,2:(ncol(Q1_results)-3))]
+join_all <- join_all[,c(ncol(join_all),(ncol(join_all)-1),1,2:(ncol(Q7_results)-3))]
 for(i in 1:(length(results)-1)){
   join_all <- full_join(join_all,results[[i+1]],
                         by=c("respondent_id","region","species"))
@@ -242,9 +242,9 @@ write.csv(long_results,file.path(main_dir,"Long_AllResults.csv"), row.names = F)
 
 # dataframe with notes about additional target species suggested, one per region
 # phrase to match
-Q4_match <- "You may also provide names of other species you would add to the above list"
+Q6_match <- "También puede proporcionar nombres de otras especies que agregaría a la lista anterior de especies en nuestros géneros objetivo; Indique las razones principales de su  vulnerabilidad:"
 # find locations of phrase
-t <- grep(Q4_match,colnames(raw_data))
+t <- grep(Q6_match,colnames(raw_data))
 # create dataframe
 add_species <- data.frame(
   "Additional species and reason" = as.character(NA),
