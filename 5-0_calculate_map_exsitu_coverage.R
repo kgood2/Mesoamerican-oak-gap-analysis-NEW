@@ -203,6 +203,9 @@ pt.proj <- "+proj=longlat +datum=WGS84"
 #   for calculations we need something in meters, like Equal Earth Projection
 # calc.proj <- "+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 calc.proj <- "+proj=aea + lat_1=29.5 + lat_2=45.5 + lat_0=37.5 + lon_0=-96 +x_0=0 +y_0=0 + ellps =GRS80 +datum=NAD83 + units=m +no_defs"
+# Mexico Albers Equal Area Conic 
+# calc.proj <- "+proj=aea + lat_1=14.5 + lat_2=32.5 + lat_0=24.0 + lon_0=-105 +x_0=0 +y_0=0 + ellps =GRS80 +datum=NAD83 + units=m +no_defs"
+
 
 # choose buffer sizes to use
 # buffer size in kilometers = value/1000
