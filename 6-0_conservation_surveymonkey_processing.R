@@ -67,9 +67,8 @@ str(respondent_info)
 
 ## change the following as needed, based on your questionnaire:
 
-# list of regions (in order!)
-regions <- c("México y Centroamérica","Asia occidental","El sudeste de Asia","Europa",
-             "China", "África")
+# list of regions (in order! From SurveyMonkey, left column first top to bottom then right column)
+regions <- c("México y Centroamérica","El sudeste de Asia","China","Asia occidental","Europa","África","Otro (Por favor especifica)")
 
 # unique part of each main question asked
 select_sp <- "Seleccione todas las especies"
