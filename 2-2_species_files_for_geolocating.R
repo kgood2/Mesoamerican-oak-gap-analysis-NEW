@@ -106,7 +106,7 @@ head(as.data.frame(all_data14),n=30)
 
 # write file
 write.csv(all_data14, file.path(main_dir,"outputs","to_geolocate",
-                                paste0("To_Geolocate_CR-EN-VU-NT_", Sys.Date(), ".csv")),row.names = F)
+                                paste0("To_Geolocate_CR-EN-VU-NT_", Sys.Date(), ".csv")),row.names = F, fileEncoding = "UTF-8")
 
 
 # create one CSV for each target species
@@ -119,4 +119,4 @@ if(!dir.exists(file.path(main_dir,"outputs","to_geolocate")))
              recursive=T)
 lapply(seq_along(sp_split), function(i) write.csv(sp_split[[i]],
                                                   file.path(main_dir,"outputs","to_geolocate",
-                                                            paste0(names(sp_split)[[i]], ".csv")),row.names = F))
+                                                            paste0(names(sp_split)[[i]], ".csv")),row.names = F, fileEncoding = "UTF-8"))
