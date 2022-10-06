@@ -1088,7 +1088,6 @@ all_data12 <- as.data.frame(lapply(all_data12, function(x) gsub(",",";",x)),
 #distinct(inst_short,species_name_acc,prov_type,all_locality,.keep_all=T) %>%
 
 all_data13 <- all_data12 %>%
-  mutate(sum_num_indiv = sum(as.numeric(num_indiv))) %>%
   select(
   # grouping data
     inst_short, species_name_acc,prov_type,all_locality,
@@ -1100,7 +1099,7 @@ all_data13 <- all_data12 %>%
   # source
     acc_num,lin_num,coll_num,coll_name,coll_year,
   # material info
-    germ_type,garden_loc,rec_as,taxon_det,sum_num_indiv,#sum_num_acc,
+    germ_type,garden_loc,rec_as,taxon_det,num_indiv,#sum_num_acc,
   # taxon name
     list,taxon_full_name,genus,#taxon_name_acc,
     taxon_full_name_orig,taxon_full_name_concat,cultivar,
