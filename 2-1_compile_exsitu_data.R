@@ -29,6 +29,7 @@ rm(list=ls())
 my.packages <- c('plyr', 'tidyverse', 'textclean', 'spatialEco',
                  'maps', 'measurements', 'CoordinateCleaner', 'rnaturalearth', 'raster')
 select <- dplyr::select
+rename <- dplyr::rename
 # install.packages (my.packages) #Turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
 # install.packages("naniar") # when running above script you may get an error that naniar cant be loaded. Load separately
@@ -1064,7 +1065,7 @@ all_data12 <- as.data.frame(lapply(all_data12, function(x) str_squish(x)),
 all_data12 <- as.data.frame(lapply(all_data12, function(x) gsub(",",";",x)),
                             stringsAsFactors=F)
 
-all_data13 <- all_data12 %>%
+# all_data13 <- all_data12 %>%
   ### combine duplicates at all_locality level
   #group_by(inst_short,species_name_acc,prov_type,all_locality) %>%
   #mutate(
@@ -1086,6 +1087,8 @@ all_data13 <- all_data12 %>%
 #ungroup() %>%
 #distinct(inst_short,species_name_acc,prov_type,all_locality,.keep_all=T) %>%
 
+all_data13 <- all_data12 %>%
+  mutate(sum_num_indiv = sum(as.numeric(num_indiv))) %>%
   select(
   # grouping data
     inst_short, species_name_acc,prov_type,all_locality,
@@ -1097,7 +1100,7 @@ all_data13 <- all_data12 %>%
   # source
     acc_num,lin_num,coll_num,coll_name,coll_year,
   # material info
-    germ_type,garden_loc,rec_as,taxon_det,#sum_num_indiv,sum_num_acc,
+    germ_type,garden_loc,rec_as,taxon_det,sum_num_indiv,#sum_num_acc,
   # taxon name
     list,taxon_full_name,genus,#taxon_name_acc,
     taxon_full_name_orig,taxon_full_name_concat,cultivar,
