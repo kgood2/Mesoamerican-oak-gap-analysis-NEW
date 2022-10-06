@@ -1,5 +1,6 @@
 ################################################################################
-### Author: Emily Beckman  ###  Date: 09/14/2021
+### Authors: Emily Beckman Bruns & Kate Good
+### Date: October 2022
 
 ### DESCRIPTION:
 ## Takes SurveyMonkey Excel export and format for analysis. Specially-designed
@@ -44,31 +45,48 @@ raw_data <- read_excel(file.path(main_dir,survey_export_file))
 
 ## CREATE RESPONDENT INFO DATAFRAME
 
-# list of names for the respondent info columns (can use X1, X2, X3, etc. for
-#   cols you don't want)
+# list of names for the respondent info columns
+#   (can use X1, X2, X3, etc. for cols you don't want)
 respondent_col_names <- c("respondent_id","collector_id","start_date",
-                          "end_date","ip_address","X1","X2","X3","X4","dont_make_public","name",
-                          "institution","X5","X6","X7","X8","X9","country","email_address","X10",
-                          "institution_category","institution_category_other")
+                          "end_date","ip_address","X1","X2","X3","X4",
+                          "dont_make_public","name","institution",
+                          "X5","X6","X7","X8","X9","country","email_address",
+                          "X10","institution_category",
+                          "institution_category_other")
 
 # select and rename respondent info columns
 respondent_info <- raw_data[2:nrow(raw_data),1:length(respondent_col_names)]
 for(i in 1:ncol(respondent_info)){
   names(respondent_info)[i] <- respondent_col_names[i] }
-
 # remove respondent info columns with "X" in the name
 t <- grepl("^X",names(respondent_info))
 if(length(unique(t))>1){
   respondent_info <- respondent_info[, -grep("^X", names(respondent_info))] }
 str(respondent_info)
+# standardize the respondent info a little
+##### here you could make everything the same case (some things are capital)
+##### and standardize the country names as well
 
 
 ## ORGANIZE DATA BY QUESTIONN TYPE AND ADD REGION COLUMN
 
 ## change the following as needed, based on your questionnaire:
 
-# list of regions (in order! From SurveyMonkey, left column first top to bottom then right column)
-regions <- c("México y Centroamérica","El sudeste de Asia","China","Asia occidental","Europa","África","Otro (Por favor especifica)")
+# see if any regions had an "Other" option when selecting species
+other_col_en <- grep("Other",raw_data[1,])
+other_col_es <- grep("Otro",raw_data[1,])
+as.data.frame(raw_data[,other_col_en])
+as.data.frame(raw_data[,other_col_es])
+  # we are going to manually remove these columns when they're in the species
+  #   selection section because they greatly complicates the loop below,
+  #   since the 'other' selection was not carried through to the questions
+  #   themselves
+  # note that this might not be necessary for other surveys, depending
+  #   on the format
+  # if there is any imporant information being removed, note it manually
+  #   somewhere else
+  # !! insert the column numbers you'd like to remove, based on above outputs
+raw_data <- raw_data[,-c(3870,6614,9157)]
 
 # unique part of each main question asked
 select_sp <- "Seleccione todas las especies"
@@ -143,13 +161,24 @@ head(Q9_results)
 results <- list(Q7_results,Q8_results,Q9_results)
 
 # create list of column numbers to cycle through
+#   (column where each question starts)
 start <- list(
   grep(Q7_match,colnames(raw_data)),
   grep(Q8_match,colnames(raw_data)),
   grep(Q9_match,colnames(raw_data)),
   ncol(raw_data)+1)
+head(start)
 
-num_sp <- grep(select_sp,colnames(raw_data))
+# get the column numbers where the species are selected for each region
+start_sp <- grep(select_sp,colnames(raw_data))
+# print the region headers so you can see what's present
+for(i in 1:length(start_sp)){
+  print(substr(colnames(raw_data[0,start_sp[[i]]]),1,80))
+}
+# create a list of target regions based on the above results
+regions <- c("México y Centroamérica", "Asia", "China",
+             "Asia occidental, Europa, y África")
+
 
 
 ### LOOP THROUGH AUTOMATICALLY ###
@@ -157,14 +186,15 @@ num_sp <- grep(select_sp,colnames(raw_data))
 # FOR EACH QUESTIONN
 for(q in 1:length(results)){
   # get the number of categories for the question
-  num_fields <- ncol(results[[q]])-3 # -3 removes metadata cols (not categories)
+  #   -3 removes metadata cols (species, region, respondent_id)
+  num_fields <- ncol(results[[q]])-3
   # results dataframe for the question
   df_out <- results[[q]]
-  
+
   # FOR EACH REGION
   for(r in 1:length(regions)){
     # get the raw data for the current question and region only
-    data <- raw_data[,start[[q]][r]:(start[[q]][r]+((start[[1]][r]-num_sp[[r]]-1)*num_fields)-1)]
+    raw_data[,start[[q]][r]:(start[[q]][r]+((start[[1]][r]-start_sp[[r]]-1)*num_fields)-1)]
     # use the first row to assign column names
     colnames(data) = data[1, ]
     # leave just species name in first row (cut off rest)
@@ -173,9 +203,12 @@ for(q in 1:length(results)){
     # cycle through each species and add the responses to a dataframe
     start_col <- 1
     end_col <- num_fields
-    
+
     # FOR EACH SPECIES
-    for(s in 1:(start[[1]][r]-num_sp[[r]]-1)){ #number of species
+      # the -1 below removes the open-ended response col to
+      #   get the true number of species
+    for(s in 1:(start[[1]][r]-start_sp[[r]]-1)){
+      # start at row 2 because there is a second header row
       add <- data[2:nrow(data),start_col:end_col]
       sp_add <- data.frame("species" = rep(data[1,start_col],
                                            times=nrow(data)-1))
@@ -193,6 +226,7 @@ for(q in 1:length(results)){
     df_out <- df_out[rowSums(is.na(df_out[,2:ncol(df_out)]))<ncol(df_out)-3,]
   }
   results[[q]] <- df_out
+  print(str(df_out))
 }
 
 ## SAVE ALL RESULTS IN ONE FILE:
@@ -207,6 +241,7 @@ for(i in 1:(length(results)-1)){
 join_all <- right_join(respondent_info,join_all)
 # sort by whatever variables you'd like:
 join_all <- join_all %>% arrange(species,name)
+str(join_all)
 write.csv(join_all,file.path(main_dir,"Grid_AllResults.csv"),row.names = F)
 
 
@@ -234,6 +269,7 @@ for(q in 1:length(results)){
 }
 
 long_results <- Reduce(rbind,results)
+str(long_results)
 write.csv(long_results,file.path(main_dir,"Long_AllResults.csv"), row.names = F)
 
 
@@ -260,7 +296,7 @@ for(i in 1:length(t)){
 add_species <- add_species[!is.na(add_species[,1]),]
 # join to rest of respondent info
 add_sp_join <- left_join(add_species,respondent_info)
-head(add_sp_join)
+str(add_sp_join)
 # write file
 write.csv(add_sp_join,file.path(main_dir,"AdditionalSpeciesNotes.csv"),
           row.names = F)
