@@ -40,7 +40,7 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
-main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
+main_dir <- "/Volumes/GoogleDrive/.shortcut-targets-by-id/1hPxnSy4E1n2pwsxLdcCeDDs42tCitz_d/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
 
 
 # OPTIONAL, depending on workflow: set target genus/genera name (for file reading and writing)
@@ -158,10 +158,11 @@ sort(colnames(all_data))
 colnames(all_data) <- gsub("^ï..","2",colnames(all_data))
 
 # remove "dead" and "removed" individuals from condition column 
-# table(all_data$condition)
-# nrow(all_data)
-# all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
-# nrow(all_data)
+# LOOK INTO THIS MORE, THIS IS CAUSING ERRORS WITH DATA
+table(all_data$condition)
+nrow(all_data)
+all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
+nrow(all_data)
 
 #remove institutions in parent file if they also have their own, newer file. 
 all_data <- all_data[!(all_data$filename == "PCNQuercus" & all_data$inst_short == "RanchoSantaAnaBG"),]
