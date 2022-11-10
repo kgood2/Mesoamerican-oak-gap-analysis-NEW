@@ -29,6 +29,7 @@ rm(list=ls())
 my.packages <- c('plyr', 'tidyverse', 'textclean', 'spatialEco',
                  'maps', 'measurements', 'CoordinateCleaner', 'rnaturalearth', 'raster')
 select <- dplyr::select
+rename <- dplyr::rename
 # install.packages (my.packages) #Turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
 # install.packages("naniar") # when running above script you may get an error that naniar cant be loaded. Load separately
@@ -155,10 +156,11 @@ sort(colnames(all_data))
 colnames(all_data) <- gsub("^ï..","2",colnames(all_data))
 
 # remove "dead" and "removed" individuals from condition column
-# table(all_data$condition)
-# nrow(all_data)
-# all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
-# nrow(all_data)
+# LOOK INTO THIS MORE, THIS IS CAUSING ERRORS WITH DATA
+table(all_data$condition)
+nrow(all_data)
+all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
+nrow(all_data)
 
 #remove institutions in parent file if they also have their own, newer file.
 all_data <- all_data[!(all_data$filename == "PCNQuercus" & all_data$inst_short == "RanchoSantaAnaBG"),]
@@ -1063,7 +1065,7 @@ all_data12 <- as.data.frame(lapply(all_data12, function(x) str_squish(x)),
 all_data12 <- as.data.frame(lapply(all_data12, function(x) gsub(",",";",x)),
                             stringsAsFactors=F)
 
-all_data13 <- all_data12 %>%
+# all_data13 <- all_data12 %>%
   ### combine duplicates at all_locality level
   #group_by(inst_short,species_name_acc,prov_type,all_locality) %>%
   #mutate(
@@ -1084,6 +1086,8 @@ all_data13 <- all_data12 %>%
 #  sum_num_acc = n()) %>%
 #ungroup() %>%
 #distinct(inst_short,species_name_acc,prov_type,all_locality,.keep_all=T) %>%
+
+all_data13 <- all_data12 %>%
   select(
   # grouping data
     inst_short, species_name_acc,prov_type,all_locality,
@@ -1095,7 +1099,7 @@ all_data13 <- all_data12 %>%
   # source
     acc_num,lin_num,coll_num,coll_name,coll_year,
   # material info
-    germ_type,garden_loc,rec_as,taxon_det,#sum_num_indiv,sum_num_acc,
+    germ_type,garden_loc,rec_as,taxon_det,num_indiv,#sum_num_acc,
   # taxon name
     list,taxon_full_name,genus,#taxon_name_acc,
     taxon_full_name_orig,taxon_full_name_concat,cultivar,
