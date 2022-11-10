@@ -40,16 +40,14 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
-main_dir <- "/Volumes/GoogleDrive/.shortcut-targets-by-id/1hPxnSy4E1n2pwsxLdcCeDDs42tCitz_d/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
-
-
-# OPTIONAL, depending on workflow: set target genus/genera name (for file reading and writing)
-#target_genus <- "Acer"
+# set manually...
+main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
+# ...or set automatically with 0-0 script:
+#source("/Users/emily/Documents/GitHub/Mesoamerican-oak-gap-analysis-NEW/0-0_set_working_directory.R")
 
 ################################################################################
 # Load functions
 ################################################################################
-#source(file.path(script_dir,"0-2_load_IMLS_functions.R"))
 
 # function to read in ex situ files from different folders/years and stack
 read.exsitu.csv <- function(path,submission_year){
@@ -157,14 +155,14 @@ sort(colnames(all_data))
 # remove ï.. at start of some column names
 colnames(all_data) <- gsub("^ï..","2",colnames(all_data))
 
-# remove "dead" and "removed" individuals from condition column 
+# remove "dead" and "removed" individuals from condition column
 # LOOK INTO THIS MORE, THIS IS CAUSING ERRORS WITH DATA
 table(all_data$condition)
 nrow(all_data)
 all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
 nrow(all_data)
 
-#remove institutions in parent file if they also have their own, newer file. 
+#remove institutions in parent file if they also have their own, newer file.
 all_data <- all_data[!(all_data$filename == "PCNQuercus" & all_data$inst_short == "RanchoSantaAnaBG"),]
 all_data <- all_data[!(all_data$filename == "PCNQuercus" & all_data$inst_short == "MortonArb"),]
 all_data <- all_data[!(all_data$filename == "CultivatedOaks" & all_data$inst_short == "ArbPouyouleix"),]
@@ -229,7 +227,6 @@ all_data <- tidyr::unite(all_data,"species", c("species","Specific.Epithet"),
   sep=";",remove=T,na.rm=T)
 all_data <- tidyr::unite(all_data,"garden_loc", c("garden_loc","loc"),
   sep=";",remove=T,na.rm=T)
-
 #all_data <- tidyr::unite(all_data,"inst_short", c("inst_short","ï..inst_short"),
 #  sep=";",remove=T,na.rm=T)
 #all_data <- tidyr::unite(all_data,"num_indiv", c("num_indiv","num_plants"),
@@ -246,7 +243,8 @@ all_data <- tidyr::unite(all_data,"garden_loc", c("garden_loc","loc"),
 #colnames(all_data)[colnames(all_data)=="name_determ"] <- "taxon_det"
 
 ### CHECK THINGS OUT ###
-#sort(colnames(all_data)); ncol(all_data)
+sort(colnames(all_data))
+ncol(all_data) #70
 # There should be max of 31 columns, including no more than:
 # acc_num,assoc_sp,coll_name,coll_num,coll_year,country,county,cultivar,
 # filename,garden_loc,genus,germ_type,hybrid,infra_name,infra_rank,inst_short,
@@ -256,11 +254,11 @@ all_data <- tidyr::unite(all_data,"garden_loc", c("garden_loc","loc"),
 # fill in inst_short column with filename if none provided
 all_data$inst_short[all_data$inst_short==""] <-
   all_data$filename[all_data$inst_short==""]
-nrow(all_data) #96841
+nrow(all_data) #58552
 # remove rows with no inst_short
 all_data <- all_data[!(all_data$inst_short==""),]
 # all_data <- all_data[which(all_data$inst_short!=""),]
-nrow(all_data) #96841
+nrow(all_data) #58552
 ## IF NEEDED: remove duplicates in network datasets (e.g., PCN) if institution
 ##   submitted their own data separately
 # Network 1
@@ -272,7 +270,7 @@ nrow(all_data) #96841
 #nrow(all_data) #95244
 
 ### CHECK ALL INSTITUTIONS ARE HERE ###
-sort(unique(all_data$inst_short)) #158
+sort(unique(all_data$inst_short)) #105
 
 # remove leading, trailing, and middle (e.g., double space) whitespace,
 #   to prevent future errors
@@ -305,7 +303,7 @@ all_data2$genus <- mgsub(all_data2$genus,
 # remove rows not in target genus/genera
 target_genera <- c("Quercus")
 all_data3 <- all_data2 %>% filter(genus %in% target_genera)
-nrow(all_data2); nrow(all_data3) #95244 ; 45057
+nrow(all_data2); nrow(all_data3) #58552 ; 24387
 
 # create concatenated taxon_full_name column
 all_data3 <- tidyr::unite(all_data3, "taxon_full_name_concat",
@@ -394,7 +392,7 @@ all_data4$genus_new <- all_data4$genus
 
 all_data5 <- all_data4 %>%
   filter(!grepl("\"",species_new) & !grepl("\'",species_new))
-nrow(all_data5) #38748
+nrow(all_data5) #22978
 # see records removed:
 sort(unique(anti_join(all_data4,all_data5)$taxon_full_name))
 
@@ -502,7 +500,7 @@ all_data6 <- all_data6 %>%
 all_data7 <- left_join(all_data6,taxon_list)
 # if no taxon match, join again just by species name
 need_match <- all_data7[which(is.na(all_data7$list)),]
-nrow(need_match) #8851
+nrow(need_match) #21126
 # remove columns from first taxon name match
 need_match <- need_match[,1:(ncol(all_data7)-ncol(taxon_list)+1)]
 # rename column for matching
@@ -514,9 +512,9 @@ need_match <- left_join(need_match,taxon_list)
 matched <- all_data7[which(!is.na(all_data7$list)),]
 matched$taxon_full_name <- matched$taxon_name
 all_data8 <- rbind(matched,need_match)
-table(all_data8$list) # desiderata: 30240 | synonym: 491
+table(all_data8$list) # desiderata: 1959 | synonym: 90
 # see how many rows have taxon name match
-nrow(all_data8[which(!is.na(all_data8$list)),]) #30731
+nrow(all_data8[which(!is.na(all_data8$list)),]) #2049
 
 ### CHECK UNMATCHED SPECIES, TO ADD TO SYNONYM LIST AS NECESSARY ###
 check <- all_data8 %>% filter(is.na(list) &
@@ -530,18 +528,25 @@ write.csv(sort(unique(check$taxon_full_name)), file.path(main_dir,"outputs",
 
 # keep only matched names
 all_data9 <- all_data8 %>% filter(!is.na(list))
-nrow(all_data9) #30731
+nrow(all_data9) #2049
 # can check to see which target species have data
 unique(sort(all_data9$taxon_full_name))
 # should be NA:
 unique(all_data9$hybrid)
 
-#look at institutions remaining and the files they are in
-sort(unique(all_data9$inst_short))
-
 #identify column names to edit end of script below, if needed
 # want: taxon_full_name, filename, inst_short, submission_year
 colnames(all_data9)
+
+# remove "dead" and "removed" individuals from condition column
+table(all_data9$condition)
+unique(all_data9$condition)
+nrow(all_data9) #2049
+all_data <- all_data[!(all_data$condition=="Dead" & all_data$condition=="Removed"),]
+nrow(all_data9) #1054
+
+#look at institutions remaining and the files they are in
+sort(unique(all_data9$inst_short)) #99
 
 ## compare species in the new file and old file for an institution
 ## if the same species are in the old and new dataset, you can just use the new
@@ -585,12 +590,6 @@ colnames(all_data9)
 ################################################################################
 # 4. Standardize important columns
 ################################################################################
-
-# remove "dead" and "removed" individuals from condition column 
-table(all_data$condition)
-nrow(all_data)
-all_data <- all_data[!(all_data$condition=="Dead" | all_data$condition=="Removed"),]
-nrow(all_data)
 
 # keep only necessary columns
 all_data10 <- all_data9 %>% select(
@@ -1140,11 +1139,3 @@ all_data14$database <- "Ex_situ"
 # write file
 write.csv(all_data14, file.path(main_dir,"inputs","compiled_occurrence",
                                 paste0("ExSitu_", Sys.Date(), ".csv")),row.names = F)
-
-
-
-
-
-
-
-
