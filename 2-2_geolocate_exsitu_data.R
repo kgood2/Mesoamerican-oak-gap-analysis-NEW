@@ -31,7 +31,10 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
+# set manually...
 main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/3. In situ/occurrence_points"
+# ...or set automatically with 0-0 script:
+source("/Users/emily/Documents/GitHub/Mesoamerican-oak-gap-analysis-NEW/0-0_set_working_directory.R")
 
 # Read in ExSitu_Compiled_Standardized file from 2-1_compile_exsitu_data script and name all_data13
 all_data13 <- read.csv(file.path(main_dir, "outputs",
@@ -81,10 +84,9 @@ all_data14 <- all_data13 %>%
     ## UID
     UID) %>%
   # combine locality duplicates so we don't need to geolocate them mult. times
-  group_by(locality.string) %>%
+  group_by(locality.string,species_name_acc) %>%
     # concatenate unique values in other columns so we can still see those
   mutate(
-    species_name_acc = paste(unique(species_name_acc),collapse=" | "),
     flag = paste(unique(flag),collapse=" | "),
     gps_det = paste(unique(gps_det),collapse=" | "),
     prov_type_edit = paste(unique(prov_type_edit),collapse=" | "),
@@ -101,7 +103,7 @@ all_data14 <- all_data13 %>%
     UID = paste(unique(UID),collapse=" | ")) %>%
   ungroup() %>%
   # remove duplicates
-  distinct(locality.string,.keep_all=T) %>%
+  distinct(locality.string,species_name_acc,.keep_all=T) %>%
   # order by locality string and lat/long pts at bottom
   arrange(locality.string) %>%
   arrange(!is.na(latitude),latitude)
@@ -119,7 +121,7 @@ write.csv(all_data14, file.path(main_dir,"outputs","to_geolocate",
                                 paste0("To_Geolocate_", Sys.Date(), ".csv")),row.names = F)
 
 
-## !! MANUAL STEP IN EXCEL !!
+## !! MANUAL STEP IN EXCEL/GOOGLE SHEETS !!
 ## Now follow PART 1 in the how to geolocate doc:
 ##   https://docs.google.com/document/d/16EjD39JI0416c0MEbKcHF2qGJ0ZAZ8Nqpkv54N5HQkM/edit?usp=sharing
 ## When you finish that section, save your file as "To_Geolocate_Checked.csv"
@@ -137,10 +139,10 @@ write.csv(all_data14, file.path(main_dir,"outputs","to_geolocate",
 all_data15 <- read.csv(file.path(main_dir, "outputs","To_Geolocate_Checked.csv"),
                        header = T, na.strings = c("","NA"),colClasses = "character")
 
-# remove records with anything in the gps_det column
+# remove records with anything in the gps_det column (except L)
 XXXXXXXX
 
-# see if any records are for multiple species
+# remove lat/long if gps_det = X
 XXXXXXXX
 
 # remove dot in column names (replace with space) for GEOLocate
@@ -160,3 +162,7 @@ if(!dir.exists(file.path(main_dir,"outputs","to_geolocate")))
 lapply(seq_along(sp_split), function(i) write.csv(sp_split[[i]],
                                                   file.path(main_dir,"outputs","to_geolocate",
                                                             paste0(names(sp_split)[[i]], ".csv")),row.names = F))
+
+##
+## ADD BACK INTO FULL DATASET
+##
