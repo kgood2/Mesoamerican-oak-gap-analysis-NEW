@@ -800,6 +800,7 @@ sernec_raw <- sernec_raw %>%
                                 "EJEMPLAR_HERBORIZADO" = "PRESERVED_SPECIMEN",
                                 "LIVINGSPECIMEN" = "LIVING_SPECIMEN",
                                 "HUMANOBSERVATION" = "HUMAN_OBSERVATION",
+                                "MACHINEOBSERVATION" = "MACHINE_OBSERVATION",
                                 .missing = "UNKNOWN"))
 # establishmentMeans
 sernec_raw$establishmentMeans <- str_to_upper(sernec_raw$establishmentMeans)
@@ -810,10 +811,20 @@ sernec_raw <- sernec_raw %>%
                                      "NATIVE" = "NATIVE",
                                      "INTRODUCED" = "INTRODUCED",
                                      "UNCERTAIN" = "UNCERTAIN",
+                                     "UKNOWN" = "UNCERTAIN",
                                      "ALIEN" = "INTRODUCED",
-                                     "CLONAL" = "UNKNOWN",
+                                     "CLONAL" = "UNCERTAIN",
                                      "WILD" = "NATIVE",
+                                     "PLANTED" = "CULTIVATED",
+                                     "CAPTIVE" = "UNCERTAIN",
+                                     "1" = "UNCERTAIN",
+                                     "SEED" = "UNCERTAIN",
+                                     "WILD CAUGHT" = "NATIVE",
+                                     "WILD COLLECTION" = "NATIVE",
+                                     "NATIVO" = "NATIVE",
                                      "NATURALIZED" = "INTRODUCED",
+                                     "CULTIVATED" = "CULTIVATED",
+                                     "MANAGED" = "MANAGED",
                                      "ESCAPE FROM CULTIVATION" = "INTRODUCED",
                                      "ESTABLISHED NON-NATIVE" = "INTRODUCED",
                                      "INTRODUCED; VOLUNTEER" = "INTRODUCED",
@@ -876,16 +887,19 @@ bien_citation <- BIEN_metadata_citation(dataframe = bien_raw)
 write.csv(bien_citation, file.path(main_dir,data,
                                    raw,"BIEN","citation_info.csv"),row.names=FALSE)
 
+# Remove extra date_collected column (no idea where this comes from)
+bien_raw <- bien_raw[, !duplicated(colnames(bien_raw), fromLast = TRUE)]
+
 # OPTIONAL: remove rows from GBIF and/or FIA if you are separately downloading
 # those datasets
+# NOTE: I did this for output created Jan 16, 2023
 bien_raw <- bien_raw %>% filter(datasource != "FIA" & datasource != "GBIF")
 nrow(bien_raw) #871544
 
 # split date collected column to just get year
-# first remove extra date_collected column (no idea where this comes from)
-bien_raw <- bien_raw[, !duplicated(colnames(bien_raw), fromLast = TRUE)]
 bien_raw <- bien_raw %>% separate("date_collected","year",sep="-",remove=T)
 sort(unique(bien_raw$year))
+
 # keep only necessary columns & rename to fit standard
 bien_raw <- bien_raw %>%
   select("name_matched","verbatim_scientific_name","verbatim_family",
@@ -1028,7 +1042,7 @@ state_abb <- c("AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID",
 
 # If you have access to the Morton Googld Drive, set your working directory
 # to this Shared drive folder (change slighly based on your computer)...
-fia_dir <- "/Volumes/GoogleDrive-103729429307302508433/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/FIA_data_Nov2022"
+fia_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/FIA_data_Nov2022"
 # If you downloaded manually, set the working directory for the location of
 # the folder where you placed all the downloaded files...
 #fia_dir <- "./Desktop/*work/FIA_data"
