@@ -1,3 +1,24 @@
+### Authors: Emily Beckman Bruns, Shannon M Still, Kate Good
+# Date: January 17, 2023
+
+### Description 
+# Takes compiled ex situ file from Quercus ex situ processing script 
+# (compile_exsitu_data-Quercus2022.R) and identifies points for georeferencing. 
+
+## INPUTS:
+# 1) compiled ex situ file
+# 2) target taxa list
+
+## OUTPUTS:
+# 1) Table with...
+#   species name
+#   num wild acc
+#   num non-H acc w/ coords
+#   num non-H acc with no coords & yes locality info
+
+#2) ExSitu_Need_Geolocation file
+
+
 
 ################################################################################
 # Load libraries
