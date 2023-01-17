@@ -1,6 +1,66 @@
+
+################################################################################
+# Load libraries
+################################################################################
+
+my.packages <- c('plyr', 'tidyverse', 'textclean', 'spatialEco',
+                 'maps', 'measurements', 'CoordinateCleaner', 'raster',
+                 'data.table', 'terra')
+
+# install.packages (my.packages) #Turn on to install current versions
+lapply(my.packages, require, character.only=TRUE)
+rm(my.packages)
+
+select <- dplyr::select
+rename <- dplyr::rename
+filter <- dplyr::filter
+group_by <- dplyr::group_by
+mutate <- dplyr::mutate
+distinct <- dplyr::distinct
+
+################################################################################
+# Set working directory
+################################################################################
+
+main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
+
+# set up file structure within your main working directory
+data <- "occurrence_data"
+raw <- "raw_occurrence_data"
+standard <- "standardized_occurrence_data"
+
+################################################################################
+# Load target taxa list
+################################################################################
+
+taxon_list <- read.csv(file.path(main_dir,"inputs", "taxa_list", "target_taxa_with_synonyms.csv"),
+                       header = T, colClasses="character")
+
 ################################################################################
 # Explore geoerferencing needs
 ################################################################################
+
+# create folder for all georeferencing data
+if(!dir.exists(file.path(main_dir,data, "georeferencing")))
+  dir.create(file.path(main_dir, data, "georeferencing"), recursive=T)
+
+# upload compiled ex situ file from script 2-0
+data_sel <- read.csv(file.path(main_dir,data,standard,"Ex_situ.csv"), colClasses = "character",
+                     na.strings=c("", "NA"), strip.white=T, fileEncoding="UTF-8")
+
+# create all_locality column
+data_sel$latitude <- round(as.numeric(data_sel$lat_dd,digits=4))
+data_sel$longitude <- round(as.numeric(data_sel$long_dd,digits=4))
+data_sel <- unite(data_sel, "all_locality",
+                   c(locality,municipality,county,state,country,orig_source,
+                     lin_num,coll_num,coll_name,coll_year,
+                     latitude,longitude,notes),sep = " | ",remove = F)
+# remove NA in concatenated locality column
+data_sel$all_locality <- gsub("NA","",data_sel$all_locality)
+# if no locality info at all, make it NA
+data_sel$all_locality[which(data_sel$all_locality ==
+                               " |  |  |  |  |  |  |  |  |  |  |  | ")] <- NA
+
 
 ### explore georeferencing needs
 # table with...
@@ -24,7 +84,7 @@ geo_needs <- data_sel %>%
   )
 head(geo_needs,n=20)
 # write file
-write.csv(geo_needs, file.path(exsitu_dir,data_out,
+write.csv(geo_needs, file.path(main_dir, data, "georeferencing",
                                paste0("ExSitu_Geolocation_Needs_Summary_", Sys.Date(), ".csv")),
           row.names = F)
 
@@ -55,25 +115,10 @@ need_geo <- need_geo %>%
          state,country,flag)
 nrow(need_geo) #2907
 head(need_geo)
-# flag records for species that are high priority...
-#   threatened and/or have less than 15 wild accessions
-#   (you can choose whatever threshold you want)
-# thresholds
-rl_threat <- c("CR (Critically Endangered)","EN (Endangered)","VU (Vulnerable)")
-ns_threat <- c("G1 (Critically Imperiled)","G2 (Imperiled)","G3 (Vulerable)")
-few_wild <- geo_needs[geo_needs$num_wild<15,]$taxon_name_accepted
-# flag priority taxa
-priority_taxa <- taxon_list %>%
-  filter(iucnredlist_category %in% rl_threat |
-           natureserve_rank %in% ns_threat |
-           taxon_name %in% few_wild) %>%
-  select(taxon_name_accepted)
-priority_taxa$priority <- "Priority"
-need_geo <- left_join(need_geo,priority_taxa)
-table(need_geo$priority) #456
+
 
 # write file
-write.csv(need_geo, file.path(exsitu_dir,data_out,
+write.csv(need_geo, file.path(main_dir, data, "georeferencing",
                               paste0("ExSitu_Need_Geolocation_", Sys.Date(), ".csv")),row.names = F)
 
 ### NOW MANUALLY GEOLOCATE !
@@ -81,7 +126,7 @@ write.csv(need_geo, file.path(exsitu_dir,data_out,
 ### https://docs.google.com/document/d/1RBUD6-ogLc7PRVkDJSIEKzkgvC6xekj9Q_kl1vzxhCs/edit?usp=sharing
 
 ################################################################################
-# Add geolocated data, after manual geolocation
+# 9. Add geolocated data, after manual geolocation
 ################################################################################
 
 # read in all compiled ex situ data (exported above)
@@ -139,3 +184,4 @@ write.csv(exsitu_all, file.path(main_dir,"occurrence_data",
                                 "raw_occurrence_data","Ex-situ",
                                 paste0("ExSitu_Compiled_Post-Geolocation_", Sys.Date(), ".csv")), 
           row.names = F)
+
