@@ -151,16 +151,16 @@ write.csv(need_geo, file.path(main_dir, data, "georeferencing",
 ################################################################################
 
 # read in all compiled ex situ data (exported above)
-exsitu <- read.csv(file.path(exsitu_dir,data_out,
-                             "All_ExSitu_Compiled_2022-12-07.csv"), header = T, colClasses="character")
+exsitu <- read.csv(file.path(main_dir,data,standard,
+                             "Ex_situ.csv"), header = T, colClasses="character")
 
 # read in geolocated dataset
-geo_raw <- read.csv(file.path(exsitu_dir,data_out,
-                              "ExSitu_Need_Geolocation_2022-12-07_Geolocated.csv"),
+geo_raw <- read.csv(file.path(main_dir,data,"georeferencing",
+                              "ExSitu_Need_Geolocation_2023-01-17_Geolocated.csv"),
                     header = T, colClasses="character")
 head(geo_raw)
 # check this is just NA and no "priority" records that are not geolocated
-unique(geo_raw[which(is.na(geo_raw$gps_det)),"priority"])
+# unique(geo_raw[which(is.na(geo_raw$gps_det)),"priority"])
 
 # add geolocated coordinates to ex situ data
 # separate UID row
@@ -197,12 +197,7 @@ table(exsitu_all$gps_det)
 #   289   62   1261  1331  2095
 
 # write new file
-write.csv(exsitu_all, file.path(exsitu_dir,data_out,
-                                paste0("All_ExSitu_Compiled_Post-Geolocation_", Sys.Date(), ".csv")), 
-          row.names = F)
-# write to in situ folder also
-write.csv(exsitu_all, file.path(main_dir,"occurrence_data",
-                                "raw_occurrence_data","Ex-situ",
+write.csv(exsitu_all, file.path(main_dir,data,"georeferencing",
                                 paste0("ExSitu_Compiled_Post-Geolocation_", Sys.Date(), ".csv")), 
           row.names = F)
 
