@@ -53,11 +53,7 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
-# either set manually:
-#main_dir <- "/Volumes/GoogleDrive-103729429307302508433/My Drive/CWR North America Gap Analysis/Gap-Analysis-Mapping"
-
-# or use 0-set_working_directory.R script:
-source("/Users/emily/Documents/GitHub/SDBG_CWR-trees-gap-analysis/0-set_working_directory.R")
+main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
 # set up file structure within your main working directory
 data <- "occurrence_data"
@@ -106,7 +102,7 @@ rm(all_data_raw)
 ################################################################################
 
 # read in target taxa list
-taxon_list <- read.csv(file.path(main_dir,"taxa_metadata",
+taxon_list <- read.csv(file.path(main_dir,"inputs","taxa_list",
                                  "target_taxa_with_synonyms.csv"),
                        header = T, na.strings = c("","NA"),
                        colClasses = "character")
@@ -135,11 +131,9 @@ matched$taxon_name_full <- matched$taxon_name
 all_data <- rbind(matched,need_match)
 table(all_data$taxon_name_status) # Accepted: 2252608   Synonym: 254542
 # fill in extra data for synonyms
-all_data <- all_data %>% 
-  dplyr::select(-iucnredlist_category,-natureserve_rank,-fruit_nut)
 taxon_list_add <- taxon_list %>% 
   filter(taxon_name_status == "Accepted") %>%
-  dplyr::select(taxon_name_accepted,iucnredlist_category,natureserve_rank,fruit_nut)
+  dplyr::select(taxon_name_acc)
 all_data <- left_join(all_data,taxon_list_add)
 
 # check names that got excluded.....
@@ -157,7 +151,7 @@ nrow(all_data) #2512150
 ### ! target taxa with no occurrence data:
 unique(taxon_list$taxon_name_acc)[
   !(unique(taxon_list$taxon_name_acc) %in% (unique(all_data$taxon_name_acc)))]
-# none ! wow !
+# Quercus centenaria, Quercus mexiae
 
 ################################################################################
 # Standardize/check some key columns
@@ -170,7 +164,7 @@ all_data <- all_data %>%
         c(locality,municipality,higherGeography,county,stateProvince,country,
           countryCode,locationNotes,verbatimLocality), remove = F, 
         sep = " | ") %>%
-  mutate(decimalLatitude=as.numeric(decimalLatitude),
+  dplyr::mutate(decimalLatitude=as.numeric(decimalLatitude),
          decimalLongitude=as.numeric(decimalLongitude))
 # get rid of NAs but keep pipes, so you can split back into parts if desired
 all_data$localityDescription <- mgsub(all_data$localityDescription,
@@ -193,6 +187,28 @@ sort(unique(all_data$year))
 # check basis of record column
 unique(all_data$basisOfRecord)
 all_data$basisOfRecord[which(is.na(all_data$basisOfRecord))] <- "UNKNOWN"
+
+all_data <- all_data %>%
+  mutate(basisOfRecord = recode(basisOfRecord,
+                             "humanobservance" = "HUMAN_OBSERVATION",
+                             "preservedspecimen" = "PRESERVED_SPECIMEN",
+                             "27500" = "UNKNOWN",
+                             "32741" = "UNKNOWN",
+                             "34061" = "UNKNOWN",
+                             "36967" = "UNKNOWN",
+                             "36988" = "UNKNOWN",
+                             "36989" = "UNKNOWN",
+                             "36990" = "UNKNOWN",
+                             "51165" = "UNKNOWN",
+                             "59744" = "UNKNOWN",
+                             "69980" = "UNKNOWN",
+                             "72537" = "UNKNOWN",
+                             "72547" = "UNKNOWN",
+                             "72552" = "UNKNOWN",
+                             "72554" = "UNKNOWN",
+                             "UNKNOWNN" = "UNKNOWN",
+                             "69980" = "UNKNOWN"))
+# rename to fit standard
 
 # check establishment means
 unique(all_data$establishmentMeans)
@@ -365,7 +381,7 @@ geo_pts$long_round <- round(geo_pts$decimalLongitude,digits=2)
 ex_situ <- geo_pts[which(geo_pts$database=="Ex_situ"),]
 ex_situ <- ex_situ %>% 
   dplyr::select(-flag) %>%
-  mutate(coordinateUncertaintyInMeters=as.numeric(coordinateUncertaintyInMeters))
+  dplyr::mutate(coordinateUncertaintyInMeters=as.numeric(coordinateUncertaintyInMeters))
 
 # sort before removing duplicates;
 # whatever you sort to the top will be kept when there is a duplicate further down;
@@ -403,7 +419,7 @@ geo_pts <- geo_pts %>% arrange(database)
 # can take a while to remove duplicates if there are lots a rows
 geo_pts2 <- geo_pts %>%
   group_by(taxon_name_accepted,lat_round,long_round) %>%
-  mutate(all_source_databases = paste(unique(database), collapse = ', ')) %>%
+  dplyr::mutate(all_source_databases = paste(unique(database), collapse = ', ')) %>%
   distinct(taxon_name_accepted,lat_round,long_round,.keep_all=T) %>%
   ungroup() %>%
   dplyr::select(-flag)
