@@ -79,11 +79,9 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
-# either set manually...
 main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
+log_loc <- "/Users/kateschowe/Desktop/gbif_password.txt"
 
-# ...or use 0-set_working_directory.R script:
-# source("/Users/emily/Documents/GitHub/SDBG_CWR-trees-gap-analysis/0-set_working_directory.R")
 
 # set up file structure within your main working directory
 data <- "occurrence_data"
@@ -152,7 +150,7 @@ if(!dir.exists(file.path(main_dir,data,raw,"GBIF")))
 # either read in a text file with username, password, and email (one on each
 #   line) or manually fill in each below:
 login <- read_lines(log_loc)
-user  <- login[1] #"user"
+user  <- login[1] #"user" 
 pwd   <- login[2] #"password"
 email <- login[3] #"email"
 rm(login)
@@ -219,7 +217,8 @@ length(file_list) #1
 # You can query by genus or scientific name, and use other filters as desired.
 # Remember that you need to cite these data using the DOI provided with the
 # download!
-# Citation: GBIF.org (13 January 2023) GBIF Occurrence Download  https://doi.org/10.15468/dl.em7wqe
+# The Quercus file is HUGE (6+ GB) too big to run in R. Use Option 1 above instead, 
+# which only looks at target taxa
 # Place all downloaded data (single or multiple) in the folder you just created:
 # occurrence_data/raw_occurrence_data/GBIF
 
@@ -817,7 +816,7 @@ sernec_raw <- sernec_raw %>%
                                      "WILD" = "NATIVE",
                                      "PLANTED" = "CULTIVATED",
                                      "CAPTIVE" = "UNCERTAIN",
-                                     "1" = "UNCERTAIN",
+                                     "1" = "CULTIVATED",
                                      "SEED" = "UNCERTAIN",
                                      "WILD CAUGHT" = "NATIVE",
                                      "WILD COLLECTION" = "NATIVE",
@@ -1083,6 +1082,7 @@ extract_tree_data_local <- function(state_abb){
 }
 
 # loop through states and pull data
+# Note: This can take a really long time - hours
 fia_outputs <- lapply(state_abb, extract_tree_data_local)
 length(fia_outputs)
 # stack state-by-state data extracted to create one dataframe
@@ -1224,16 +1224,19 @@ rm(fia_raw)
 # G) Ex situ accession-level data: wild collection locations
 # These data are compiled in 2-compile_exsitu_data.R and here we are simply 
 # formatting them for use in the occurrence point dataset.
+
+##IF YOU HAVE NOT GEOLOCATED YOUR POINTS YET, STOP HERE AND RUN SCRIPT 3_1
 ###############################################
 ###############
 ###
 
+
 # read in ex situ data we saved in 2-compile_exsitu_data.R
-exsitu_raw1 <- read.csv(file.path(main_dir,data,raw,"Ex-situ",
-                                  "ExSitu_Compiled_Post-Geolocation_2022-12-07.csv"), colClasses = "character",
-                        na.strings=c("", "NA"), strip.white=T, fileEncoding="UTF-8")
+exsitu_raw1 <- read.csv(file.path(main_dir,data,"georeferencing",
+                        "ExSitu_Compiled_Post-Geolocation_2023-01-19.csv"), colClasses = "character",
+                        na.strings=c("", "NA"), strip.white=T, fileEncoding="latin1")
 exsitu_raw2 <- read.csv(file.path(main_dir,data,raw,"Ex-situ",
-                                  "ExSitu_Dead_2022-12-07.csv"), colClasses = "character",
+                                  "ExSitu_Dead_2022-12-01.csv"), colClasses = "character",
                         na.strings=c("", "NA"), strip.white=T, fileEncoding="UTF-8")
 exsitu_raw <- rbind.fill(exsitu_raw1,exsitu_raw2)
 nrow(exsitu_raw) #9334
