@@ -58,7 +58,7 @@ main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analy
 # set up file structure within your main working directory
 data <- "occurrence_data"
 standard <- "standardized_occurrence_data"
-polygons <- "gis_layers"
+polygons <- "gis_data"
 
 ################################################################################
 # Read in and compile occurrence point data
@@ -260,7 +260,7 @@ no_geo_pts <- all_data %>% dplyr::filter(!is.na(flag))
 # a few minutes or more to buffer and intersect the polygons
 # read in world polygons shapefile
 world_polygons <- vect(file.path(main_dir,polygons,
-                                 "UIA_World_Countries_Boundaries/World_Countries__Generalized_.shp"))                             
+                                 "UIA_World_Countries_Boundaries", "World_Countries__Generalized_.shp"))                             
 # add 1km buffer to ecoregion layer, so we keep pts close to land;
 # width is in meters - change as desired; > ~500 threw this error:
 # "IllegalArgumentException: point array must contain 0 or >1 elements"
@@ -307,11 +307,11 @@ rm(all_data,geo_pts_spatial,land_pts,no_geo_pts,on_land,world_buff,land_id)
 # country name to 3 letter ISO code
 # fix some issues first (can add anything that is not matched unambiguously)
 geo_pts$country <- mgsub(geo_pts$country,
-                         c("Bolívia","Brasil","EE. UU.","ESTADOS UNIDOS DE AMERICA",
+                         c("méxico", "PAN", "Bolívia","Brasil","EE. UU.","ESTADOS UNIDOS DE AMERICA",
                            "México","MÉXICO","Repubblica Italiana","U. S. A.","United Statese",
                            "America","Atats-Unis","CAN","ESP","MA(C)xico","MEX",
                            "MX","PER","Unknown","Cultivated"),
-                         c("Bolivia","Brazil","United States","United States",
+                         c("Mexico","Panama","Bolivia","Brazil","United States","United States",
                            "Mexico","Mexico","Italy","United States","United States",
                            "United States","United States","Canada","Spain","Mexico","Mexico",
                            "Mexico","Peru",NA,NA))
@@ -321,6 +321,8 @@ country_codes1 <- as.data.frame(sort(unique(geo_pts$country))) %>%
                                  origin="country.name", destination="iso2c")) %>%
   rename("country" = "sort(unique(geo_pts$country))",
          "countryCode_standard" = "iso3c")
+
+
 # add to data
 geo_pts <- left_join(geo_pts,country_codes1)
 
@@ -330,6 +332,12 @@ geo_pts$countryCode <- mgsub(geo_pts$countryCode,
                              c("XK","ZZ"),c("RS",NA))
 geo_pts$countryCode <- str_to_upper(geo_pts$countryCode)
 # check codes 
+
+geo_pts$countryCode <- mgsub(geo_pts$countryCode,
+                             c("BLZ","CRI","GTM","HND","MEX","PAN","SLV","USA"),
+                             c("BZ","CR","GT","HN","MX","PA","SV","US"))
+
+
 country_codes2 <- as.data.frame(sort(unique(geo_pts$countryCode))) %>%
   add_column(iso3c = countrycode(sort(unique(geo_pts$countryCode)),
                                  origin="iso2c", destination="iso2c")) %>%
@@ -362,11 +370,11 @@ sort(table(geo_pts$countryCode_standard))
 
 # first, if you're working at the taxon level, add infrataxon records to their 
 # parent species too
-add_again <- geo_pts %>% filter(grepl("var\\.|subsp\\.", taxon_name_accepted))
-unique(add_again$taxon_name_accepted)
-add_again$taxon_name_accepted <- gsub(" var\\.*\\s.+", "",
-                                      add_again$taxon_name_accepted)
-unique(add_again$taxon_name_accepted)
+add_again <- geo_pts %>% filter(grepl("var\\.|subsp\\.", taxon_name_acc))
+unique(add_again$taxon_name_acc)
+add_again$taxon_name_acc <- gsub(" var\\.*\\s.+", "",
+                                      add_again$taxon_name_acc)
+unique(add_again$taxon_name_acc)
 geo_pts <- rbind(geo_pts,add_again)
 table(geo_pts$database)
 # BIEN    Ex_situ   FIA      GBIF     iDigBio   IUCN_RedList  NorthAm_herbaria
@@ -410,7 +418,7 @@ geo_pts <- geo_pts %>% arrange(desc(year))
 unique(geo_pts$database)
 geo_pts$database <- factor(geo_pts$database,
                            levels = c("GBIF","iDigBio","IUCN_RedList","NorthAm_herbaria",
-                                      "FIA","BIEN","Ex_situ"))
+                                      "FIA","BIEN","Ex_situ","GT_USCG","Maricela"))
 geo_pts <- geo_pts %>% arrange(database)
 
 # remove duplicates
@@ -418,9 +426,9 @@ geo_pts <- geo_pts %>% arrange(database)
 #    databases from which duplicates were removed
 # can take a while to remove duplicates if there are lots a rows
 geo_pts2 <- geo_pts %>%
-  group_by(taxon_name_accepted,lat_round,long_round) %>%
+  group_by(taxon_name_acc,lat_round,long_round) %>%
   dplyr::mutate(all_source_databases = paste(unique(database), collapse = ', ')) %>%
-  distinct(taxon_name_accepted,lat_round,long_round,.keep_all=T) %>%
+  distinct(taxon_name_acc,lat_round,long_round,.keep_all=T) %>%
   ungroup() %>%
   dplyr::select(-flag)
 nrow(geo_pts2) #366757
@@ -433,7 +441,7 @@ nrow(geo_pts2) #367559
 keep_col <- c( #data source and unique ID
   "UID","database","all_source_databases",
   #taxon
-  "taxon_name_accepted",
+  "taxon_name_acc",
   "taxon_name","scientificName","family","genus","specificEpithet",
   "taxonRank","infraspecificEpithet","taxonIdentificationNotes",
   #event
@@ -451,8 +459,8 @@ keep_col <- c( #data source and unique ID
   "locationNotes","municipality","higherGeography","county",
   "stateProvince","country","countryCode","countryCode_standard",
   #additional optional data
-  "taxon_name_status","iucnredlist_category",
-  "natureserve_rank","fruit_nut")
+  "taxon_name_status")
+
 # set column order and remove a few unnecessary columns
 geo_pts2 <- geo_pts2[,keep_col]
 
@@ -465,8 +473,8 @@ table(geo_pts2$database)
 rm(geo_pts)
 
 # write file if you'd like
-#write.csv(geo_pts2, file.path(main_dir,data,standard,
-#  paste0("Occurrences_Compiled_", Sys.Date(), ".csv")),row.names = F)
+write.csv(geo_pts2, file.path(main_dir,data,standard,
+  paste0("Occurrences_Compiled_", Sys.Date(), ".csv")),row.names = F)
 
 ################################################################################
 # 6. Look at results
@@ -474,7 +482,7 @@ rm(geo_pts)
 
 # summarize results for each target taxon
 # lat-long records
-count_geo <- geo_pts2 %>% count(taxon_name_accepted)
+count_geo <- geo_pts2 %>% count(taxon_name_acc)
 names(count_geo)[2] <- "num_latlong_records"
 # locality-only records (invalid coords or in water)
 count_locality <- locality_pts %>% count(taxon_name_accepted)
@@ -493,7 +501,7 @@ write.csv(summary, file.path(main_dir,data,
 ################################################################################
 
 # split records to create one CSV for each target taxon
-sp_split <- split(geo_pts2, as.factor(geo_pts2$taxon_name_accepted))
+sp_split <- split(geo_pts2, as.factor(geo_pts2$taxon_name_acc))
 names(sp_split) <- gsub(" ","_",names(sp_split))
 names(sp_split) <- gsub("\\.","",names(sp_split))
 
