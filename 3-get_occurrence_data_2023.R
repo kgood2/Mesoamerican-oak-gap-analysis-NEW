@@ -1260,7 +1260,6 @@ exsitu_raw <- exsitu_raw %>%
          "decimalLatitude" = "lat_dd",
          "decimalLongitude" = "long_dd",
          "coordinateUncertaintyInMeters" = "uncertainty",
-         "verbatimLocality" = "all_locality",
          "stateProvince" = "state",
          "establishmentMeans" = "prov_type") %>%
   unite("recordedBy", c("coll_name","coll_num"), remove=T, sep="; ") %>%
@@ -1290,7 +1289,7 @@ exsitu_raw <- exsitu_raw %>%
          nativeDatabaseID,datasetName,publisher,rightsHolder,references,
          issue,recordedBy,establishmentMeans,individualCount,decimalLatitude,
          decimalLongitude,coordinateUncertaintyInMeters,geolocationNotes,
-         locality,verbatimLocality,locationNotes,municipality,county,
+         locality,locationNotes,municipality,county,
          stateProvince,country)
 head(exsitu_raw)
 # write file
