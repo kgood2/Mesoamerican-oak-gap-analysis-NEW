@@ -439,7 +439,7 @@ urban.poly <- rnaturalearth::ne_download(scale = "large", type = "urban_areas")
 ################################################################################
 
 ## save these objects for later use
-save(adm0.poly, adm1.poly, adm2.poly, urban.poly, #native_dist,
+save(adm0.poly, adm1.poly, adm2.poly, #urban.poly, #native_dist,
      #taxon_list, gts_list, rl_native, rl_introduced,
      #adm0, adm1, adm2, adm0.spdf, adm1.spdf, adm2.spdf,
      file=file.path(main_dir, "inputs", "gis_data", "admin_shapefiles.RData"))
