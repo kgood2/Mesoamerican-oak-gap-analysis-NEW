@@ -42,29 +42,28 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
-# either set manually:
-#main_dir <- "/Volumes/GoogleDrive-103729429307302508433/My Drive/CWR North America Gap Analysis/Gap-Analysis-Mapping"
 
-# or use 0-set_working_directory.R script:
-source("/Users/emily/Documents/GitHub/SDBG_CWR-trees-gap-analysis/0-set_working_directory.R")
+main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
+
+
 
 ################################################################################
 # Use leaflet package to create interactive maps to explore (html)
 ################################################################################
 
 # set up file paths
-output.maps <- file.path(main_dir, "interactive_maps","visualize_occurrence_data")
-path.gis <- file.path(main_dir,"gis_layers")
+output.maps <- file.path(main_dir, "outputs", "interactive_maps","visualize_occurrence_data")
+path.gis <- file.path(main_dir,"gis_data")
 path.pts <- file.path(main_dir,"occurrence_data",
                       "standardized_occurrence_data","taxon_edited_points")
 path.rasters <- file.path(main_dir,"sdm_rasters")
 
 # select target taxa
-taxon_list <- read.csv(file.path(main_dir,taxa_dir,
+taxon_list <- read.csv(file.path(main_dir,"inputs","taxa_list",
                                  "target_taxa_with_synonyms.csv"), 
                        header = T, na.strings=c("","NA"),colClasses="character")
 # add country distribution data
-taxon_dist <- read.csv(file.path(main_dir,taxa_dir,
+taxon_dist <- read.csv(file.path(main_dir,"inputs","known_distribution",
                                  "target_taxa_with_native_dist.csv"), header = T, na.strings=c("","NA"),
                        colClasses="character")
 taxon_list <- left_join(taxon_list,taxon_dist)
@@ -77,16 +76,16 @@ taxon_list <- left_join(taxon_list,taxon_dist)
 target_taxa <- taxon_list %>%
   dplyr::filter(taxon_name_status == "Accepted"
                 # optionally, remove species with no SDM (list created manually above)
-                #        & !(taxon_name_accepted %in% no_sdm)
+                #        & !(taxon_name_acc %in% no_sdm)
   )
 nrow(target_taxa) #87 // 96
-spp.all <- unique(gsub(" ","_",target_taxa$taxon_name_accepted))
+spp.all <- unique(gsub(" ","_",target_taxa$taxon_name_acc))
 spp.all
 # list of native countries for each target species
 countries <- target_taxa$all_native_dist_iso2
 # read in country boundaries shapefile
 world_polygons <- vect(file.path(path.gis,
-                                 "UIA_World_Countries_Boundaries/World_Countries__Generalized_.shp"))                             
+                                 "UIA_World_Countries_Boundaries","World_Countries__Generalized_.shp"))                             
 
 # create folder for output maps, if not yet created
 if(!dir.exists(output.maps)) dir.create(output.maps, recursive=T)
@@ -116,8 +115,8 @@ for(i in 1:length(spp.all)){
                        
                        ## read in species distribution model and select color for mapping
                        ## this is the old code for using SDMs from Khoury et al 2020 (PNAS):
-                       #genus <- strsplit(spp.now$taxon_name_accepted[1]," ")[[1]][1]
-                       #taxon <- gsub(" ","%20",spp.now$taxon_name_accepted[1])
+                       #genus <- strsplit(spp.now$taxon_name_acc[1]," ")[[1]][1]
+                       #taxon <- gsub(" ","%20",spp.now$taxon_name_acc[1])
                        #raster_path <- paste0(
                        #  "https://raw.githubusercontent.com/dcarver1/cwr_pnas_results/main/speciesLevelData20210706/",
                        #  genus,"/",taxon,"/",taxon,"__thrsld_median.tif")
@@ -152,7 +151,7 @@ for(i in 1:length(spp.all)){
         # Color by database
         addCircleMarkers(data = spp.now, ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -168,7 +167,7 @@ for(i in 1:length(spp.all)){
         addCircleMarkers(data = spp.now %>% filter(!.cen & database!="Ex_situ"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -180,25 +179,25 @@ for(i in 1:length(spp.all)){
                            "<b>ID:</b> ",UID),
                          radius=4,stroke=T,color="black",weight=1,fillColor="red",fillOpacity=0.8,
                          group = "Within 500m of country/state centroid (.cen)") %>%
-        addCircleMarkers(data = spp.now %>% filter(!.urb & database!="Ex_situ"),
-                         ~decimalLongitude, ~decimalLatitude,
-                         popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
-                           "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
-                           "<b>Source database:</b> ",database,"<br/>",
-                           "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
-                           "<b>Year:</b> ",year,"<br/>",
-                           "<b>Basis of record:</b> ",basisOfRecord,"<br/>",
-                           "<b>Dataset name:</b> ",datasetName,"<br/>",
-                           "<b>Establishment means:</b> ",establishmentMeans,"<br/>",
-                           "<b>Coordinate uncertainty:</b> ",coordinateUncertaintyInMeters,"<br/>",
-                           "<b>ID:</b> ",UID),
-                         radius=4,stroke=T,color="black",weight=1,fillColor="red",fillOpacity=0.8,
-                         group = "In urban area (.urb)") %>%
+        #addCircleMarkers(data = spp.now %>% filter(database!="Ex_situ"),
+                         #~decimalLongitude, ~decimalLatitude,
+                         #popup = ~paste0(
+                           #"<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
+                           #"<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
+                           #"<b>Source database:</b> ",database,"<br/>",
+                           #"<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
+                           #"<b>Year:</b> ",year,"<br/>",
+                           #"<b>Basis of record:</b> ",basisOfRecord,"<br/>",
+                           #"<b>Dataset name:</b> ",datasetName,"<br/>",
+                           #"<b>Establishment means:</b> ",establishmentMeans,"<br/>",
+                           #"<b>Coordinate uncertainty:</b> ",coordinateUncertaintyInMeters,"<br/>",
+                           #"<b>ID:</b> ",UID),
+                         #radius=4,stroke=T,color="black",weight=1,fillColor="red",fillOpacity=0.8,
+                         #group = "In urban area (.urb)") %>%
         addCircleMarkers(data = spp.now %>% filter(!.inst & database!="Ex_situ"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -213,7 +212,7 @@ for(i in 1:length(spp.all)){
         addCircleMarkers(data = spp.now %>% filter(!.con & database!="Ex_situ"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -228,7 +227,7 @@ for(i in 1:length(spp.all)){
         addCircleMarkers(data = spp.now %>% filter(!.outl & database!="Ex_situ"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -243,7 +242,7 @@ for(i in 1:length(spp.all)){
         addCircleMarkers(data = spp.now %>% filter(!.nativectry),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -260,7 +259,7 @@ for(i in 1:length(spp.all)){
                                     basisOfRecord == "LIVING_SPECIMEN"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -279,7 +278,7 @@ for(i in 1:length(spp.all)){
                                     establishmentMeans == "CULTIVATED"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -294,7 +293,7 @@ for(i in 1:length(spp.all)){
         addCircleMarkers(data = spp.now %>% filter(!.yr1950 & database!="Ex_situ"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -309,7 +308,7 @@ for(i in 1:length(spp.all)){
         addCircleMarkers(data = spp.now %>% filter(!.yr1980 & database!="Ex_situ"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -324,7 +323,7 @@ for(i in 1:length(spp.all)){
         addCircleMarkers(data = spp.now %>% filter(!.yrna & database!="Ex_situ"),
                          ~decimalLongitude, ~decimalLatitude,
                          popup = ~paste0(
-                           "<b>Accepted species name:</b> ",taxon_name_accepted,"<br/>",
+                           "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
                            "<b>Verbatim taxon name:</b> ",taxon_name,"<br/>",
                            "<b>Source database:</b> ",database,"<br/>",
                            "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
@@ -343,7 +342,6 @@ for(i in 1:length(spp.all)){
           #               "Esri.WorldTopoMap",
           #               "Stamen.Watercolor"),
           overlayGroups = c("Within 500m of country/state centroid (.cen)",
-                            "In urban area (.urb)",
                             "Within 100m of biodiversity institution (.inst)",
                             "Not in reported country (.con)",
                             "Geographic outlier (.outl)",
@@ -356,7 +354,7 @@ for(i in 1:length(spp.all)){
           options = layersControlOptions(collapsed = FALSE)) %>%
         ## uncomment these to hide the group (unchecked in controls on map)
         #hideGroup("Within 500m of country/state centroid (.cen)") %>%
-        hideGroup("In urban area (.urb)") %>%
+        #hideGroup("In urban area (.urb)") %>%
         #hideGroup("Within 100m of biodiversity institution (.inst)") %>%
         hideGroup("Not in reported country (.con)") %>%
         #hideGroup("Geographic outlier (.outl)") %>%
