@@ -100,8 +100,7 @@ summary_tbl <- data.frame(
   total_pts = "start",
   unflagged_pts = "start", 
   selected_pts = "start", 
-  .cen = "start", 
-  .urb = "start",
+  .cen = "start",
   .inst = "start",
   .con = "start", 
   .outl = "start", 
@@ -137,7 +136,7 @@ col_names <- c(
   "taxon_name_status",
   #flag columns
   "latlong_countryCode",
-  ".cen",".urb",".inst",".con",".outl",
+  ".cen",".inst",".con",".outl",
   ".nativectry",
   ".yr1950",".yr1980",".yrna"
 )
@@ -154,11 +153,12 @@ for (i in 1:length(taxon_list)){
   # bring in records
   taxon_df <- read.csv(file.path(main_dir,data,standard,"taxon_raw_points",
                                  paste0(taxon_file, ".csv")))
-  
+
   # make taxon points into a spatial object
   taxon_spdf <- vect(
     cbind(taxon_df$decimalLongitude,taxon_df$decimalLatitude),
     atts=taxon_df, crs="EPSG:4326")
+ 
   # add country polygon data to each point based on lat-long location
   taxon_now <- intersect(taxon_spdf,world_polygons)
   taxon_now <- as.data.frame(taxon_now)
@@ -212,18 +212,7 @@ for (i in 1:length(taxon_list)){
                                  inst_rad = 100, # radius around biodiversity institutions coords (meters)
                                  tests = c("centroids","institutions")
   )
-  ## adding urban area test separately because won't work when only 1 point;
-  # this is really slow when not using rnaturalearth version..
-  if(nrow(taxon_df)<2){
-    taxon_now$.urb <- NA
-    print("Taxa with fewer than 2 records will not be tested.")
-  } else {
-    taxon_now <- as.data.frame(taxon_now)
-    flag_urb <- cc_urb(taxon_now,
-                       lon = "decimalLongitude",lat = "decimalLatitude",
-                       ref = urban.poly, value = "flagged")
-    taxon_now$.urb <- flag_urb
-  }
+  
   ## for some reason the "sea" flag isn't working in the clean_coordinates 
   #    function above; adding here separately
   # actually, found it flags a lot on islands, etc. Skipping for now.
@@ -260,7 +249,7 @@ for (i in 1:length(taxon_list)){
     dplyr::select(all_of(col_names))
   # df of completely unflagged points
   total_unflagged <- taxon_now %>%
-    filter(.cen & .urb &
+    filter(.cen &
              .inst & .con & .outl & .yr1950 & .yr1980 & .yrna &
              (.nativectry | is.na(.nativectry)) &
              basisOfRecord != "FOSSIL_SPECIMEN" & 
@@ -287,7 +276,6 @@ for (i in 1:length(taxon_list)){
     unflagged_pts = nrow(total_unflagged),
     selected_pts = nrow(select_unflagged),
     .cen = sum(!taxon_now$.cen),
-    .urb = sum(!taxon_now$.urb),
     .inst = sum(!taxon_now$.inst),
     .con = sum(!taxon_now$.con),
     .outl = sum(!taxon_now$.outl),
