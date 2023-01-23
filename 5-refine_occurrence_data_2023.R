@@ -2,7 +2,7 @@
 
 ## 5-refine_occurrence_data.R
 
-### Authors: Emily Beckman Bruns & Shannon M Still
+### Authors: Emily Beckman Bruns & Shannon M Still, Kate Good
 ### Funding: Base script was funded by the Institute of Museum and Library 
 # Services (IMLS MFA program grant MA-30-18-0273-18 to The Morton Arboretum).
 # Moderate edits were added with funding from a cooperative agreement
