@@ -84,8 +84,14 @@ all_data_raw <- Reduce(bind_rows, file_dfs)
 nrow(all_data_raw) #2557129
 names(all_data_raw) #37
 table(all_data_raw$database)
-# BIEN    Ex_situ  FIA     GBIF    iDigBio  IUCN_RedList  NorthAm_herbaria
-# 871544  9318     922368  481187  38256    52322         182134 
+#Base_Quercus   BIEN    El_Salvador   Ex_situ   FIA   GBIF    GT_USCG
+#258            855     76            7522      158   16656   1683
+
+#Herbario_TEFH_Honduras   iDigBio     ICUN_RedList    Maricela    NorthAm_herbaria
+#179                      4143        128704          347         192454
+
+#PMA   
+#103    
 
 # add unique identifier
 nms <- names(all_data_raw)
@@ -117,11 +123,11 @@ all_data <- all_data %>% dplyr::select(-genus)
 all_data <- left_join(all_data,taxon_list)
 # join again just by species name if no taxon match
 need_match <- all_data[which(is.na(all_data$taxon_name_status)),]
-nrow(need_match) #59933
+nrow(need_match) #347009
 # remove columns from first taxon name match
 need_match <- need_match[,1:(ncol(all_data)-ncol(taxon_list)+1)]
 # rename column for matching
-need_match <- need_match %>% rename(taxon_name_full = taxon_name)
+need_match <- need_match %>% dplyr::rename(taxon_name_full = taxon_name)
 need_match$taxon_name <- need_match$species_name
 # new join
 need_match <- left_join(need_match,taxon_list)
@@ -319,7 +325,7 @@ geo_pts$country <- mgsub(geo_pts$country,
 country_codes1 <- as.data.frame(sort(unique(geo_pts$country))) %>%
   add_column(iso3c = countrycode(sort(unique(geo_pts$country)),
                                  origin="country.name", destination="iso2c")) %>%
-  rename("country" = "sort(unique(geo_pts$country))",
+  dplyr::rename("country" = "sort(unique(geo_pts$country))",
          "countryCode_standard" = "iso3c")
 
 
