@@ -48,16 +48,12 @@ rm(my.packages)
 # Set working directory
 ################################################################################
 
-# either set manually:
-#main_dir <- "/Volumes/GoogleDrive-103729429307302508433/My Drive/CWR North America Gap Analysis/Gap-Analysis-Mapping"
-
-# or use 0-set_working_directory.R script:
-source("/Users/emily/Documents/GitHub/SDBG_CWR-trees-gap-analysis/0-set_working_directory.R")
+main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
 # set up file structure within your main working directory
 data <- "occurrence_data"
 standard <- "standardized_occurrence_data"
-polygons <- "gis_layers"
+polygons <- "gis_data"
 
 ################################################################################
 # Read in data
@@ -70,18 +66,18 @@ wgs_proj <- sp::CRS(SRS_string="EPSG:4326")
 #urban.poly <- rnaturalearth::ne_download(scale = "large", type = "urban_areas")
 ### !! THIS NEEDS TO BE TESTED STILL !!!
 urban.poly <- sf::read_sf(
-  file.path(main_dir,gis_dir,"ne_10m_urban_areas/ne_10m_urban_areas.shp"))
+  file.path(main_dir,"gis_data","ne_10m_urban_areas","ne_10m_urban_areas.shp"))
 urban.poly <- st_transform(urban.poly,wgs_proj)
 
 # read in country-level native distribution data
-native_dist <- read.csv(file.path(main_dir,"taxa_metadata",
+native_dist <- read.csv(file.path(main_dir,"inputs", "known_distribution",
                                   "target_taxa_with_native_dist.csv"), header = T, na.strings = c("","NA"),
                         colClasses = "character")
 
 # read in country boundaries shapefile
 world_polygons <- vect(
   file.path(main_dir,polygons,
-            "UIA_World_Countries_Boundaries/World_Countries__Generalized_.shp"))                             
+            "UIA_World_Countries_Boundaries", "World_Countries__Generalized_.shp"))                             
 
 # create new folder for revised points, if not already existing
 if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points")))
@@ -100,7 +96,7 @@ taxon_list <- file_path_sans_ext(taxon_files)
 
 # start a table to add summary of results for each species
 summary_tbl <- data.frame(
-  taxon_name_accepted = "start", 
+  taxon_name_acc = "start", 
   total_pts = "start",
   unflagged_pts = "start", 
   selected_pts = "start", 
@@ -120,7 +116,7 @@ col_names <- c(
   #data source and unique ID
   "UID","database","all_source_databases",
   #taxon
-  "taxon_name_accepted",
+  "taxon_name_acc",
   "taxon_name","scientificName","genus","specificEpithet",
   "taxonRank","infraspecificEpithet","taxonIdentificationNotes",
   #event
@@ -138,8 +134,7 @@ col_names <- c(
   "locationNotes","municipality","higherGeography","county",
   "stateProvince","country","countryCode","countryCode_standard",
   #additional optional data from target taxa list
-  "taxon_name_status","iucnredlist_category",
-  "natureserve_rank","fruit_nut",
+  "taxon_name_status",
   #flag columns
   "latlong_countryCode",
   ".cen",".urb",".inst",".con",".outl",
@@ -172,7 +167,7 @@ for (i in 1:length(taxon_list)){
   #  this previously checked GlobalTreeSearch and IUCN Red List separately, but
   #     I have now combined into one - old code is commented out below
   ctry <- unique(unlist(strsplit(native_dist$all_native_dist_iso2[
-    native_dist$taxon_name_accepted==taxon_nm], "; ")))
+    native_dist$species_name_acc==taxon_nm], "; ")))
   if(!is.na(ctry[1])){
     ## flag records where RL country doesn't match record's coordinate location
     taxon_now <- taxon_now %>% mutate(.nativectry=(ifelse(
@@ -212,7 +207,7 @@ for (i in 1:length(taxon_list)){
   ## cc_inst - Identify Records in the Vicinity of Biodiversity Institutions
   taxon_now <- clean_coordinates(taxon_now,
                                  lon = "decimalLongitude", lat = "decimalLatitude",
-                                 species = "taxon_name_accepted",
+                                 species = "taxon_name_acc",
                                  centroids_rad = 500, # radius around capital coords (meters); default=1000
                                  inst_rad = 100, # radius around biodiversity institutions coords (meters)
                                  tests = c("centroids","institutions")
@@ -239,7 +234,7 @@ for (i in 1:length(taxon_list)){
   taxon_now <- as.data.frame(taxon_now)
   flag_outl <- cc_outl(taxon_now,
                        lon = "decimalLongitude",lat = "decimalLatitude",
-                       species = "taxon_name_accepted", method = "quantile",
+                       species = "taxon_name_acc", method = "quantile",
                        mltpl = 4, value = "flagged")
   taxon_now$.outl <- flag_outl
   
