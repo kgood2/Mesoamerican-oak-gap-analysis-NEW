@@ -133,6 +133,9 @@ need_match$taxon_name <- need_match$species_name
 # new join
 need_match <- left_join(need_match,taxon_list)
 # bind together new matches and previously matched
+# If you get an error about column numbers being different here, make sure
+# that you have removed the compiled output file generated in 
+# standard occurrence data folder.
 matched <- all_data[which(!is.na(all_data$taxon_name_status)),]
 matched$taxon_name_full <- matched$taxon_name
 all_data <- rbind(matched,need_match)
