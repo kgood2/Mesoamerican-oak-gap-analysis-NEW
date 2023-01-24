@@ -167,7 +167,7 @@ for (i in 1:length(taxon_list)){
   #  this previously checked GlobalTreeSearch and IUCN Red List separately, but
   #     I have now combined into one - old code is commented out below
   ctry <- unique(unlist(strsplit(native_dist$all_native_dist_iso2[
-    native_dist$species_name_acc==taxon_nm], "; ")))
+    native_dist$taxon_name_acc==taxon_nm], "; ")))
   if(!is.na(ctry[1])){
     ## flag records where RL country doesn't match record's coordinate location
     taxon_now <- taxon_now %>% mutate(.nativectry=(ifelse(
@@ -245,7 +245,7 @@ for (i in 1:length(taxon_list)){
   
   # set column order and remove a few unnecessary columns
   taxon_now <- taxon_now %>% 
-    rename("latlong_countryCode" = "ISO") %>%
+    dplyr::rename("latlong_countryCode" = "ISO") %>%
     dplyr::select(all_of(col_names))
   # df of completely unflagged points
   total_unflagged <- taxon_now %>%
