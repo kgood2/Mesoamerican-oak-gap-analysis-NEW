@@ -88,6 +88,10 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points")))
 # Iterate through taxon files and flag suspect points
 ################################################################################
 
+#Note: Quercus supranitida is throwing an error. Not sure how to fix at this point, 
+# There are only two points so I went through and created the taxon_edited_points file 
+# for this species by  hand. 
+
 # list of taxon files to iterate through
 taxon_files <- list.files(path=file.path(main_dir,data,standard,
                                          "taxon_raw_points"), 
