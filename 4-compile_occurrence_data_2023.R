@@ -75,15 +75,16 @@ file_list <- list.files(file.path(main_dir,data,standard), pattern = ".csv",
                         full.names = T)
 file_dfs <- lapply(file_list, read.csv, header = T, na.strings = c("","NA"),
                    colClasses = "character")
-length(file_dfs) #7
+length(file_dfs) #14
 
 # stack all datasets using bind_rows, which keeps non-matching columns
 #   and fills with NA; 'Reduce' iterates through list and merges with previous.
 # this may take a few minutes if you have lots of data
 all_data_raw <- Reduce(bind_rows, file_dfs)
-nrow(all_data_raw) #2557129
+nrow(all_data_raw) #347009
 names(all_data_raw) #37
 table(all_data_raw$database)
+#NOTE: two files have database as Maraicela (14 files, only 13 databases)
 #Base_Quercus   BIEN    El_Salvador   Ex_situ   FIA   GBIF    GT_USCG
 #258            855     76            7522      158   16656   1683
 
@@ -148,6 +149,11 @@ nrow(still_no_match) #49979
 sort(unique(still_no_match$taxon_name))
 table(still_no_match$database)
 rm(matched,need_match,taxon_list_add,still_no_match)
+
+# add target taxa back in that accidentally got excluded
+#all_data$taxon_name <- all_data(geo_pts$taxon_name,
+                         #c("Quercus brandegei","Quercus hintoni","Quercus costaricensis ","Quercus acutifolia "),
+                         #c("Quercus brangegeei","Quercus hintonii", "Quercus costaricensis","Quercus acutifolia"))
 
 # keep only rows for target taxa
 all_data <- all_data %>% 
@@ -301,8 +307,14 @@ write.csv(locality_pts, file.path(main_dir,data,
 geo_pts <- all_data %>% filter(is.na(flag))
 nrow(geo_pts) #2184049
 table(geo_pts$database)
-# BIEN    Ex_situ   FIA      GBIF     iDigBio   IUCN_RedList  NorthAm_herbaria
-# 808255  1429      917467   344725   38286     22429         51458
+# Base_Quercus    BIEN    Ex_situ     FIA       GBIF 
+#  13             708       262       138       6880 
+
+#GT_USCG    Herbario_TEFH_Honduras  iDigBio   IUCN_RedList  Maricela
+#295              2                   2215        3611        327
+
+#NorthAm_herbaria       PMA
+#2248                   10
 
 rm(all_data,geo_pts_spatial,land_pts,no_geo_pts,on_land,world_buff,land_id)
 
@@ -347,7 +359,7 @@ geo_pts$countryCode <- mgsub(geo_pts$countryCode,
 country_codes2 <- as.data.frame(sort(unique(geo_pts$countryCode))) %>%
   add_column(iso3c = countrycode(sort(unique(geo_pts$countryCode)),
                                  origin="iso2c", destination="iso2c")) %>%
-  rename("countryCode" = "sort(unique(geo_pts$countryCode))",
+  dplyr::rename("countryCode" = "sort(unique(geo_pts$countryCode))",
          "countryCode_standard2" = "iso3c")
 # add to data
 geo_pts <- left_join(geo_pts,country_codes2)
@@ -383,8 +395,12 @@ add_again$taxon_name_acc <- gsub(" var\\.*\\s.+", "",
 unique(add_again$taxon_name_acc)
 geo_pts <- rbind(geo_pts,add_again)
 table(geo_pts$database)
-# BIEN    Ex_situ   FIA      GBIF     iDigBio   IUCN_RedList  NorthAm_herbaria
-# 815391  1530      917467   351671   42525     22893         59884
+#Base_Quercus          BIEN                Ex_situ                    FIA                   GBIF 
+#13                    708                    262                    138                   6880 
+#GT_USCG Herbario_TEFH_Honduras             iDigBio           IUCN_RedList               Maricela 
+#295                      2                   2215                   3611                    327 
+#NorthAm_herbaria         PMA 
+#2248                     10 
 
 # create rounded latitude and longitude columns for removing duplicates;
 #   number of digits can be changed based on how dense you want data
@@ -423,8 +439,9 @@ geo_pts <- geo_pts %>% arrange(desc(year))
 # sort by source database
 unique(geo_pts$database)
 geo_pts$database <- factor(geo_pts$database,
-                           levels = c("GBIF","iDigBio","IUCN_RedList","NorthAm_herbaria",
-                                      "FIA","BIEN","Ex_situ","GT_USCG","Maricela"))
+                           levels = c("GBIF","Ex_situ","NorthAm_herbaria","iDigBio",
+                                      "GT_USCG","FIA","Base_Quercus","IUCN_RedList",
+                                      "BIEN","PMA","Herbario_TEFH_Honduras","Maricela"))
 geo_pts <- geo_pts %>% arrange(database)
 
 # remove duplicates
@@ -474,11 +491,18 @@ geo_pts2 <- geo_pts2[,keep_col]
 head(as.data.frame(geo_pts2))
 nrow(geo_pts2) #367559
 table(geo_pts2$database)
-# BIEN    Ex_situ   FIA      GBIF     iDigBio   IUCN_RedList  NorthAm_herbaria
-# 12703   1530      160099   176790   10345     3969          8879
+#Base_Quercus         BIEN                Ex_situ                    FIA                   GBIF 
+#9                     83                    262                     20                   4164 
+#GT_USCG Herbario_TEFH_Honduras       iDigBio           IUCN_RedList               Maricela 
+#84                      2              24                    847                     17 
+#NorthAm_herbaria       PMA 
+#624                      4 
+
 rm(geo_pts)
 
 # write file if you'd like
+#IF YOU ARE RE-RUNNING THIS SCRIPT, YOU WILL NEED TO DELETE THIS FILE SO IT IS NOT
+#ACCIDENTALLY READ IN
 write.csv(geo_pts2, file.path(main_dir,data,standard,
   paste0("Occurrences_Compiled_", Sys.Date(), ".csv")),row.names = F)
 
@@ -491,7 +515,7 @@ write.csv(geo_pts2, file.path(main_dir,data,standard,
 count_geo <- geo_pts2 %>% count(taxon_name_acc)
 names(count_geo)[2] <- "num_latlong_records"
 # locality-only records (invalid coords or in water)
-count_locality <- locality_pts %>% count(taxon_name_accepted)
+count_locality <- locality_pts %>% count(taxon_name_acc)
 names(count_locality)[2] <- "num_locality_records"
 # make table
 files <- list(count_geo,count_locality)
@@ -507,11 +531,11 @@ write.csv(summary, file.path(main_dir,data,
 ################################################################################
 
 # split records to create one CSV for each target taxon
-sp_split <- split(geo_pts2, as.factor(geo_pts2$taxon_name_acc))
+sp_split <- split(geo_pts2, as.factor(geo_pts2$taxon_name_accepted))
 names(sp_split) <- gsub(" ","_",names(sp_split))
 names(sp_split) <- gsub("\\.","",names(sp_split))
 
 # write files
 lapply(seq_along(sp_split), function(i) write.csv(sp_split[[i]],
-                                                  file.path(main_dir,data,standard,"taxon_raw_points",
-                                                            paste0(names(sp_split)[[i]],".csv")),row.names = F))
+                    file.path(main_dir,data,standard,"taxon_raw_points",
+                    paste0(names(sp_split)[[i]],".csv")),row.names = F))
