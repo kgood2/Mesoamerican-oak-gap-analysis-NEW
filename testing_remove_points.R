@@ -1,3 +1,18 @@
+###############################################################################
+# January 25, 2023
+# Kate Good
+
+# This script goes through each species and removes UIDs from the the species'
+# taxon edited points file. It creates a new file for each species with points
+# removed. I manually enter the UIDs to remove for each species from the 
+# Manual Point Edits file. I get these points from the Interactive Maps 
+# generated in script 6-visuaize_occurrence_data. If there are no points that 
+# need to be removed, I read in the file and then write the file, renaming it 
+# with the "points removed" file name and putting it in the "taxon_edited_points_removed"
+# folder
+
+
+
 ################################################################################
 # Set working directory
 ################################################################################
@@ -260,10 +275,10 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                           "Quercus_graciliformis.csv"), header = T, na.strings=c("","NA"),
                                 colClasses="character")
 
-  new_Quercus_graciliformis = subset(Quercus_graciliformis,!(UID %in% "id00015064"))
+  new_Quercus_graciliformis = subset(Quercus_graciliformis,!(UID %in% c("id00015064","id00001542", "id00001540")))
 
   write.csv(new_Quercus_graciliformis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
-                                               paste0("Quercus_graciliformisa_points_removed", ".csv")),row.names = F)
+                                               paste0("Quercus_graciliformis_points_removed", ".csv")),row.names = F)
 #28#####
   Quercus_gracilior<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points",
                                       "Quercus_gracilior.csv"), header = T, na.strings=c("","NA"),
