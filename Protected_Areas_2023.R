@@ -1,6 +1,7 @@
 ###NEED TO WORK ON CLIPPING BOUNDARIES TO LAND
 ###NEED TO EXCLUDE EX SITU POINTS FROM DATABASE
 ### THIS IS JUST FOR Q. BRANDEGEEI, NOT ALL SPECIES
+### need to edit key
 
 
 ### Author: Jean Linsky  ###  Date: 04/7/2021
@@ -131,19 +132,19 @@ protected_areas0 <- readOGR(file.path(pa_dir,"Mexico_PAs","WDPA_WDOECM_Jan2023_P
                                       "WDPA_WDOECM_Jan2023_Public_MEX_shp-polygons.shp"))
 ##clipping PAs to land only
 protected_areas0_clip.wgs <- raster::intersect(protected_areas0,boundary.wgs)
-protected_areas0_clip.aea <- raster::intersect(protected_areas0,boundary.aea)
+#3protected_areas0_clip.aea <- raster::intersect(protected_areas0,boundary.aea)
 
 protected_areas1 <- readOGR(file.path(pa_dir, "Mexico_PAs","WDPA_WDOECM_Jan2023_Public_MEX_shp_1",
                                       "WDPA_WDOECM_Jan2023_Public_MEX_shp-polygons.shp"))
 ##clipping PAs to land only
 protected_areas1_clip.wgs <- raster::intersect(protected_areas1,boundary.wgs)
-protected_areas1_clip.aea <- raster::intersect(protected_areas1,boundary.aea)
+#protected_areas1_clip.aea <- raster::intersect(protected_areas1,boundary.aea)
 
 protected_areas2 <- readOGR(file.path(pa_dir, "Mexico_PAs","WDPA_WDOECM_Jan2023_Public_MEX_shp_2",
                                       "WDPA_WDOECM_Jan2023_Public_MEX_shp-polygons.shp"))
 ##clipping PAs to land only
 protected_areas2_clip.wgs <- raster::intersect(protected_areas2,boundary.wgs)
-protected_areas2_clip.aea <- raster::intersect(protected_areas2,boundary.aea)
+#protected_areas2_clip.aea <- raster::intersect(protected_areas2,boundary.aea)
 
 
 ## States
@@ -203,13 +204,13 @@ insitu <- read.csv(file.path(pts_dir,paste0(target_sp[sp], "_points_removed",
 str(insitu)
 ## change column names or remove columns as needed; need at least
 ##	"decimalLatitude" and "decimalLongitude"
-insitu <- insitu %>%
-  dplyr::rename(Latidude = decimalLatitude, Longitude = decimalLongitude)
+#insitu <- insitu %>%
+  #dplyr::rename(decimalLatidude = Latitude, decimalLongitude = Longitude)
   #filter(Category == "in_situ")
 ## if desired, can clip points by boundary so only in target area
 ## (helpful if focusing on one country/region)
-insitu <- clip.by.boundary(insitu,wgs.proj,boundary.wgs)
-str(insitu)
+#insitu <- clip.by.boundary(insitu,wgs.proj,boundary.wgs)
+#str(insitu)
 
 
 ### CREATE MAP
@@ -227,15 +228,15 @@ map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
              position = "topright") %>%
   ## ProtectedAreas
   addPolygons(
-    data = protected_areas0, label = "Quercus_brangegeei",
+    data = protected_areas0_clip.wgs, label = "Quercus_brangegeei",
     fillColor = ~pa_pal(protected_areas0_clip.wgs@data$ECO_ID),
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
   addPolygons(
-    data = protected_areas1, label = "Quercus_brangegeei",
+    data = protected_areas1_clip.wgs, label = "Quercus_brangegeei",
     fillColor = ~pa_pal(protected_areas0_clip.wgs@data$ECO_ID),
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
   addPolygons(
-    data = protected_areas2, label = "Quercus_brangegeei",
+    data = protected_areas2_clip.wgs, label = "Quercus_brangegeei",
     fillColor = ~pa_pal(protected_areas0@data$ECO_ID),
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
   ## (optional) Country or state outlines
