@@ -16,7 +16,7 @@
 ### DESCRIPTION:
 # Creates interactive (HTML) occurrence point map for each target species,
 #   for exploring after points have been reviewed and removed. Creates maps
-# without key or points highlighted in red that can be shared with exper reviewers. 
+# without key or points highlighted in red that can be shared with expert reviewers. 
 
 ### INPUTS:
 # target_taxa_with_synonyms.csv
@@ -33,10 +33,12 @@
 
 rm(list=ls())
 my.packages <- c("ggplot2","maps","leaflet","RColorBrewer","dplyr","raster",
-                 "terra")
+                 "terra", "mapview")
 #install.packages(my.packages) #Turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
 rm(my.packages)
+
+webshot::install_phantomjs()
 
 ################################################################################
 # Set working directory
@@ -93,8 +95,7 @@ if(!dir.exists(output.maps)) dir.create(output.maps, recursive=T)
 for(i in 1:length(spp.all)){
   
   # read in records
-  spp.now <- read.csv(file.path(path.pts, paste0(gsub("\\.","",spp.all[i]), 
-                                                 "_points_removed", ".csv")))
+  spp.now <- read.csv(file.path(path.pts, paste0(gsub("\\.","",spp.all[i]), "_points_removed", ".csv")))
   
   #target.iso <- unlist(strsplit(countries[i],split="; "))
   #target_countries <- world_polygons[world_polygons$IOS %in% target.iso,]
@@ -149,9 +150,19 @@ for(i in 1:length(spp.all)){
       position = "bottomleft"))
                        final_map
                        
+                       #save image of map (png, pdf, or jpeg)
+                       mapview::mapshot(final_map, 
+                                        file = paste0(main_dir, "/outputs", "/static_maps/", spp.all[i], 
+                                                      "-edited_points_static_map.png"),
+                                        remove_controls = c("zoomControl", "layersControl"),
+                                        zoom=3)
                        # save map
                        try(htmlwidgets::saveWidget(final_map, file.path(output.maps,
-                                                                        paste0(spp.all[i], "_occurrence_map.html"))))
+                                                                        paste0(spp.all[i], "_occurrence_map.html")))) 
+                         
+                         
+                         
+                        
                        
                        cat("\tEnding ", spp.all[i], ", ", i, " of ", length(spp.all), ".\n\n", sep="")
 }
