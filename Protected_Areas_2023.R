@@ -38,18 +38,18 @@
 rm(list=ls())
 my.packages <- c("leaflet","raster","sp","rgeos","plyr","dplyr","rgdal",
                  "Polychrome","cleangeo","RColorBrewer","smoothr","rnaturalearth","polylabelr",
-                 "sf")
+                 "sf", "rnaturalearthhires")
 
 #install.packages(my.packages) # turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
 
 select <- dplyr::select
 
-install.packages("rnaturalearthhires", repos = "http://packages.ropensci.org", type = "source")
+#install.packages("rnaturalearthhires", repos = "http://packages.ropensci.org", type = "source")
 
-install.packages('cmdstanr')
-install.packages("rnaturalearth")
-devtools::install_github("ropensci/rnaturalearth")
+#install.packages('cmdstanr')
+#install.packages("rnaturalearth")
+#devtools::install_github("ropensci/rnaturalearth")
 
 #########################
 ### WORKING DIRECTORY ###
@@ -111,14 +111,19 @@ aea.proj <- sp::CRS(SRS_string="EPSG:8858")
 
 ## Countries
 world_countries <- readOGR(file.path(poly_dir,"UIA_World_Countries_Boundaries", "World_Countries__Generalized_.shp"))
+
 ## filter to only target countries; speeds things up and prevents errors.
 ##	there is a self-intersection error when trying the aggregate function for
 ##	the aea projection using all countries; tried clgeo_Clean and did not fix
 sort(unique(world_countries@data$ISO))
+
 ## Look up country codes at website below, using "Alpha 2" column:
 ##	https://www.nationsonline.org/oneworld/country_code_list.htm
-target_iso <- c("MX")
+# "united states of america","mexico","belize","guatemala",
+# "honduras","panama","costa rica","nicaragua","el salvador"
+target_iso <- c("US","MX","BZ","GT","HN","PA","CR","NI","SV")
 target_countries <- world_countries[world_countries@data$ISO %in% target_iso,]
+
 ## create polygon for clipping buffers later, one in each projection
 target_countries.wgs <- spTransform(target_countries,wgs.proj)
 boundary.wgs <- aggregate(target_countries.wgs,dissolve = TRUE)
@@ -258,29 +263,20 @@ map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
   addScaleBar(position = "bottomright",
               options = scaleBarOptions(maxWidth = 150)) %>%
   
-  ##Need to see if a legend with PAs, points can be added
+
   ## Add legend
-  ##	not perfect, but something! Used https://imgbb.com to host the buffer
-  ##	PNG images! So you could do that for any shape you'd like
+  ##	Used https://imgbb.com to host the buffer PNG images
   addControl(
-    html = "<img src='https://i.ibb.co/1dW95pC/Insitu-buffer.png'
-		style='width:40px;height:40px;'> Species' estimated native distribution<br/>
-		(20 km buffer around in situ occurrence points)<br/>
-		<img src='https://i.ibb.co/SR71N6k/Exsitu-buffer.png'
-		style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
-		(20 km buffer around wild provenance localities)",
+    html = "<img src='https://i.ibb.co/j855sx6/black-circle.png'
+    style='width:40px;height:40px;'> Geolocated in situ occurrence points<br/>
+        <img src='https://i.ibb.co/Gt6kL1Q/green-square.png' 
+    style='width:40px;height:40px;'> Protected areas from Protected Planet<br/>
+    (https://www.protectedplanet.net/en)",
 		position = "bottomleft") %>%
-  addControl(
-    html = "Source locality and number of wild provenance<br/>individuals in ex situ collections<br/>
-		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
-		style='width:8px;height:8px;'> 1-4
-		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
-		style='width:15px;height:15px;'> 5-14
-		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
-		style='width:22px;height:22px;'> 15+",
-		position = "bottomleft") %>%
-  ## Set view (long and lat) and zoom level, for when map initially opens
-  setView(104, 32, zoom = 5)
+
+		
+		## Set view (long and lat) and zoom level, for when map initially opens
+  setView(-100, 20, zoom = 5) 
 map
 
 ## save map as html file, so you can embed on a webpage or share with others
