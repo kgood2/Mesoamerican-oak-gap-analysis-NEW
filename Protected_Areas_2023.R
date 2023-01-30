@@ -98,14 +98,6 @@ clip.by.boundary <- function(pts,pt_proj,boundary){
 ##	leaflet map
 wgs.proj <- sp::CRS(SRS_string="EPSG:4326")
 ##CRS arguments: +proj=longlat +datum=WGS84 +no_defs
-## define projection for calculations (meters/km must be the unit); this one
-##	works best if you use projection specifically for your target region;
-## 	you can search for projections and their EPSG codes here: https://epsg.org
-## FOR ASIA/PACIFIC: 8859; FOR THE AMERICAS: 8858; FOR EUROPE/AFRICA: 8857;
-##	FOR THE U.S. ONLY, if you want to align with USGS preference: 5070
-
-aea.proj <- sp::CRS(SRS_string="EPSG:8858")
-##CRS arguments: +proj=eqearth +lon_0=150 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs
 
 ### READ IN POLYGON DATA
 
@@ -127,67 +119,71 @@ target_countries <- world_countries[world_countries@data$ISO %in% target_iso,]
 ## create polygon for clipping buffers later, one in each projection
 target_countries.wgs <- spTransform(target_countries,wgs.proj)
 boundary.wgs <- aggregate(target_countries.wgs,dissolve = TRUE)
-target_countries.aea <- spTransform(target_countries,aea.proj)
-## this is where the error occurs with certain countries.. may need to find
-##	a work-around
-boundary.aea <- aggregate(target_countries.aea,dissolve = TRUE)
 
-##Protected Areas
-protected_areas0 <- readOGR(file.path(pa_dir,"Mexico_PAs","WDPA_WDOECM_Jan2023_Public_MEX_shp_0",
+
+##Protected Areas (Mexico)
+MXprotected_areas0 <- readOGR(file.path(pa_dir,"Mexico_PAs","WDPA_WDOECM_Jan2023_Public_MEX_shp_0",
                                       "WDPA_WDOECM_Jan2023_Public_MEX_shp-polygons.shp"))
-##clipping PAs to land only
-protected_areas0_clip.wgs <- raster::intersect(protected_areas0,boundary.wgs)
-#3protected_areas0_clip.aea <- raster::intersect(protected_areas0,boundary.aea)
+MXprotected_areas0_clip.wgs <- raster::intersect(MXprotected_areas0,boundary.wgs)
 
-protected_areas1 <- readOGR(file.path(pa_dir, "Mexico_PAs","WDPA_WDOECM_Jan2023_Public_MEX_shp_1",
+MXprotected_areas1 <- readOGR(file.path(pa_dir, "Mexico_PAs","WDPA_WDOECM_Jan2023_Public_MEX_shp_1",
                                       "WDPA_WDOECM_Jan2023_Public_MEX_shp-polygons.shp"))
-##clipping PAs to land only
-protected_areas1_clip.wgs <- raster::intersect(protected_areas1,boundary.wgs)
-#protected_areas1_clip.aea <- raster::intersect(protected_areas1,boundary.aea)
+MXprotected_areas1_clip.wgs <- raster::intersect(MXprotected_areas1,boundary.wgs)
 
-protected_areas2 <- readOGR(file.path(pa_dir, "Mexico_PAs","WDPA_WDOECM_Jan2023_Public_MEX_shp_2",
+MXprotected_areas2 <- readOGR(file.path(pa_dir, "Mexico_PAs","WDPA_WDOECM_Jan2023_Public_MEX_shp_2",
                                       "WDPA_WDOECM_Jan2023_Public_MEX_shp-polygons.shp"))
-##clipping PAs to land only
-protected_areas2_clip.wgs <- raster::intersect(protected_areas2,boundary.wgs)
-#protected_areas2_clip.aea <- raster::intersect(protected_areas2,boundary.aea)
+MXprotected_areas2_clip.wgs <- raster::intersect(MXprotected_areas2,boundary.wgs)
+
+##Protected Areas (Costa Rica)
+CRprotected_areas0 <-readOGR(file.path(pa_dir,"Costa_Rica_PAs","WDPA_WDOECM_Jan2023_Public_CRI_shp_0",
+                                       "WDPA_WDOECM_Jan2023_Public_CRI_shp-polygons.shp"))
+CRprotected_areas0_clip.wgs <- raster::intersect(CRprotected_areas0,boundary.wgs)
+
+CRprotected_areas1 <-readOGR(file.path(pa_dir,"Costa_Rica_PAs","WDPA_WDOECM_Jan2023_Public_CRI_shp_1",
+                                       "WDPA_WDOECM_Jan2023_Public_CRI_shp-polygons.shp"))
+CRprotected_areas1_clip.wgs <- raster::intersect(CRprotected_areas1,boundary.wgs)
+
+CRprotected_areas2 <-readOGR(file.path(pa_dir,"Costa_Rica_PAs","WDPA_WDOECM_Jan2023_Public_CRI_shp_2",
+                                       "WDPA_WDOECM_Jan2023_Public_CRI_shp-polygons.shp"))
+CRprotected_areas2_clip.wgs <- raster::intersect(CRprotected_areas2,boundary.wgs)
+
+##Protected Areas (Guatemala)
+GTprotected_areas0 <-readOGR(file.path(pa_dir,"Guatemala_PAs","WDPA_WDOECM_Jan2023_Public_GTM_shp_0",
+                                       "WDPA_WDOECM_Jan2023_Public_GTM_shp-polygons.shp"))
+GTprotected_areas0_clip.wgs <- raster::intersect(GTprotected_areas0,boundary.wgs)
+
+GTprotected_areas1 <-readOGR(file.path(pa_dir,"Guatemala_PAs","WDPA_WDOECM_Jan2023_Public_GTM_shp_1",
+                                       "WDPA_WDOECM_Jan2023_Public_GTM_shp-polygons.shp"))
+GTprotected_areas1_clip.wgs <- raster::intersect(GTprotected_areas1,boundary.wgs)
+
+GTprotected_areas2 <-readOGR(file.path(pa_dir,"Guatemala_PAs","WDPA_WDOECM_Jan2023_Public_GTM_shp_2",
+                                       "WDPA_WDOECM_Jan2023_Public_GTM_shp-polygons.shp"))
+GTprotected_areas2_clip.wgs <- raster::intersect(GTprotected_areas2,boundary.wgs)
+
+##Protected Areas (Panama)
+PAprotected_areas0 <-readOGR(file.path(pa_dir,"Panama_PAs","WDPA_WDOECM_Jan2023_Public_PAN_shp_0",
+                                       "WDPA_WDOECM_Jan2023_Public_PAN_shp-polygons.shp"))
+PAprotected_areas0_clip.wgs <- raster::intersect(PAprotected_areas0,boundary.wgs)
+
+PAprotected_areas1 <-readOGR(file.path(pa_dir,"Panama_PAs","WDPA_WDOECM_Jan2023_Public_PAN_shp_1",
+                                       "WDPA_WDOECM_Jan2023_Public_PAN_shp-polygons.shp"))
+PAprotected_areas1_clip.wgs <- raster::intersect(PAprotected_areas1,boundary.wgs)
+
+PAprotected_areas2 <-readOGR(file.path(pa_dir,"Panama_PAs","WDPA_WDOECM_Jan2023_Public_PAN_shp_2",
+                                       "WDPA_WDOECM_Jan2023_Public_PAN_shp-polygons.shp"))
+PAprotected_areas2_clip.wgs <- raster::intersect(PAprotected_areas2,boundary.wgs)
 
 
-## States
-## read in state polygons using rnaturalearth package (or can read in other shapefile
+## countries
+## read in country polygons using rnaturalearth package (or can read in other shapefile
 ##		you have downloaded online)
-#state_bound <- ne_states(country=NULL)
 
-country_bound <- readOGR(file.path(poly_dir,"UIA_World_Countries_Boundaries","World_Countries__Generalized_.shp"))
+country_bound <- ne_countries(scale = 110, type="countries")
+#country_bound <- readOGR(file.path(poly_dir,"UIA_World_Countries_Boundaries","World_Countries__Generalized_.shp"))
 
 ## project to WGS84
 country_bound.wgs <- spTransform(country_bound,wgs.proj)
 
-## if desired, select states in target countries only
-#state_bound_clip.wgs <- state_bound.wgs[state_bound.wgs@data$iso_a2 %in% target_iso,]
-## find the visual center point of each state (still not perfect), for
-##		labeling purposes
-#simple_states <- st_as_sf(state_bound.wgs)
-#state_centers <- as.data.frame(do.call(rbind, poi(simple_states, precision=0.01)))
-#state_centers$label <- state_bound.wgs@data$NAME_0
-#state_centers$x <- as.numeric(state_centers$x)
-#state_centers$y <- as.numeric(state_centers$y)
-## (optional) edit state/province names to better format for map labels
-##	 remove word "Prefecture" in labels
-#state_centers$label <- gsub(" Prefecture","",state_centers$label)
-##	 remove words "Autonomous Region" in labels
-#state_centers$label <- gsub(" Autonomous Region","",state_centers$label)
-## 	 view labels
-#state_centers
-
-### CREATE COLOR PALETTES / MAP ICONS
-
-## PA polygon colors
-pa_pal_colors <- createPalette(length(unique(protected_areas0@data$ECO_ID)),
-                               seedcolors = c("#ba3c3c","#ba7d3c","#baab3c","#3ca7ba","#3c6aba","#573cba","#943cba","#ba3ca1","#ba3c55"),
-                               range = c(5,42), target = "normal", M=50000)
-swatch(pa_pal_colors)
-pa_pal_colors <- as.vector(pa_pal_colors)
-pa_pal <- colorFactor(pa_pal_colors,protected_areas0@data$ECO_ID)
 
 
 ################################################################################
@@ -233,28 +229,15 @@ map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
              position = "topright") %>%
   ## ProtectedAreas
   addPolygons(
-    data = protected_areas0_clip.wgs, label = "Quercus_brangegeei",
-    fillColor = ~pa_pal(protected_areas0_clip.wgs@data$ECO_ID),
+    data = MXprotected_areas0_clip.wgs, label = "Quercus_brangegeei",
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
   addPolygons(
-    data = protected_areas1_clip.wgs, label = "Quercus_brangegeei",
-    fillColor = ~pa_pal(protected_areas0_clip.wgs@data$ECO_ID),
+    data = MXprotected_areas1_clip.wgs, label = "Quercus_brangegeei",
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
   addPolygons(
-    data = protected_areas2_clip.wgs, label = "Quercus_brangegeei",
-    fillColor = ~pa_pal(protected_areas0@data$ECO_ID),
+    data = MXprotected_areas2_clip.wgs, label = "Quercus_brangegeei",
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
-  ## (optional) Country or state outlines
-  ##	when you add these outlines, ecoregion labels don't pop up anymore...
-  ##	not sure yet how to have both on the map
-  addPolygons(
-    data = country_bound.wgs, label = "Quercus_brangegeei", fillColor = "transparent",
-    weight = 1.5, opacity = 0.3, color = "black") %>%
-  ## (optional) Add static labels to countries/states
-  #addLabelOnlyMarkers(
-    #data = state_centers, lng = ~x, lat = ~y, label = ~label,
-    #labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE,
-                                #style = list("font-weight"="bold","font-size"="13px","color"="black"))) %>%
+ 
   ## (optional) In situ points
   addCircleMarkers(data = insitu,
                    lng = ~decimalLongitude, lat = ~decimalLatitude,
@@ -271,7 +254,7 @@ map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
     style='width:40px;height:40px;'> Geolocated in situ occurrence points<br/>
         <img src='https://i.ibb.co/Gt6kL1Q/green-square.png' 
     style='width:40px;height:40px;'> Protected areas from Protected Planet<br/>
-    (https://www.protectedplanet.net/en)",
+        (https://www.protectedplanet.net/en)",
 		position = "bottomleft") %>%
 
 		
