@@ -173,6 +173,44 @@ PAprotected_areas2 <-readOGR(file.path(pa_dir,"Panama_PAs","WDPA_WDOECM_Jan2023_
                                        "WDPA_WDOECM_Jan2023_Public_PAN_shp-polygons.shp"))
 PAprotected_areas2_clip.wgs <- raster::intersect(PAprotected_areas2,boundary.wgs)
 
+##Protected Areas (El Salvador)
+SVprotected_areas0 <-readOGR(file.path(pa_dir,"El_Salvador_PAs","WDPA_WDOECM_Jan2023_Public_SLV_shp_0",
+                                       "WDPA_WDOECM_Jan2023_Public_SLV_shp-polygons.shp"))
+SVprotected_areas0_clip.wgs <- raster::intersect(SLVprotected_areas0,boundary.wgs)
+
+SVprotected_areas1 <-readOGR(file.path(pa_dir,"El_Salvador_PAs","WDPA_WDOECM_Jan2023_Public_SLV_shp_1",
+                                       "WDPA_WDOECM_Jan2023_Public_SLV_shp-polygons.shp"))
+SVprotected_areas1_clip.wgs <- raster::intersect(SLVprotected_areas1,boundary.wgs)
+
+SVprotected_areas2 <-readOGR(file.path(pa_dir,"El_Salvador_PAs","WDPA_WDOECM_Jan2023_Public_SLV_shp_2",
+                                       "WDPA_WDOECM_Jan2023_Public_SLV_shp-polygons.shp"))
+SVprotected_areas2_clip.wgs <- raster::intersect(SLVprotected_areas2,boundary.wgs)
+
+##Protected Areas (Honduras)
+HNprotected_areas0 <-readOGR(file.path(pa_dir,"Honduras_PAs","WDPA_WDOECM_Jan2023_Public_HND_shp_0",
+                                       "WDPA_WDOECM_Jan2023_Public_HND_shp-polygons.shp"))
+HNprotected_areas0_clip.wgs <- raster::intersect(HNprotected_areas0,boundary.wgs)
+
+HNprotected_areas1 <-readOGR(file.path(pa_dir,"Honduras_PAs","WDPA_WDOECM_Jan2023_Public_HND_shp_1",
+                                       "WDPA_WDOECM_Jan2023_Public_HND_shp-polygons.shp"))
+HNprotected_areas1_clip.wgs <- raster::intersect(HNprotected_areas1,boundary.wgs)
+
+HNprotected_areas2 <-readOGR(file.path(pa_dir,"Honduras_PAs","WDPA_WDOECM_Jan2023_Public_HND_shp_2",
+                                       "WDPA_WDOECM_Jan2023_Public_HND_shp-polygons.shp"))
+HNprotected_areas2_clip.wgs <- raster::intersect(HNprotected_areas2,boundary.wgs)
+
+##Protected Areas (Nucaragua)
+NIprotected_areas0 <-readOGR(file.path(pa_dir,"Nicaragua_PAs","WDPA_WDOECM_Jan2023_Public_NIC_shp_0",
+                                       "WDPA_WDOECM_Jan2023_Public_NIC_shp-polygons.shp"))
+NIprotected_areas0_clip.wgs <- raster::intersect(NIprotected_areas0,boundary.wgs)
+
+NIprotected_areas1 <-readOGR(file.path(pa_dir,"Nicaragua_PAs","WDPA_WDOECM_Jan2023_Public_NIC_shp_1",
+                                       "WDPA_WDOECM_Jan2023_Public_NIC_shp-polygons.shp"))
+NIprotected_areas1_clip.wgs <- raster::intersect(NIprotected_areas1,boundary.wgs)
+
+NIprotected_areas2 <-readOGR(file.path(pa_dir,"Nicaragua_PAs","WDPA_WDOECM_Jan2023_Public_NIC_shp_2",
+                                       "WDPA_WDOECM_Jan2023_Public_NIC_shp-polygons.shp"))
+NIprotected_areas2_clip.wgs <- raster::intersect(NIprotected_areas2,boundary.wgs)
 
 ## countries
 ## read in country polygons using rnaturalearth package (or can read in other shapefile
@@ -229,13 +267,13 @@ map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
              position = "topright") %>%
   ## ProtectedAreas
   addPolygons(
-    data = MXprotected_areas0_clip.wgs, label = "Quercus_brangegeei",
+    data = MXprotected_areas0_clip.wgs,
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
   addPolygons(
-    data = MXprotected_areas1_clip.wgs, label = "Quercus_brangegeei",
+    data = MXprotected_areas1_clip.wgs,
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
   addPolygons(
-    data = MXprotected_areas2_clip.wgs, label = "Quercus_brangegeei",
+    data = MXprotected_areas2_clip.wgs,
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
  
   ## (optional) In situ points
