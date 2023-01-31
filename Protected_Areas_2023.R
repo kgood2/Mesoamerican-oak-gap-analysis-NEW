@@ -1,6 +1,7 @@
 ###NEED TO WORK ON CLIPPING BOUNDARIES TO LAND
 ###NEED TO EXCLUDE EX SITU POINTS FROM DATABASE
 ### THIS IS JUST FOR Q. BRANDEGEEI, NOT ALL SPECIES
+## Emily said she clips to ecoregions in her most recent scripts? 
 
 
 ### Author: Jean Linsky  ###  Date: 04/7/2021
@@ -214,7 +215,7 @@ NIprotected_areas2_clip.wgs <- raster::intersect(NIprotected_areas2,boundary.wgs
 ## countries
 ## read in country polygons using rnaturalearth package (or can read in other shapefile
 ##		you have downloaded online)
-country_bound <- ne_states(scale = 110, type="countries")
+country_bound <- ne_countries(scale = 10, type="countries")
 #country_bound <- readOGR(file.path(poly_dir,"UIA_World_Countries_Boundaries","World_Countries__Generalized_.shp"))
 
 ## project to WGS84
