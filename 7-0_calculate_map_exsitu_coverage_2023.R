@@ -52,6 +52,8 @@ my.packages <- c(
 lapply(my.packages, require, character.only=TRUE)
 rm(my.packages)
 
+remotes::install_github('rstudio/rmarkdown')
+
 ################################################################################
 # Set working directory
 ################################################################################
@@ -242,6 +244,10 @@ taxon_list <- read.csv(file.path(main_dir, "inputs", "taxa_list",
                                  "target_taxa_with_synonyms.csv"),
                        header = T, na.strings = c("","NA"),colClasses = "character")
 head(taxon_list)
+
+## Add species here that have no occurrence points (Q. centenaria and Q. mexiae)
+no_occ <- c("Quercus centenaria","Quercus mexiae")
+taxon_list <- subset(taxon_list,!(taxon_name_acc %in% no_occ))
 
 # OPTIONAL, depending on your workflow:
 #		read in manual edits to target species maps

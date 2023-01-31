@@ -115,7 +115,7 @@ sort(unique(world_countries@data$ISO))
 target_iso <- c("US","MX","BZ","GT","HN","PA","CR","NI","SV")
 target_countries <- world_countries[world_countries@data$ISO %in% target_iso,]
 
-## create polygon for clipping buffers later, one in each projection
+## create polygon for clipping buffers later
 target_countries.wgs <- spTransform(target_countries,wgs.proj)
 boundary.wgs <- aggregate(target_countries.wgs,dissolve = TRUE)
 
@@ -214,8 +214,7 @@ NIprotected_areas2_clip.wgs <- raster::intersect(NIprotected_areas2,boundary.wgs
 ## countries
 ## read in country polygons using rnaturalearth package (or can read in other shapefile
 ##		you have downloaded online)
-
-country_bound <- ne_countries(scale = 110, type="countries")
+country_bound <- ne_states(scale = 110, type="countries")
 #country_bound <- readOGR(file.path(poly_dir,"UIA_World_Countries_Boundaries","World_Countries__Generalized_.shp"))
 
 ## project to WGS84
@@ -286,6 +285,10 @@ map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
   addPolygons(
     data = MXprotected_areas2_clip.wgs,
     fillOpacity = 0.8, color = "#038f28", weight = 1.5, opacity = 0.8) %>%
+  
+  #country boundaries 
+  addPolygons(data = country_bound.wgs,
+              fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1) %>%
  
   ## (optional) In situ points
   addCircleMarkers(data = insitu,
