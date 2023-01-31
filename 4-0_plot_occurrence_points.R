@@ -28,9 +28,10 @@
 ################################################################################
 
 rm(list=ls())
-my.packages <- c("ggplot2", "maps", "leaflet", "RColorBrewer", "dplyr")
+my.packages <- c("ggplot2", "maps", "leaflet", "RColorBrewer", "dplyr", "mapview")
 #install.packages(my.packages) #Turn on to install current versions
 lapply(my.packages, require, character.only=TRUE)
+webshot::install_phantomjs()
 rm(my.packages)
 
 ################################################################################
@@ -448,3 +449,10 @@ for(i in 1:length(spp.all)){
   
   cat("\tEnding ", spp.now, ", ", i, " of ", length(spp.all), ".\n\n", sep="")
 }
+
+## SAVE STATIC IMAGE OF LEAFLET MAP ##
+
+# save image of map (png, pdf, or jpeg)
+mapview::mapshot(coverage_map, 
+                 file = paste0(main_dir, "/outputs”, "/exsitu_coverage/", target_sp[sp], "-exsitu_coverage_static_map1.png"),
+                 remove_controls = c("zoomControl","layersControl"))
