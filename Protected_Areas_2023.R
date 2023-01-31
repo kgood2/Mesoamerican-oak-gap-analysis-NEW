@@ -1,7 +1,6 @@
 ###NEED TO WORK ON CLIPPING BOUNDARIES TO LAND
 ###NEED TO EXCLUDE EX SITU POINTS FROM DATABASE
 ### THIS IS JUST FOR Q. BRANDEGEEI, NOT ALL SPECIES
-### need to edit key
 
 
 ### Author: Jean Linsky  ###  Date: 04/7/2021
@@ -222,6 +221,19 @@ country_bound <- ne_countries(scale = 110, type="countries")
 ## project to WGS84
 country_bound.wgs <- spTransform(country_bound,wgs.proj)
 
+################################################################################
+# Choose target species
+################################################################################
+
+# read in target taxa list
+taxon_list <- read.csv(file.path(main_dir, "inputs", "taxa_list",
+                                 "target_taxa_with_synonyms.csv"),
+                       header = T, na.strings = c("","NA"),colClasses = "character")
+head(taxon_list)
+
+## Add species here that have no occurrence points (Q. centenaria and Q. mexiae)
+no_occ <- c("Quercus centenaria","Quercus mexiae")
+taxon_list <- subset(taxon_list,!(taxon_name_acc %in% no_occ))
 
 
 ################################################################################
@@ -230,31 +242,30 @@ country_bound.wgs <- spTransform(country_bound,wgs.proj)
 
 ### CREATE LIST OF TARGET SPECIES
 
-target_sp <- c("Quercus_brandegeei")
-## select species to work with now
-sp <- 1
+target_sp <- unique(taxon_list$taxon_name_acc)
 
-### READ IN AND PREP POINT DATA
+# added line to replace _ with a space in species name when searching for file
+# to read in occurrence points
+target_sp <- gsub(" ","_",target_sp)
 
-## read in wild in situ occurrence points
-insitu <- read.csv(file.path(pts_dir,paste0(target_sp[sp], "_points_removed",
-                                            ".csv")),na.strings=c("","NA"),
-                   stringsAsFactors = F)
-str(insitu)
-## change column names or remove columns as needed; need at least
-##	"decimalLatitude" and "decimalLongitude"
-#insitu <- insitu %>%
-  #dplyr::rename(decimalLatidude = Latitude, decimalLongitude = Longitude)
-  #filter(Category == "in_situ")
-## if desired, can clip points by boundary so only in target area
-## (helpful if focusing on one country/region)
-#insitu <- clip.by.boundary(insitu,wgs.proj,boundary.wgs)
-#str(insitu)
 
 
 ### CREATE MAP
 
-
+for(sp in 1:length(target_sp)){
+  
+  # print progress
+  cat("\nStarting ", target_sp[sp], "\n")
+  
+  ## read in wild in situ occurrence points
+  insitu_all <- read.csv(file.path(pts_dir,paste0(target_sp[sp], "_points_removed",
+                                              ".csv")),na.strings=c("","NA"),
+                     stringsAsFactors = F)
+  #str(insitu_all)
+  
+  ## remove ex situ points 
+  insitu = subset(insitu_all,!(database %in% "Ex_situ"))
+  
 ## map everything!
 ## can turn layers on or off, or switch them for other polygons, as desired
 map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
@@ -304,3 +315,4 @@ map
 # looks like some of these maps are too big to save? works best to view
 #		one-by-one in browser straight from R and take screenshot
 htmlwidgets::saveWidget(map, file.path(output.maps, paste0(target_sp[sp],"_leaflet_map.html")))
+}
