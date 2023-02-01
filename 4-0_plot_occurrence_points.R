@@ -449,6 +449,7 @@ for(i in 1:length(spp.all)){
   
   cat("\tEnding ", spp.now, ", ", i, " of ", length(spp.all), ".\n\n", sep="")
 }
+<<<<<<< HEAD:4-0_plot_occurrence_points.R
 
 ## SAVE STATIC IMAGE OF LEAFLET MAP ##
 
@@ -456,3 +457,5 @@ for(i in 1:length(spp.all)){
 mapview::mapshot(coverage_map, 
                  file = paste0(main_dir, "/outputs”, "/exsitu_coverage/", target_sp[sp], "-exsitu_coverage_static_map1.png"),
                  remove_controls = c("zoomControl","layersControl"))
+=======
+>>>>>>> 2cfbacffc4b009fea578c1b23059712ddaa9d780:old scripts/4-0_plot_occurrence_points.R
