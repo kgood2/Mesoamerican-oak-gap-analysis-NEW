@@ -457,5 +457,8 @@ for(i in 1:length(spp.all)){
 mapview::mapshot(coverage_map, 
                  file = paste0(main_dir, "/outputs”, "/exsitu_coverage/", target_sp[sp], "-exsitu_coverage_static_map1.png"),
                  remove_controls = c("zoomControl","layersControl"))
+<<<<<<< HEAD:4-0_plot_occurrence_points.R
 =======
 >>>>>>> 2cfbacffc4b009fea578c1b23059712ddaa9d780:old scripts/4-0_plot_occurrence_points.R
+=======
+>>>>>>> 9578164412ab2542e734836293cdeacf34844d4f:old/4-0_plot_occurrence_points.R
