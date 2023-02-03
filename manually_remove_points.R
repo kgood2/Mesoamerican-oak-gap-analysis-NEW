@@ -353,6 +353,12 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
   Quercus_insignis<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points",
                                                "Quercus_insignis.csv"), header = T, na.strings=c("","NA"),
                                      colClasses="character")
+  
+  new_Quercus_insignis = subset(Quercus_insignis,!(UID %in% c("id00013078", "id00015794", "id00013081", "id00015067", 
+                                                              "id00009744", "id00016741", "id00016729", "id00000855", 
+                                                              "id00014803", "id00008885", "id00016781", "id00008832", 
+                                                              "id00000913", "id00000853", "id00016740", "id00020563", 
+                                                              "id00019125")))
 
   write.csv(Quercus_insignis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_insignis_points_removed", ".csv")),row.names = F)
