@@ -85,6 +85,11 @@ all_spp_combined2 <- merge(all_spp_combined,taxon_list,by="taxon_name_acc")
 
 all_spp_combined3 <- all_spp_combined2[all_spp_combined2$IUCN_Category %in% c("EN","CR"),]
 
+# read in shapefile of KBAs
+KBA <- vect(file.path(main_dir,"gis_data",
+                                  "protected_areas","North_Central_America_KBA","North_Central_America_KBA.shp"))
+KBA <- sf::st_as_sf(KBA)
+
 ### cycle through all species combined file and create map
 
   
@@ -145,7 +150,10 @@ final_map <- leaflet() %>%
                            "<b>Coordinate uncertainty:</b> ",coordinateUncertaintyInMeters,"<br/>",
                            "<b>ID:</b> ",UID),
                          color = ~species.pal(taxon_name_acc),radius = 4,
-                         fillOpacity = 0.9, stroke = T)
+                         fillOpacity = 0.9, stroke = T) %>%
+        addPolygons(data = KBA,
+                     fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1)
+
         
                        final_map
                        
