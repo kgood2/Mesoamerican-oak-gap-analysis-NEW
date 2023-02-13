@@ -157,6 +157,13 @@ final_map <- leaflet() %>%
         
                        final_map
                        
+                       #save image of map (png, pdf, or jpeg)
+                       mapview::mapshot(final_map, 
+                                        file = paste0(main_dir, "/outputs", "/static_maps/", 
+                                                      "CR_and_EN_occurrence_mapp.png"),
+                                        remove_controls = c("zoomControl", "layersControl"),
+                                        zoom=3)
+                       
                        # save map
                        (htmlwidgets::saveWidget(final_map, file.path(output.maps,
                                                                         paste0("CR_and_EN_occurrence_map.html"))))
