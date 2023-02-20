@@ -75,24 +75,24 @@ file_list <- list.files(file.path(main_dir,data,standard), pattern = ".csv",
                         full.names = T)
 file_dfs <- lapply(file_list, read.csv, header = T, na.strings = c("","NA"),
                    colClasses = "character")
-length(file_dfs) #14
+length(file_dfs) #18
 
 # stack all datasets using bind_rows, which keeps non-matching columns
 #   and fills with NA; 'Reduce' iterates through list and merges with previous.
 # this may take a few minutes if you have lots of data
 all_data_raw <- Reduce(bind_rows, file_dfs)
-nrow(all_data_raw) #347009
+nrow(all_data_raw) #348015
 names(all_data_raw) #37
 table(all_data_raw$database)
 #NOTE: two files have database as Maraicela (14 files, only 13 databases)
 #Base_Quercus   BIEN    El_Salvador   Ex_situ   FIA   GBIF    GT_USCG
-#258            855     76            7522      158   16656   1683
+#258            772     76            7260      138   12492   1608
 
 #Herbario_TEFH_Honduras   iDigBio     ICUN_RedList    Maricela    NorthAm_herbaria
-#179                      4143        128704          347         192454
+#179                      4050        127759          328         191986
 
-#PMA   
-#103    
+#PMA   SAlvarez_Clare     Sula      T_Blacks_Martin   Tropicos  
+#103    36                9           71              880
 
 # add unique identifier
 nms <- names(all_data_raw)
@@ -316,8 +316,11 @@ table(geo_pts$database)
 #GT_USCG    Herbario_TEFH_Honduras  iDigBio   IUCN_RedList  Maricela
 #295              2                   2215        3611        327
 
-#NorthAm_herbaria       PMA
-#2248                   10
+#NorthAm_herbaria       PMA   SAlvarez_Clare      Sula        T_Blacks_Martin 
+#2248                   10          35            9                     71 
+
+#Tropicos
+#767
 
 rm(all_data,geo_pts_spatial,land_pts,no_geo_pts,on_land,world_buff,land_id)
 
@@ -402,8 +405,10 @@ table(geo_pts$database)
 #13                    708                    262                    138                   6880 
 #GT_USCG Herbario_TEFH_Honduras             iDigBio           IUCN_RedList               Maricela 
 #295                      2                   2215                   3611                    327 
-#NorthAm_herbaria         PMA 
-#2248                     10 
+#NorthAm_herbaria         PMA    SAlvarez_Clare                   Sula        T_Blacks_Martin 
+#2248                     10                35                      9                     71
+#Tropicos
+#767
 
 # create rounded latitude and longitude columns for removing duplicates;
 #   number of digits can be changed based on how dense you want data
@@ -444,7 +449,8 @@ unique(geo_pts$database)
 geo_pts$database <- factor(geo_pts$database,
                            levels = c("GBIF","Ex_situ","NorthAm_herbaria","iDigBio",
                                       "GT_USCG","FIA","Base_Quercus","IUCN_RedList",
-                                      "BIEN","PMA","Herbario_TEFH_Honduras","Maricela"))
+                                      "BIEN","PMA","Herbario_TEFH_Honduras","Maricela","SAlvarez_Clare",
+                                      "Sula","T_Blacks_Martin","Tropicos"))
 geo_pts <- geo_pts %>% arrange(database)
 
 # remove duplicates
@@ -498,8 +504,10 @@ table(geo_pts2$database)
 #9                     83                    262                     20                   4164 
 #GT_USCG Herbario_TEFH_Honduras       iDigBio           IUCN_RedList               Maricela 
 #84                      2              24                    847                     17 
-#NorthAm_herbaria       PMA 
-#624                      4 
+#NorthAm_herbaria       PMA    SAlvarez_Clare                   Sula        T_Blacks_Martin  
+#624                      4      16                              8                      6 
+#Tropicos
+#12
 
 rm(geo_pts)
 
@@ -534,7 +542,7 @@ write.csv(summary, file.path(main_dir,data,
 ################################################################################
 
 # split records to create one CSV for each target taxon
-sp_split <- split(geo_pts2, as.factor(geo_pts2$taxon_name_accepted))
+sp_split <- split(geo_pts2, as.factor(geo_pts2$taxon_name_acc))
 names(sp_split) <- gsub(" ","_",names(sp_split))
 names(sp_split) <- gsub("\\.","",names(sp_split))
 
