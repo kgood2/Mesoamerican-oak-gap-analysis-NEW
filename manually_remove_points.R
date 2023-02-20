@@ -51,7 +51,7 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                             "Quercus_acutifolia.csv"), header = T, na.strings=c("","NA"),
                                   colClasses="character")
 
-  new_Quercus_acutifolia = subset(Quercus_acutifolia,!(UID %in% c("id00014389", "id00008604", "id00215352")))
+  new_Quercus_acutifolia = subset(Quercus_acutifolia,!(UID %in% c("id00014389",  "id00008604", "id00215352", "id00013082")))
 
   write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_acutifolia_points_removed", ".csv")),row.names = F)
@@ -151,7 +151,7 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                         "Quercus_costaricensis.csv"), header = T, na.strings=c("","NA"),
                               colClasses="character")
 
-  new_Quercus_costaricensis = subset(Quercus_costaricensis,!(UID %in% c("id00011879", "id00000517")))
+  new_Quercus_costaricensis = subset(Quercus_costaricensis,!(UID %in% c("id00011879", "id00000517", "id00014880", "id00008739")))
 
   write.csv(new_Quercus_costaricensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_costaricensis_points_removed", ".csv")),row.names = F)
@@ -360,7 +360,7 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                               "id00000913", "id00000853", "id00016740", "id00020563", 
                                                               "id00019125")))
 
-  write.csv(Quercus_insignis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
+  write.csv(new_Quercus_insignis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_insignis_points_removed", ".csv")),row.names = F)
 
 #37
