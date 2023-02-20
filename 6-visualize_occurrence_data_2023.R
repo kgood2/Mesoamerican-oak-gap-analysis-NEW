@@ -104,17 +104,19 @@ for(i in 1:length(spp.all)){
                              levels = c("Ex_situ","GBIF","NorthAm_herbaria","iDigBio",
                                         "IUCN_RedList","FIA","BIEN",
                                         "Base_Quercus","GT_USCG","Maricela","PMA",
-                                        "Herbario_TEFH_Honduras"))
+                                        "Herbario_TEFH_Honduras", "SAlvarez_Clare", "Sula",
+                                        "T_Blacks_Martin","Tropicos"))
   spp.now <- spp.now %>% arrange(desc(database))
   # create color palette
   # https://color-hex.org/palettes/popular
   colors <- c("#adbb3f","#819756","#5fbb9a","#6a9ebd","#7b83cc","#7264de",
-                       "#3c2c7a","#e0bfb8","#c4c4c4","#ccdcf2","#3475cc","#0152bf")
+                       "#3c2c7a","#e0bfb8","#c4c4c4","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
                        database.pal <- colorFactor(palette=colors,
                                                    levels = c("Ex_situ","GBIF","NorthAm_herbaria","iDigBio",
                                                               "IUCN_RedList","FIA","BIEN",
                                                               "Base_Quercus","GT_USCG","Maricela","PMA",
-                                                              "Herbario_TEFH_Honduras"))
+                                                              "Herbario_TEFH_Honduras", "SAlvarez_Clare", "Sula",
+                                                              "T_Blacks_Martin","Tropicos"))
                        
                        ## read in species distribution model and select color for mapping
                        ## this is the old code for using SDMs from Khoury et al 2020 (PNAS):
