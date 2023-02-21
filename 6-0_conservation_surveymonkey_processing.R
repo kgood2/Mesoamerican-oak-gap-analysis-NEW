@@ -29,8 +29,8 @@
 ## SET UP YOUR WORKSPACE
 
 # set working directory
-main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Mesoamerican Oak Gap Analysis/2. Conservation"
-survey_export_file <- "Cuestionario de acciones .xlsx"
+main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/conservation"
+survey_export_file <- "Cuestionario de acciones.xlsx"
 
 # load libraries
 library("tidyverse")
@@ -83,16 +83,16 @@ as.data.frame(raw_data[,other_col_es])
   #   themselves
   # note that this might not be necessary for other surveys, depending
   #   on the format
-  # if there is any imporant information being removed, note it manually
+  # if there is any important information being removed, note it manually
   #   somewhere else
   # !! insert the column numbers you'd like to remove, based on above outputs
-raw_data <- raw_data[,-c(3870,6614,9157)]
+raw_data <- raw_data[,-c(3870,22,29,6614,9157)]
 
 # unique part of each main question asked
 select_sp <- "Seleccione todas las especies"
-Q7_match <- "Seleccione todas las actividades de conservación en las que participa su institución para cada"
-Q8_match <- "Seleccione lo que considere la actividad de conservación más urgente para cada especie"
-Q9_match <- "Seleccione lo que considere la amenaza más importante para las poblaciones"
+Q7_match <- "Seleccione todas las actividades de"
+Q8_match <- "Seleccione lo que considere la actividad de"
+Q9_match <- "Seleccione lo que considere la amenaza"
 
 # create dataframes for collecting results, one for each main question
 # QUESTION7
@@ -170,14 +170,15 @@ start <- list(
 head(start)
 
 # get the column numbers where the species are selected for each region
+# 30, 3803, 6550, 9132
 start_sp <- grep(select_sp,colnames(raw_data))
 # print the region headers so you can see what's present
 for(i in 1:length(start_sp)){
   print(substr(colnames(raw_data[0,start_sp[[i]]]),1,80))
 }
 # create a list of target regions based on the above results
-regions <- c("México y Centroamérica", "Asia", "China",
-             "Asia occidental, Europa, y África")
+regions <- c("M√©xico y Am√©rica Centra", "sudeste de Asia", "China",
+             "Asia occidental, Europa, y √Åfrica")
 
 
 
@@ -194,7 +195,7 @@ for(q in 1:length(results)){
   # FOR EACH REGION
   for(r in 1:length(regions)){
     # get the raw data for the current question and region only
-    raw_data[,start[[q]][r]:(start[[q]][r]+((start[[1]][r]-start_sp[[r]]-1)*num_fields)-1)]
+    data <- raw_data[,start[[q]][r]:(start[[q]][r]+((start[[1]][r]-start_sp[[r]]-1)*num_fields)-1)]
     # use the first row to assign column names
     colnames(data) = data[1, ]
     # leave just species name in first row (cut off rest)
