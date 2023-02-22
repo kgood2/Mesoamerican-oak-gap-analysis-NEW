@@ -35,12 +35,14 @@ survey_export_file <- "Cuestionario de acciones.xlsx"
 # load libraries
 library("tidyverse")
 library("readxl")
+library("xlsx")
 
 
 ## READ IN DATA
 
 # read in SurveyMonkey export
 raw_data <- read_excel(file.path(main_dir,survey_export_file))
+
 
 
 ## CREATE RESPONDENT INFO DATAFRAME
