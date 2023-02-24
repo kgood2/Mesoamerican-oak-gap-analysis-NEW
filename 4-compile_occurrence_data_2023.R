@@ -75,7 +75,7 @@ file_list <- list.files(file.path(main_dir,data,standard), pattern = ".csv",
                         full.names = T)
 file_dfs <- lapply(file_list, read.csv, header = T, na.strings = c("","NA"),
                    colClasses = "character")
-length(file_dfs) #18
+length(file_dfs) #19
 
 # stack all datasets using bind_rows, which keeps non-matching columns
 #   and fills with NA; 'Reduce' iterates through list and merges with previous.
@@ -84,15 +84,11 @@ all_data_raw <- Reduce(bind_rows, file_dfs)
 nrow(all_data_raw) #348015
 names(all_data_raw) #37
 table(all_data_raw$database)
-#NOTE: two files have database as Maraicela (14 files, only 13 databases)
-#Base_Quercus   BIEN    El_Salvador   Ex_situ   FIA   GBIF    GT_USCG
-#258            772     76            7260      138   12492   1608
+# BIEN               CR          Ex_situ      Expert_Comm              FIA             GBIF 
+#  772             1046             7260             2128              138            12492
 
-#Herbario_TEFH_Honduras   iDigBio     ICUN_RedList    Maricela    NorthAm_herbaria
-#179                      4050        127759          328         191986
-
-#PMA   SAlvarez_Clare     Sula      T_Blacks_Martin   Tropicos  
-#103    36                9           71              880
+# iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos 
+# 4050           127759           191986              103              179              88
 
 # add unique identifier
 nms <- names(all_data_raw)
@@ -124,7 +120,7 @@ all_data <- all_data %>% dplyr::select(-genus)
 all_data <- left_join(all_data,taxon_list)
 # join again just by species name if no taxon match
 need_match <- all_data[which(is.na(all_data$taxon_name_status)),]
-nrow(need_match) #347009
+nrow(need_match) #319145
 # remove columns from first taxon name match
 need_match <- need_match[,1:(ncol(all_data)-ncol(taxon_list)+1)]
 # rename column for matching
@@ -161,7 +157,7 @@ rm(matched,need_match,taxon_list_add,still_no_match)
 # keep only rows for target taxa
 all_data <- all_data %>% 
   filter(!is.na(taxon_name_status) & !is.na(UID))
-nrow(all_data) #2512150
+nrow(all_data) #30134
 
 ### ! target taxa with no occurrence data:
 unique(taxon_list$taxon_name_acc)[
@@ -310,17 +306,7 @@ write.csv(locality_pts, file.path(main_dir,data,
 geo_pts <- all_data %>% filter(is.na(flag))
 nrow(geo_pts) #2184049
 table(geo_pts$database)
-# Base_Quercus    BIEN    Ex_situ     FIA       GBIF 
-#  13             708       262       138       6880 
 
-#GT_USCG    Herbario_TEFH_Honduras  iDigBio   IUCN_RedList  Maricela
-#295              2                   2215        3611        327
-
-#NorthAm_herbaria       PMA   SAlvarez_Clare      Sula        T_Blacks_Martin 
-#2248                   10          35            9                     71 
-
-#Tropicos
-#767
 
 rm(all_data,geo_pts_spatial,land_pts,no_geo_pts,on_land,world_buff,land_id)
 
@@ -447,10 +433,9 @@ geo_pts <- geo_pts %>% arrange(desc(year))
 # sort by source database
 unique(geo_pts$database)
 geo_pts$database <- factor(geo_pts$database,
-                           levels = c("GBIF","Ex_situ","NorthAm_herbaria","iDigBio",
-                                      "GT_USCG","FIA","Base_Quercus","IUCN_RedList",
-                                      "BIEN","PMA","Herbario_TEFH_Honduras","Maricela","SAlvarez_Clare",
-                                      "Sula","T_Blacks_Martin","Tropicos"))
+                           levels = c("GBIF", "Ex_situ","Expert_Comm","NorthAm_herbaria","iDigBio",
+                                      "CR","FIA","IUCN_RedList","BIEN","PMA","TEFH",
+                                      "Tropicos"))
 geo_pts <- geo_pts %>% arrange(database)
 
 # remove duplicates
@@ -468,6 +453,16 @@ nrow(geo_pts2) #366757
 # add ex situ data back in
 geo_pts2 <- full_join(geo_pts2,ex_situ)
 nrow(geo_pts2) #367559
+
+# Remove points where institutionCode = EB-BUAP 
+# This was per Allen's suggestion due to issues with Taxonomy not being updated
+# filter also removes NA's, which is why you need first part of this code. 
+
+geo_pts2 <- filter(geo_pts2,is.na(institutionCode) | institutionCode != "EB-BUAP")
+
+# Remove points with Human Observation as basis of record and where no names were listed as 
+# identifyer. These were all from FB-UMSNH. This was also per Allen's suggestion
+#geo_pts2 <- geo_pts2[!(geo_pts2$institutionCode == "FB-UMSNH" & geo_pts2$basisOfRecord =="HUMAN_OBSERVATION"),]
 
 ## set header/column name order
 keep_col <- c( #data source and unique ID
@@ -500,14 +495,11 @@ geo_pts2 <- geo_pts2[,keep_col]
 head(as.data.frame(geo_pts2))
 nrow(geo_pts2) #367559
 table(geo_pts2$database)
-#Base_Quercus         BIEN                Ex_situ                    FIA                   GBIF 
-#9                     83                    262                     20                   4164 
-#GT_USCG Herbario_TEFH_Honduras       iDigBio           IUCN_RedList               Maricela 
-#84                      2              24                    847                     17 
-#NorthAm_herbaria       PMA    SAlvarez_Clare                   Sula        T_Blacks_Martin  
-#624                      4      16                              8                      6 
-#Tropicos
-#12
+#  BIEN               CR          Ex_situ      Expert_Comm              FIA             GBIF
+# 82               14              262              184               20             4164
+
+# iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos 
+# 24              847              580                2                2               12 
 
 rm(geo_pts)
 
