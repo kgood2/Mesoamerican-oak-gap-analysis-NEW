@@ -75,7 +75,7 @@ file_list <- list.files(file.path(main_dir,data,standard), pattern = ".csv",
                         full.names = T)
 file_dfs <- lapply(file_list, read.csv, header = T, na.strings = c("","NA"),
                    colClasses = "character")
-length(file_dfs) #19
+length(file_dfs) #20
 
 # stack all datasets using bind_rows, which keeps non-matching columns
 #   and fills with NA; 'Reduce' iterates through list and merges with previous.
@@ -84,8 +84,8 @@ all_data_raw <- Reduce(bind_rows, file_dfs)
 nrow(all_data_raw) #348015
 names(all_data_raw) #37
 table(all_data_raw$database)
-# BIEN               CR          Ex_situ      Expert_Comm              FIA             GBIF 
-#  772             1046             7260             2128              138            12492
+# BIEN      CONABIO         CR          Ex_situ      Expert_Comm              FIA             GBIF 
+#  772        23307       1046             7260             2128              138            12492
 
 # iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos 
 # 4050           127759           191986              103              179              88
@@ -218,7 +218,8 @@ all_data <- all_data %>%
                              "72552" = "UNKNOWN",
                              "72554" = "UNKNOWN",
                              "UNKNOWNN" = "UNKNOWN",
-                             "69980" = "UNKNOWN"))
+                             "69980" = "UNKNOWN",
+                             "Colectado" = "PRESERVED_SPECIMEN"))
 # rename to fit standard
 
 # check establishment means
@@ -317,11 +318,11 @@ rm(all_data,geo_pts_spatial,land_pts,no_geo_pts,on_land,world_buff,land_id)
 # country name to 3 letter ISO code
 # fix some issues first (can add anything that is not matched unambiguously)
 geo_pts$country <- mgsub(geo_pts$country,
-                         c("méxico", "PAN", "Bolívia","Brasil","EE. UU.","ESTADOS UNIDOS DE AMERICA",
+                         c("Panamá","méxico", "PAN", "Bolívia","Brasil","EE. UU.","ESTADOS UNIDOS DE AMERICA",
                            "México","MÉXICO","Repubblica Italiana","U. S. A.","United Statese",
                            "America","Atats-Unis","CAN","ESP","MA(C)xico","MEX",
                            "MX","PER","Unknown","Cultivated"),
-                         c("Mexico","Panama","Bolivia","Brazil","United States","United States",
+                         c("Panama","Mexico","Panama","Bolivia","Brazil","United States","United States",
                            "Mexico","Mexico","Italy","United States","United States",
                            "United States","United States","Canada","Spain","Mexico","Mexico",
                            "Mexico","Peru",NA,NA))
@@ -435,7 +436,7 @@ unique(geo_pts$database)
 geo_pts$database <- factor(geo_pts$database,
                            levels = c("GBIF", "Ex_situ","Expert_Comm","NorthAm_herbaria","iDigBio",
                                       "CR","FIA","IUCN_RedList","BIEN","PMA","TEFH",
-                                      "Tropicos"))
+                                      "Tropicos","CONABIO"))
 geo_pts <- geo_pts %>% arrange(database)
 
 # remove duplicates
@@ -462,7 +463,7 @@ geo_pts2 <- filter(geo_pts2,is.na(institutionCode) | institutionCode != "EB-BUAP
 
 # Remove points with Human Observation as basis of record and where no names were listed as 
 # identifyer. These were all from FB-UMSNH. This was also per Allen's suggestion
-#geo_pts2 <- geo_pts2[!(geo_pts2$institutionCode == "FB-UMSNH" & geo_pts2$basisOfRecord =="HUMAN_OBSERVATION"),]
+# geo_pts2 <- filter(geo_pts2,is.na(institutionCode) | is.na(basisOfRecord) | institutionCode != "FB-UMSNH" & basisOfRecord !="HUMAN_OBSERVATION")
 
 ## set header/column name order
 keep_col <- c( #data source and unique ID
