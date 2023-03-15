@@ -165,4 +165,14 @@ leaflet() %>%
                    fillColor = "red") %>%
   addCircleMarkers(data = locations_in_boundary, radius = 2,
                    fillOpacity = 0.8, color = "blue",
-                   fillColor = "blue")
+                   fillColor = "blue") %>%
+  addScaleBar(position = "bottomright",
+            options = scaleBarOptions(maxWidth = 150)) %>%
+  addControl(html = "<img src='https://i.ibb.co/WWfzSyw/square-png-25129.png'
+  		                                style='width:20px;height:20px;'> Protected areas <br/>
+  		                                <img src='https://i.ibb.co/8M5jS4r/circle-png-25316.png'
+  		                                style='width:20px;height:20px;'> Species occurence within protected area <br/>
+  		                                <img src='https://i.ibb.co/ykQSPYH/circle-icon-16060.png'
+                                      style='width:20px;height:20px;'> Species occurence outside protected area",
+          position = "bottomright") %>%
+  setView(-99, 19, zoom = 4)
