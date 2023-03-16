@@ -30,9 +30,9 @@ poly_dir <- file.path(main_dir,"gis_data")
 # species you are interested in 
 ################################################################################
 
-acutifolia <- read.csv(file.path(main_dir, "occurrence_data","standardized_occurrence_data","taxon_edited_points_removed", "Quercus_acutifolia_points_removed.csv"), 
+acherdophylla <- read.csv(file.path(main_dir, "occurrence_data","standardized_occurrence_data","taxon_edited_points_removed", "Quercus_acherdophylla_points_removed.csv"), 
                        header = T, na.strings=c("","NA"),colClasses="character") 
-acutifolia_sf <- st_as_sf(acutifolia, coords = c("decimalLongitude","decimalLatitude"),crs = 4326)
+acherdophylla_sf <- st_as_sf(acherdophylla, coords = c("decimalLongitude","decimalLatitude"),crs = 4326)
 
 #read in KBA shapefiles
 # Mexico
@@ -136,22 +136,28 @@ Nicaragua <- rnaturalearth::ne_countries(country = "Nicaragua")  %>%
   sf::st_as_sf()
 Nicaragua_cropped <- st_intersection(NI_all, Nicaragua)
 
-Belize <- rnaturalearth::ne_countries(country = "Belize")  %>%
-  sf::st_as_sf()
-Belize_cropped <- st_intersection(BLZ_all, Belize)
+#Belize <- rnaturalearth::ne_countries(country = "Belize")  %>%
+  #sf::st_as_sf()
+#Belize_cropped <- st_intersection(BLZ_all, Belize)
 
 
 
 # combine 3 shapefiles for each country into one
 Protected_areasAll <- bind_rows(Mexico_cropped, Costa_Rica_cropped, Guatemala_cropped,
                                 Panama_cropped, El_Salvador_cropped,Honduras_cropped,
-                                Nicaragua_cropped, Belize_cropped)
+                                Nicaragua_cropped) #Belize_cropped)
 
 # read in world boundaries 
 world_countries <- st_read(file.path(poly_dir,"UIA_World_Countries_Boundaries", "World_Countries__Generalized_.shp"))
 
 # Create a spatial join between the occurrence points and the KBA boundary
-locations_in_boundary <- st_intersection(acutifolia_sf, Protected_areasAll)
+locations_in_boundary <- st_intersection(acherdophylla_sf, Protected_areasAll)
+
+# count number of points inside protected areas 
+points_in_polygons <- st_join(locations_in_boundary, Protected_areasAll, join=st_within)
+points_per_polygon <- points_in_polygons %>%
+  summarize(n_points = n()) 
+points_per_polygon 
 
 ###############################################################################
 # Create the leaflet map
@@ -160,12 +166,14 @@ leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(data = world_countries, fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1) %>%
   addPolygons(data = Protected_areasAll, color = "#99cc99", fillOpacity = 1) %>%
-  addCircleMarkers(data=acutifolia_sf,radius = 2,
-                   fillOpacity = 0.8, color = "red",
-                   fillColor = "red") %>%
-  addCircleMarkers(data = locations_in_boundary, radius = 2,
-                   fillOpacity = 0.8, color = "blue",
-                   fillColor = "blue") %>%
+  addCircleMarkers(data=acherdophylla_sf,radius = 1,
+                   color = "red", 
+                   opacity = 1, 
+                   fillOpacity = 1) %>%
+  addCircleMarkers(data = locations_in_boundary, radius = 1,
+                  color = "blue", 
+                  opacity = 1,
+                  fillOpacity = 1) %>%
   addScaleBar(position = "bottomright",
             options = scaleBarOptions(maxWidth = 150)) %>%
   addControl(html = "<img src='https://i.ibb.co/WWfzSyw/square-png-25129.png'
@@ -174,5 +182,5 @@ leaflet() %>%
   		                                style='width:20px;height:20px;'> Species occurence within protected area <br/>
   		                                <img src='https://i.ibb.co/ykQSPYH/circle-icon-16060.png'
                                       style='width:20px;height:20px;'> Species occurence outside protected area",
-          position = "bottomright") %>%
+          position = "bottomleft") %>%
   setView(-99, 19, zoom = 4)
