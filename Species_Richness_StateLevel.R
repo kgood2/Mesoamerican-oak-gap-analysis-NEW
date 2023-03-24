@@ -137,6 +137,7 @@ points_sf <- st_as_sf(spp.now, coords = c("decimalLongitude","decimalLatitude"),
 
 points_new <- st_join(points_sf, Mexico_states)
 
+
 points_count <- points_new %>%
   group_by(name,taxon_name_acc) %>%
   count()
@@ -147,4 +148,18 @@ points_count
 # create a new dataframe that counts the number of unique species per state
 df_new <- points_count %>%
   group_by(name) %>%
-  summarize(n_taxon_name_acc = n_distinct(taxon_name_acc))
+  summarize(species_richness = n_distinct(taxon_name_acc))
+
+#join this new dataframe with Mexico_states file 
+new <- st_join(Mexico_states,df_new)
+
+#create color palette based on species richness
+palette <-colorNumeric(palette = "OrRd", domain = new$species_richness)
+leaflet(data = new) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~palette(species_richness), stroke = FALSE, fillOpacity = 0.5) %>%
+  addPolygons(data = Mexico_states,
+              fillOpacity = 0, color = "black", weight = 2)
+
+
+
