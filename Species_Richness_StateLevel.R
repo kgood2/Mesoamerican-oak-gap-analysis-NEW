@@ -137,8 +137,7 @@ points_sf <- st_as_sf(spp.now, coords = c("decimalLongitude","decimalLatitude"),
 
 points_new <- st_join(points_sf, Mexico_states)
 
-### THIS IS WHERE THE ISSUE HAPPENS.States that have zero species (like Sonora)
-# are dropped 
+
 points_count <- points_new %>%
   group_by(name,taxon_name_acc) %>%
   count()
@@ -156,19 +155,11 @@ df_new <- points_count %>%
 new <- st_join(Mexico_states,df_new)
 
 # create bins for color-coding species richness
-new <- new %>%
-  mutate(species_richness_class = cut(species_richness,
-                                      breaks = c(0,1,4,7,10,Inf),
-                                      labels = c("0","1-3","4-6","7-9","10+"),
-                                      include.lowest = TRUE))
-
-
-#create color palette based on species richness
-pal <- colorFactor(palette = "Greens", domain = new$species_richness_class)
-
+bins <- c(0,1,2,3,4,5,6,7,8,9)
+binpal <- colorBin("Greens", new$species_richness, bins = bins, na.color = "white")
 
 # Replace any NA values with 0
-new$species_richness_class[is.na(new$species_richness_class)] <- 0
+new$species_richness[is.na(new$species_richness)] <- 0
 
 
 
@@ -177,11 +168,11 @@ new$species_richness_class[is.na(new$species_richness_class)] <- 0
 # may be zero and those are being replaced by NA
 leaflet(data = new) %>%
   addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(fillColor = ~pal(species_richness_class), stroke = FALSE, fillOpacity = 0.8) %>%
+  addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Mexico_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
-  addLegend(pal = pal,
-            values = ~species_richness_class,
+  addLegend(pal = binpal,
+            values = ~species_richness,
             title = "Species richness",
             position = "bottomright")
 
