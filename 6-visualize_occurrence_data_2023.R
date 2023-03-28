@@ -69,12 +69,12 @@ taxon_dist <- read.csv(file.path(main_dir,"inputs","known_distribution",
 taxon_list <- left_join(taxon_list,taxon_dist)
 
 ### UPDATE THIS AS NEEDED:
-no_sdm <- c("Quercus centenaria","Quercus mexiae")
+#no_sdm <- c("Quercus centenaria","Quercus mexiae")
 # select accepted taxa and remove one that has no occurrence points
 target_taxa <- taxon_list %>%
   dplyr::filter(taxon_name_status == "Accepted"
                 # optionally, remove species with no SDM (list created manually above)
-                        & !(taxon_name_acc %in% no_sdm)
+                        #& !(taxon_name_acc %in% no_sdm)
   )
 nrow(target_taxa) #87 // 96
 spp.all <- unique(gsub(" ","_",target_taxa$taxon_name_acc))
@@ -101,22 +101,18 @@ for(i in 1:length(spp.all)){
   ## palette based on database
   # set database as factor and order appropriately
   spp.now$database <- factor(spp.now$database,
-                             levels = c("Ex_situ","GBIF","NorthAm_herbaria","iDigBio",
-                                        "IUCN_RedList","FIA","BIEN",
-                                        "Base_Quercus","GT_USCG","Maricela","PMA",
-                                        "Herbario_TEFH_Honduras", "SAlvarez_Clare", "Sula",
-                                        "T_Blacks_Martin","Tropicos"))
+                             levels = c("GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
+                                        "FIA","iDigBio","IUCN_RedList","NorthAm_herbaria","PMA",
+                                        "TEFH","Tropicos"))
   spp.now <- spp.now %>% arrange(desc(database))
   # create color palette
   # https://color-hex.org/palettes/popular
-  colors <- c("#adbb3f","#819756","#5fbb9a","#6a9ebd","#7b83cc","#7264de",
-                       "#3c2c7a","#e0bfb8","#c4c4c4","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
+  colors <- c("#adbb3f","#5fbb9a","#6a9ebd","#7b83cc",
+                       "#3c2c7a","#c4c4c4","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
                        database.pal <- colorFactor(palette=colors,
-                                                   levels = c("Ex_situ","GBIF","NorthAm_herbaria","iDigBio",
-                                                              "IUCN_RedList","FIA","BIEN",
-                                                              "Base_Quercus","GT_USCG","Maricela","PMA",
-                                                              "Herbario_TEFH_Honduras", "SAlvarez_Clare", "Sula",
-                                                              "T_Blacks_Martin","Tropicos"))
+                                                   levels = c("GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
+                                                              "FIA","iDigBio","IUCN_RedList","NorthAm_herbaria","PMA",
+                                                              "TEFH","Tropicos"))
                        
                        ## read in species distribution model and select color for mapping
                        ## this is the old code for using SDMs from Khoury et al 2020 (PNAS):
