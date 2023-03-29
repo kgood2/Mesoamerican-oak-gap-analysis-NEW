@@ -75,7 +75,7 @@ file_list <- list.files(file.path(main_dir,data,standard), pattern = ".csv",
                         full.names = T)
 file_dfs <- lapply(file_list, read.csv, header = T, na.strings = c("","NA"),
                    colClasses = "character")
-length(file_dfs) #21
+length(file_dfs) #23
 
 # stack all datasets using bind_rows, which keeps non-matching columns
 #   and fills with NA; 'Reduce' iterates through list and merges with previous.
@@ -88,7 +88,7 @@ table(all_data_raw$database)
 #  772        23320       1046             7260           10398              138            12492
 
 # iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos 
-# 4050           127759           191986              103              179              880
+# 4050           127759           192023              103              179              880
 
 # add unique identifier
 nms <- names(all_data_raw)
@@ -157,12 +157,12 @@ rm(matched,need_match,taxon_list_add,still_no_match)
 # keep only rows for target taxa
 all_data <- all_data %>% 
   filter(!is.na(taxon_name_status) & !is.na(UID))
-nrow(all_data) #32226
+nrow(all_data) #32263
 
 ### ! target taxa with no occurrence data:
 unique(taxon_list$taxon_name_acc)[
   !(unique(taxon_list$taxon_name_acc) %in% (unique(all_data$taxon_name_acc)))]
-# Quercus centenaria, Quercus mexiae
+# None!
 
 ################################################################################
 # Standardize/check some key columns
@@ -431,7 +431,7 @@ geo_pts <- geo_pts %>% arrange(desc(year))
 # sort by source database
 unique(geo_pts$database)
 geo_pts$database <- factor(geo_pts$database,
-                           levels = c("GBIF", "Ex_situ","Expert_Comm","NorthAm_herbaria","iDigBio",
+                           levels = c("NorthAm_herbaria","GBIF", "Ex_situ","Expert_Comm","iDigBio",
                                       "CR","FIA","IUCN_RedList","BIEN","PMA","TEFH",
                                       "Tropicos","CONABIO"))
 geo_pts <- geo_pts %>% arrange(database)
