@@ -104,8 +104,8 @@ for(i in 1:length(spp.all)){
   ## palette based on database
   # set database as factor and order appropriately
   spp.now$database <- factor(spp.now$database,
-                             levels = c("GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
-                                        "FIA","iDigBio","IUCN_RedList","NorthAm_herbaria","PMA",
+                             levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
+                                        "FIA","iDigBio","IUCN_RedList","PMA",
                                         "TEFH","Tropicos"))
   spp.now <- spp.now %>% arrange(desc(database))
   # create color palette
@@ -113,8 +113,8 @@ for(i in 1:length(spp.all)){
   colors <- c("#adbb3f","#5fbb9a","#6a9ebd","#7b83cc",
                        "#3c2c7a","#c4c4c4","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
                        database.pal <- colorFactor(palette=colors,
-                                                   levels = c("GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
-                                                              "FIA","iDigBio","IUCN_RedList","NorthAm_herbaria","PMA",
+                                                   levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
+                                                              "FIA","iDigBio","IUCN_RedList","PMA",
                                                               "TEFH","Tropicos"))
       
                 
@@ -143,11 +143,7 @@ for(i in 1:length(spp.all)){
         
   
         addLegend(pal = database.pal, values = unique(spp.now$database),
-                  title = "Occurrence point</br>source database", position = "bottomright", opacity = 0.8) %>%
-        addControl(
-          "See https://github.com/eb-bruns/SDBG_CWR-trees-gap-analysis
-      for information about data sources and flagging methodology.",
-      position = "bottomleft"))
+                  title = "Occurrence point</br>source database", position = "bottomright", opacity = 0.8)) 
                        final_map
                        
                        #save image of map (png, pdf, or jpeg)
