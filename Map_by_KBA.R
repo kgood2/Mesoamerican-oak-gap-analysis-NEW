@@ -72,7 +72,7 @@ points_per_polygon
 ###############################################################################
 # Create the leaflet map
 ###############################################################################
-leaflet() %>%
+m <- leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(data = world_countries, fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1) %>%
   addPolygons(data = KBA_fixed, color = "#3d8c40", opacity = 1, weight = 2) %>%
@@ -83,7 +83,8 @@ leaflet() %>%
   addCircleMarkers(data = locations_in_boundary, radius = 1,
                    color = "blue", 
                    opacity = 1,
-                   fillOpacity = 1) %>%
+                   fillOpacity = 1,
+                   ) %>%
   addScaleBar(position = "bottomright",
               options = scaleBarOptions(maxWidth = 150)) %>%
   addControl(html = "<img src='https://i.ibb.co/WWfzSyw/square-png-25129.png'
@@ -94,3 +95,27 @@ leaflet() %>%
                                       style='width:20px;height:20px;'> Species occurence outside KBA",
              position = "bottomleft") %>%
   setView(-99, 19, zoom = 4)
+
+coords <-st_coordinates(locations_in_boundary)
+locations_in_boundary$SitLong <- as.numeric(locations_in_boundary$SitLong)
+locations_in_boundary$SitLat <- as.numeric(locations_in_boundary$SitLat)
+
+intersect <- st_intersection(locations_in_boundary, KBA_fixed)
+labels <- intersect[!is.na(intersect$NatName),]
+labels <- data.frame(lat = locations_in_boundary$SitLat,
+                     lng = locations_in_boundary$SitLong,
+                     label = locations_in_boundary$NatName)
+
+m <- m %>% addLabelOnlyMarkers(
+  data = labels,
+  label = ~label,
+  labelOptions = labelOptions(
+    noHide = TRUE,
+    textOnly = FALSE,
+    direction = "auto"
+  )
+) %>%
+  addMinicharts(
+    type = "arrow",
+    color = "black"
+  )
