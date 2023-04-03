@@ -25,12 +25,12 @@ taxon_dist <- read.csv(file.path(main_dir,"inputs","known_distribution",
 taxon_list <- left_join(taxon_list,taxon_dist)
 
 ### UPDATE THIS AS NEEDED:
-no_sdm <- c("Quercus centenaria","Quercus mexiae")
+#no_sdm <- c("Quercus centenaria","Quercus mexiae")
 # select accepted taxa and remove one that has no occurrence points
 target_taxa <- taxon_list %>%
   dplyr::filter(taxon_name_status == "Accepted"
                 # optionally, remove species with no SDM (list created manually above)
-                & !(taxon_name_acc %in% no_sdm)
+                #& !(taxon_name_acc %in% no_sdm)
   )
 nrow(target_taxa) #87 // 96
 spp.all <- unique(gsub(" ","_",target_taxa$taxon_name_acc))
@@ -56,82 +56,23 @@ all_spp_combined2 <- merge(all_spp_combined,taxon_list,by="taxon_name_acc")
 
 all_spp_combined3 <- all_spp_combined2[all_spp_combined2$IUCN_Category %in% c("EN","CR","VU"),]
 
-
-#read in country shapefile with states
-Mexico_states <- rnaturalearth::ne_states(country="Mexico") %>%
-  sf::st_as_sf()
-
-### cycle through all species combined file and create map
-
-
-# read in records
 spp.now <- all_spp_combined3
 
+#change latitude and longitude to numeric values
 spp.now$decimalLatitude <- as.numeric(spp.now$decimalLatitude)
 spp.now$decimalLongitude <- as.numeric(spp.now$decimalLongitude)
 
-## palette based on species 
-# set species name as factor and order appropriately
-spp.now$taxon_name_acc <- factor(spp.now$taxon_name_acc,
-                                 levels = c("Quercus graciliformis", "Quercus hinckleyi", "Quercus mulleri", 
-                                            "Quercus brandegeei", "Quercus carmenensis", "Quercus cualensis", 
-                                            "Quercus cupreata", "Quercus delgadoana", "Quercus devia", 
-                                            "Quercus diversifolia", "Quercus dumosa", "Quercus engelmannii", 
-                                            "Quercus flocculenta", "Quercus galeanensis", "Quercus hintonii", 
-                                            "Quercus hirtifolia", "Quercus insignis", "Quercus macdougallii", 
-                                            "Quercus miquihuanensis", "Quercus nixoniana", "Quercus radiata", 
-                                            "Quercus runcinatifolia", "Quercus tomentella"))
-
-spp.now <- spp.now %>% arrange(desc(taxon_name_acc))
-
-# create color palette
-# https://color-hex.org/palettes/popular
-
-colors <- c("#adbb3f","#819756","#5fbb9a","#6a9ebd","#7b83cc","#7264de",
-                     "#3c2c7a","#e0bfb8","#c4c4c4","#ccdcf2","#3475cc","#0152bf",
-                     "#FFA500","#CC8400","#8E5C00", "#E0B566", "#FFC04D",
-                     "#FFCCCC","#ff9999","#ff4c4c","#ff0000",
-                     "#deedd8","#bedbb1")
-                     species.pal <- colorFactor(palette=colors,
-                                                levels = c("Quercus graciliformis", "Quercus hinckleyi", "Quercus mulleri", 
-                                                           "Quercus brandegeei", "Quercus carmenensis", "Quercus cualensis", 
-                                                           "Quercus cupreata", "Quercus delgadoana", "Quercus devia", 
-                                                           "Quercus diversifolia", "Quercus dumosa", "Quercus engelmannii", 
-                                                           "Quercus flocculenta", "Quercus galeanensis", "Quercus hintonii", 
-                                                           "Quercus hirtifolia", "Quercus insignis", "Quercus macdougallii", 
-                                                           "Quercus miquihuanensis", "Quercus nixoniana", "Quercus radiata", 
-                                                           "Quercus runcinatifolia", "Quercus tomentella"))
-
-
-                     final_map <- leaflet() %>%
-                       # Base layer groups
-                       #addProviderTiles(providers$CartoDB.PositronNoLabels,
-                       #  group = "CartoDB.PositronNoLabels") %>%
-                       addProviderTiles(providers$CartoDB.Positron,
-                                        group = "CartoDB.Positron") %>%
-                       addCircleMarkers(data = spp.now, ~decimalLongitude, ~decimalLatitude,
-                                        popup = ~paste0(
-                                          "<b>Accepted species name:</b> ",taxon_name_acc,"<br/>",
-                                          "<b>IUCN category:</b> ",IUCN_Category,"<br/>",
-                                          "<b>Source database:</b> ",database,"<br/>",
-                                          "<b>All databases with duplicate record:</b> ",all_source_databases,"<br/>",
-                                          "<b>Year:</b> ",year,"<br/>",
-                                          "<b>Basis of record:</b> ",basisOfRecord,"<br/>",
-                                          "<b>Dataset name:</b> ",datasetName,"<br/>",
-                                          "<b>Establishment means:</b> ",establishmentMeans,"<br/>",
-                                          "<b>Coordinate uncertainty:</b> ",coordinateUncertaintyInMeters,"<br/>",
-                                          "<b>ID:</b> ",UID),
-                                        color = ~species.pal(taxon_name_acc),radius = 4,
-                                        fillOpacity = 0.9, stroke = T) %>%
-                       addPolygons(data = Mexico_states,
-                                   fillOpacity = 0, color = "black", weight = 2)
-                     
-                     
-                     final_map                     
-                     
 
 # The script below creates a table grouped by state name and species name. You can use 
 # the table to determine the number of unique species per state
+                     
+###############################################################################
+# Mexico
+################################################################################
+#read in country shapefile with states
+Mexico_states <- rnaturalearth::ne_states(country="Mexico") %>%
+              sf::st_as_sf()                     
+
                      
 points_sf <- st_as_sf(spp.now, coords = c("decimalLongitude","decimalLatitude"),crs = 4326)
 
@@ -151,12 +92,15 @@ df_new <- points_count %>%
   group_by(name) %>%
   summarize(species_richness = n_distinct(taxon_name_acc))
 
+df_new
+
 #join this new dataframe with Mexico_states file 
 new <- st_join(Mexico_states,df_new)
 
 # create bins for color-coding species richness
-bins <- c(0,1,3,5,7,9)
-binpal <- colorBin("Greens", new$species_richness, bins = bins, na.color = "white")
+bins <- c(0,1,4,7,10,Inf)
+label <- c("0","1-3","4-6","7-9","10+")
+binpal <- colorBin(c("#e5e5e5","#b2d8b2","#66b266","#008000","#004c00"), new$species_richness, bins = bins, na.color = "white")
 
 # Replace any NA values with 0
 new$species_richness[is.na(new$species_richness)] <- 0
@@ -171,9 +115,10 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Mexico_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
-  addLegend(pal = binpal,
-            values = ~species_richness,
+  addLegend(values = ~species_richness,
+            colors = c("#e5e5e5","#b2d8b2","#66b266","#008000","#004c00"),
             title = "Species richness",
+            labels = c("0","1-3","4-6","7-9","10+"),
             position = "bottomright")
 
 ###############################################################################
@@ -206,13 +151,15 @@ df_new <- points_count %>%
   group_by(name) %>%
   summarize(species_richness = n_distinct(taxon_name_acc))
 
+df_new
+
 #join this new dataframe with Mexico_states file 
 new <- st_join(Guatemala_states,df_new)
 
 # create bins for color-coding species richness
-bins <- c(0,1,2,3)
-label <- c("0","1","2","3+")
-binpal <- colorBin(c("#b2d8b2","#66b266","#004c00"), new$species_richness, bins = bins, na.color = "white")
+bins <- c(0,1,2,3,4,5)
+label <- c("0","1","2","3","4")
+binpal <- colorBin(c("#e5e5e5","#b2d8b2","#66b266","#008000","#004c00"), new$species_richness, bins = bins, na.color = "white")
 
 # Replace any NA values with 0
 new$species_richness[is.na(new$species_richness)] <- 0
@@ -227,10 +174,10 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Guatemala_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
-  addLegend(pal = binpal,
-            values = ~species_richness,
+  addLegend(values = ~species_richness,
+            colors = c("#e5e5e5","#b2d8b2","#66b266","#008000","#004c00"),
             title = "Species richness",
-            labels = c("0","1","2","3+"),
+            labels = c("0","1","2","3","4"),
             position = "bottomright")
 
 ###############################################################################
@@ -268,12 +215,12 @@ new <- st_join(Honduras_states,df_new)
 
 # create bins for color-coding species richness
 bins <- c(0,1,2,3)
-binpal <- colorBin(c("blue","red","green","yellow"), new$species_richness, bins = bins, na.color = "white")
+label <- c("0","1","2")
+binpal <- colorBin(c("#e5e5e5","#66b266","#004c00"), new$species_richness, bins = bins, na.color = "white")
+
 
 # Replace any NA values with 0
 new$species_richness[is.na(new$species_richness)] <- 0
-
-
 
 #Map it
 #Need to figure out why gray states (Sonora etc. are coming up as NA) Looks like there
@@ -283,8 +230,297 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Honduras_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
-  addLegend(pal = binpal,
-            values = ~species_richness,
+  addLegend(values = ~species_richness,
+            colors = c("#e5e5e5","#66b266","#004c00"),
             title = "Species richness",
-            position = "bottomright") 
+            labels = c("0","1","2"),
+            position = "bottomright")
 
+###############################################################################
+# Costa Rica
+###############################################################################
+
+#read in country shapefile with states
+
+CR_states <- rnaturalearth::ne_states(country="Costa Rica") %>%
+  sf::st_as_sf()
+
+# The script below creates a table grouped by state name and species name. You can use 
+# the table to determine the number of unique species per state
+
+points_sf <- st_as_sf(spp.now, coords = c("decimalLongitude","decimalLatitude"),crs = 4326)
+
+points_new <- st_join(points_sf, CR_states)
+
+
+points_count <- points_new %>%
+  group_by(name,taxon_name_acc) %>%
+  count()
+
+
+points_count
+
+
+# create a new dataframe that counts the number of unique species per state
+df_new <- points_count %>%
+  group_by(name) %>%
+  summarize(species_richness = n_distinct(taxon_name_acc))
+
+df_new
+
+#join this new dataframe with Mexico_states file 
+new <- st_join(CR_states,df_new)
+
+# create bins for color-coding species richness
+bins <- c(0,1,2,3,4)
+label <- c("0","1","2","3")
+binpal <- colorBin(c("#e5e5e5","#b2d8b2","#66b266","#004c00"), new$species_richness, bins = bins, na.color = "white")
+
+
+# Replace any NA values with 0
+new$species_richness[is.na(new$species_richness)] <- 0
+
+#Map it
+#Need to figure out why gray states (Sonora etc. are coming up as NA) Looks like there
+# may be zero and those are being replaced by NA
+leaflet(data = new) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
+  addPolygons(data = CR_states,
+              fillOpacity = 0, color = "black", weight = 2) %>%
+  addLegend(values = ~species_richness,
+            colors = c("#e5e5e5","#b2d8b2","#66b266","#004c00"),
+            title = "Species richness",
+            labels = c("0","1","2","3"),
+            position = "bottomright")
+
+###############################################################################
+#El Salvador
+###############################################################################
+
+#read in country shapefile with states
+
+ES_states <- rnaturalearth::ne_states(country="El Salvador") %>%
+  sf::st_as_sf()
+
+# The script below creates a table grouped by state name and species name. You can use 
+# the table to determine the number of unique species per state
+
+points_sf <- st_as_sf(spp.now, coords = c("decimalLongitude","decimalLatitude"),crs = 4326)
+
+points_new <- st_join(points_sf, ES_states)
+
+
+points_count <- points_new %>%
+  group_by(name,taxon_name_acc) %>%
+  count()
+
+
+points_count
+
+
+# create a new dataframe that counts the number of unique species per state
+df_new <- points_count %>%
+  group_by(name) %>%
+  summarize(species_richness = n_distinct(taxon_name_acc))
+
+df_new
+
+#join this new dataframe with Mexico_states file 
+new <- st_join(ES_states,df_new)
+
+# create bins for color-coding species richness
+bins <- c(0,1,2,3)
+label <- c("0","1","2")
+binpal <- colorBin(c("#e5e5e5","#b2d8b2","#66b266"), new$species_richness, bins = bins, na.color = "white")
+
+
+# Replace any NA values with 0
+new$species_richness[is.na(new$species_richness)] <- 0
+
+#Map it
+#Need to figure out why gray states (Sonora etc. are coming up as NA) Looks like there
+# may be zero and those are being replaced by NA
+leaflet(data = new) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
+  addPolygons(data = ES_states,
+              fillOpacity = 0, color = "black", weight = 2) %>%
+  addLegend(values = ~species_richness,
+            colors = c("#e5e5e5","#b2d8b2","#66b266"),
+            title = "Species richness",
+            labels = c("0","1","2"),
+            position = "bottomright")
+
+###############################################################################
+# Nicaragua 
+###############################################################################
+
+#read in country shapefile with states
+
+Nicaragua_states <- rnaturalearth::ne_states(country="Nicaragua") %>%
+  sf::st_as_sf()
+
+# The script below creates a table grouped by state name and species name. You can use 
+# the table to determine the number of unique species per state
+
+points_sf <- st_as_sf(spp.now, coords = c("decimalLongitude","decimalLatitude"),crs = 4326)
+
+points_new <- st_join(points_sf, Nicaragua_states)
+
+
+points_count <- points_new %>%
+  group_by(name,taxon_name_acc) %>%
+  count()
+
+
+points_count
+
+
+# create a new dataframe that counts the number of unique species per state
+df_new <- points_count %>%
+  group_by(name) %>%
+  summarize(species_richness = n_distinct(taxon_name_acc))
+
+df_new
+
+#join this new dataframe with Mexico_states file 
+new <- st_join(Nicaragua_states,df_new)
+
+# create bins for color-coding species richness
+bins <- c(0,1,2)
+label <- c("0","1")
+binpal <- colorBin(c("#e5e5e5","#b2d8b2"), new$species_richness, bins = bins, na.color = "white")
+
+
+# Replace any NA values with 0
+new$species_richness[is.na(new$species_richness)] <- 0
+
+#Map it
+#Need to figure out why gray states (Sonora etc. are coming up as NA) Looks like there
+# may be zero and those are being replaced by NA
+leaflet(data = new) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
+  addPolygons(data = Nicaragua_states,
+              fillOpacity = 0, color = "black", weight = 2) %>%
+  addLegend(values = ~species_richness,
+            colors = c("#e5e5e5","#b2d8b2"),
+            title = "Species richness",
+            labels = c("0","1"),
+            position = "bottomright")
+
+###############################################################################
+#Panama
+###############################################################################
+
+#read in country shapefile with states
+
+Panama_states <- rnaturalearth::ne_states(country="Panama") %>%
+  sf::st_as_sf()
+
+# The script below creates a table grouped by state name and species name. You can use 
+# the table to determine the number of unique species per state
+
+points_sf <- st_as_sf(spp.now, coords = c("decimalLongitude","decimalLatitude"),crs = 4326)
+
+points_new <- st_join(points_sf, Panama_states)
+
+
+points_count <- points_new %>%
+  group_by(name,taxon_name_acc) %>%
+  count()
+
+
+points_count
+
+
+# create a new dataframe that counts the number of unique species per state
+df_new <- points_count %>%
+  group_by(name) %>%
+  summarize(species_richness = n_distinct(taxon_name_acc))
+
+df_new
+
+#join this new dataframe with Mexico_states file 
+new <- st_join(Panama_states,df_new)
+
+# create bins for color-coding species richness
+bins <- c(0,1,2,3,4)
+label <- c("0","1","2","3")
+binpal <- colorBin(c("#e5e5e5","#b2d8b2","#66b266","#004c00"), new$species_richness, bins = bins, na.color = "white")
+
+
+# Replace any NA values with 0
+new$species_richness[is.na(new$species_richness)] <- 0
+
+#Map it
+#Need to figure out why gray states (Sonora etc. are coming up as NA) Looks like there
+# may be zero and those are being replaced by NA
+leaflet(data = new) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
+  addPolygons(data = Panama_states,
+              fillOpacity = 0, color = "black", weight = 2) %>%
+  addLegend(values = ~species_richness,
+            colors = c("#e5e5e5","#b2d8b2","#66b266","#004c00"),
+            title = "Species richness",
+            labels = c("0","1","2","3"),
+            position = "bottomright")
+
+###############################################################################
+# Belize
+###############################################################################
+#read in country shapefile with states
+
+Belize_states <- rnaturalearth::ne_states(country="Belize") %>%
+  sf::st_as_sf()
+
+# The script below creates a table grouped by state name and species name. You can use 
+# the table to determine the number of unique species per state
+
+points_sf <- st_as_sf(spp.now, coords = c("decimalLongitude","decimalLatitude"),crs = 4326)
+
+points_new <- st_join(points_sf, Belize_states)
+
+
+points_count <- points_new %>%
+  group_by(name,taxon_name_acc) %>%
+  count()
+
+
+points_count
+
+
+# create a new dataframe that counts the number of unique species per state
+df_new <- points_count %>%
+  group_by(name) %>%
+  summarize(species_richness = n_distinct(taxon_name_acc))
+
+df_new
+
+#join this new dataframe with Mexico_states file 
+new <- st_join(Belize_states,df_new)
+
+# create bins for color-coding species richness
+bins <- c(0,1,2,3,4)
+label <- c("0","1","2")
+binpal <- colorBin(c("#e5e5e5","#b2d8b2","#66b266"), new$species_richness, bins = bins, na.color = "white")
+
+
+# Replace any NA values with 0
+new$species_richness[is.na(new$species_richness)] <- 0
+
+#Map it
+#Need to figure out why gray states (Sonora etc. are coming up as NA) Looks like there
+# may be zero and those are being replaced by NA
+leaflet(data = new) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
+  addPolygons(data = Belize_states,
+              fillOpacity = 0, color = "black", weight = 2) %>%
+  addLegend(values = ~species_richness,
+            colors = c("#e5e5e5","#b2d8b2","#66b266"),
+            title = "Species richness",
+            labels = c("0","1","2"),
+            position = "bottomright")
