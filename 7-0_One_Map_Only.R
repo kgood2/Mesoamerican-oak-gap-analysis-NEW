@@ -245,38 +245,12 @@ taxon_list <- read.csv(file.path(main_dir, "inputs", "taxa_list",
                        header = T, na.strings = c("","NA"),colClasses = "character")
 head(taxon_list)
 
-## Add species here that have no occurrence points (Q. centenaria and Q. mexiae)
-no_occ <- c("Quercus centenaria","Quercus mexiae")
+## Add species here that have no occurrence points (Q. centenaria and Q. mexiae) and skipping
+## Q. gulielmi-treleasei for now. Is throwing an error. 
+no_occ <- c("Quercus centenaria","Quercus mexiae","Quercus gulielmi-treleasei")
 taxon_list <- subset(taxon_list,!(taxon_name_acc %in% no_occ))
 
-# OPTIONAL, depending on your workflow:
-#		read in manual edits to target species maps
-# pt_edits <- read.csv(file.path(main_dir, "inputs", "known_distribution",
-# "manual_point_edits.csv"),
-# header = T, na.strings = c("","NA"),colClasses = "character")
-# head(pt_edits)
 
-# select target species by...
-
-# ...OPTION 1 - select threatened (CR, EN, VU) and Near Threatened species
-#target_sp <- taxon_list %>% filter(rl_category == "CR" | rl_category == "EN" |
-#																	 rl_category == "VU" | rl_category == "NT")
-#target_sp <- unique(target_sp$species_name_acc)
-
-# ...OPTION 2 - randomly select some Least Concern species
-#lc <- taxon_list %>% filter(is.na(map_flag) & list == "desiderata")
-#lc_sp <- lc[sample(nrow(lc), 29), ]
-#lc_sp <- lc_sp$species_name_acc
-#sort(lc_sp)
-
-# ...OPTION 3 - manually select target species
-# target_sp <- "Quercus_acutifolia" 
-#"Quercus_carmenensis",
-#"Quercus_cupreata","Quercus_delgadoana","Quercus_dumosa","Quercus_furfuracea","Quercus_gulielmi-treleasei",
-#"Quercus_hinckleyi","Quercus_hintonii","Quercus_hintoniorum","Quercus_hirtifolia","Quercus_insignis","Quercus_meavei",
-#"Quercus_tomentella","Quercus_vicentensis"
-
-# ...OPTION 4 - use all the species in your list!
 target_sp <- unique(taxon_list$taxon_name_acc)
 
 # added line to replace _ with a space in species name when searching for file
@@ -370,60 +344,6 @@ for(sp in 1:length(target_sp)){
   spp.rl.dist <- native_dist[which(
     native_dist$taxon_name_acc == gsub("_"," ",target_sp[sp])),]
   insitu <- insitu_raw
-  ## filter as desired
-  #insitu <- insitu_raw %>%
-  #filter(database == "Ex_situ" |
-  # select or deselect these filters as desired:
-  #(.cen & .inst & .con & #.outl &
-  #.urb & .yr1950 & .yr1980 & .yrna &
-  #(.gtsnative | is.na(.gtsnative)) &
-  #(.rlnative  | is.na(.rlnative)) &
-  #(.rlintroduced | is.na(.rlintroduced)) &
-  #basisOfRecord != "FOSSIL_SPECIMEN" & basisOfRecord != "LIVING_SPECIMEN" &
-  #establishmentMeans != "INTRODUCED" & establishmentMeans != "MANAGED" &
-  #establishmentMeans != "INVASIVE"))
-  #if(!is.na(spp.rl.dist$rl_native_dist)){
-  #insitu <- insitu %>%
-  #filter(.rlnative | is.na(.rlnative))
-  #dist_filter_val <- "RL"
-  #} else if(!is.na(spp.rl.dist$gts_native_dist)){
-  #insitu <- insitu %>%
-  #filter(.gtsnative | is.na(.gtsnative))
-  #dist_filter_val <- "GTS"
-  #} else {
-  #dist_filter_val <- "N/A"
-  #}
-  #nrow(insitu)
-  
-  ## check document with manual point edits to see if anything needs to be
-  #   added back or removed
-  #if(exists("pt_edits")){
-  #manual.edit <- pt_edits[which(
-  #pt_edits$species_name_acc == gsub("_"," ",target_sp[sp])),]
-  # bounding box
-  #if(!is.na(manual.edit$bounding_box)){
-  #bounds <- unlist(strsplit(manual.edit$bounding_box,"; "))
-  #for(i in 1:length(bounds)){
-  #within <- unlist(strsplit(bounds[i],", "))
-  #insitu <- insitu %>%
-  #filter(!(decimalLongitude > as.numeric(within[1]) &
-  #decimalLongitude < as.numeric(within[3]) &
-  #decimalLatitude > as.numeric(within[2]) &
-  #decimalLatitude < as.numeric(within[4])))
-  #}
-  #}; nrow(insitu)
-  # remove
-  #if(!is.na(manual.edit$remove)){
-  #remove <- unlist(strsplit(manual.edit$remove,"; "))
-  #insitu <- insitu %>% filter(!(UID %in% remove))
-  #}; nrow(insitu)
-  # add back
-  #if(!is.na(manual.edit$keep)){
-  #keep <- unlist(strsplit(manual.edit$keep,"; "))
-  #add <- insitu_raw %>% filter(UID %in% keep)
-  #insitu <- suppressMessages(full_join(insitu,add))
-  #}; nrow(insitu)
-  #}
   
   ### CALCULATE EOO (convex hull)
   
@@ -550,10 +470,10 @@ for(sp in 1:length(target_sp)){
                                       addControl(
                                       html = "<img src='https://i.ibb.co/j855sx6/black-circle.png'
   		                                style='width:40px;height:40px;'> Species' estimated native distribution<br/>
-  		                                (20 km buffer around in situ occurrence points)<br/>
+  		                                (50 km buffer around in situ occurrence points)<br/>
   		                                <img src='https://i.ibb.co/bs97gRF/Pngtree-lake-blue-circle-clipart-5553164.png'
   		                                style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
-  		                                (20 km buffer around wild provenance localities)",
+  		                                (50 km buffer around wild provenance localities)",
   		                                position = "bottomleft") %>%
                                                               
                                       ## Set view (long and lat) and zoom level, for when map initially opens
@@ -681,8 +601,8 @@ for(sp in 1:length(target_sp)){
       ## This map has both in situ and ex situ points
                                                             
     eco_pal_colors <- createPalette(length(unique(eco_sel$ECO_ID)),
-                                    seedcolors = c("#ba3c3c","#ba7d3c","#baab3c","#3ca7ba","#3c6aba","#573cba",
-                                                            "#943cba","#ba3ca1","#ba3c55"),range = c(5,42), target = "normal", M=50000)
+                                    seedcolors = c("#d58a8a","#d5b18a","#dcd59d","#b1dbe3","#b1c3e3","#bbb1e3",
+                                                            "#d4b1e3","#dc9dd0","#f8ebee"),range = c(5,42), target = "normal", M=50000)
                                                             swatch(eco_pal_colors)
                                                             eco_pal_colors <- as.vector(eco_pal_colors)
                                                             eco_pal <- colorFactor(eco_pal_colors,eco_sel$ECO_ID)
@@ -704,22 +624,22 @@ for(sp in 1:length(target_sp)){
                     fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1) %>%
         ## in situ buffers
         addPolygons(data = insitu_buff,
-                    smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#1c1c1b",
+                    smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#e8f4f8",
                     fillOpacity = 0.3) %>%
         ## ex situ buffers
         addPolygons(data = exsitu_buff,
-                    smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#b0f6f7",
+                    smoothFactor = 0.5,	weight = 1, opacity = 1, color = "#1c1c1b",
                     fillOpacity = 0.3) %>%
         ## in situ points
         addCircleMarkers(data = insitu,
                          lng = ~decimalLongitude, lat = ~decimalLatitude,
                          #popup = ~paste("Source(s):", all_source_databases, UID),
-                         radius = 3, fillOpacity = 1, stroke = F, color = "#1c1c1b") %>%
+                         radius = 3, fillOpacity = 1, stroke = F, color = "#e8f4f8") %>%
         ## ex situ points
         addCircleMarkers(data = exsitu,
                          lng = ~decimalLongitude, lat = ~decimalLatitude,
                          #popup = ~paste("Garden:", datasetName, UID),
-                         radius = 3, fillOpacity = 1, stroke = F, color = "#b0f6f7") %>%
+                         radius = 3, fillOpacity = 1, stroke = F, color = "#1c1c1b") %>%
           
         ## add scale bar
           addScaleBar(position = "bottomright",
@@ -731,10 +651,10 @@ for(sp in 1:length(target_sp)){
         addControl(
           html = "<img src='https://i.ibb.co/j855sx6/black-circle.png'
   		                                style='width:40px;height:40px;'> Species' estimated native distribution<br/>
-  		                                (20 km buffer around in situ occurrence points)<br/>
+  		                                (50 km buffer around in situ occurrence points)<br/>
   		                                <img src='https://i.ibb.co/bs97gRF/Pngtree-lake-blue-circle-clipart-5553164.png'
   		                                style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
-  		                                (20 km buffer around wild provenance localities)",
+  		                                (50 km buffer around wild provenance localities)",
           position = "bottomleft") %>%
     
         ## Set view (long and lat) and zoom level, for when map initially opens
