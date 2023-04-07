@@ -1,7 +1,7 @@
 # script to map species distribution in relation to Protected Areas. Occurrence points
 # that occur within Protected Areas are highlighted blue and occurrence points that occur outside 
 # Protected Areas are highlighted green. 
-
+# This script may need to be modified to exclude ex situ - ask Emily 
 # Inputs: taxo_edited_points_removed csv
 # KBA shapefile 
 
@@ -136,6 +136,8 @@ Nicaragua <- rnaturalearth::ne_countries(country = "Nicaragua")  %>%
   sf::st_as_sf()
 Nicaragua_cropped <- st_intersection(NI_all, Nicaragua)
 
+
+#need to figure out why Belize isn't working now. It used to. 
 #Belize <- rnaturalearth::ne_countries(country = "Belize")  %>%
   #sf::st_as_sf()
 #Belize_cropped <- st_intersection(BLZ_all, Belize)
@@ -159,6 +161,10 @@ points_per_polygon <- points_in_polygons %>%
   summarize(n_points = n()) 
 points_per_polygon 
 
+# create a 5 km buffer around points 
+buff_points <- Gbuffer(xy = acherdophylla_sf, dist_m=5000)
+
+
 ###############################################################################
 # Create the leaflet map
 ###############################################################################
@@ -174,6 +180,8 @@ leaflet() %>%
                   color = "blue", 
                   opacity = 1,
                   fillOpacity = 1) %>%
+  addPolygons(data = buff_points,
+              smoothFactor = 0.5,	weight = 2, fillOpacity = 0, color = "gray") %>%
   addScaleBar(position = "bottomright",
             options = scaleBarOptions(maxWidth = 150)) %>%
   addControl(html = "<img src='https://i.ibb.co/WWfzSyw/square-png-25129.png'
