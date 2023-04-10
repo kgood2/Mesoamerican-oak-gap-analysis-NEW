@@ -111,7 +111,7 @@ for(i in 1:length(spp.all)){
   # create color palette
   # https://color-hex.org/palettes/popular
   colors <- c("#adbb3f","#5fbb9a","#6a9ebd","#7b83cc",
-                       "#3c2c7a","#c4c4c4","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
+                       "#3c2c7a","green","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
                        database.pal <- colorFactor(palette=colors,
                                                    levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
                                                               "FIA","iDigBio","IUCN_RedList","PMA",
@@ -137,6 +137,7 @@ for(i in 1:length(spp.all)){
                            "<b>Establishment means:</b> ",establishmentMeans,"<br/>",
                            "<b>Coordinate uncertainty:</b> ",coordinateUncertaintyInMeters,"<br/>",
                            "<b>References:</b> ",references,"<br/>",
+                           "<b>Native Database ID:</b> ",nativeDatabaseID,"<br/>",
                            "<b>ID:</b> ",UID),
                          color = ~database.pal(database),radius = 4,
                          fillOpacity = 0.9, stroke = T) %>%
