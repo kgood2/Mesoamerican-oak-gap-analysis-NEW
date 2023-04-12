@@ -218,10 +218,10 @@ target_countries <- c("united states of america","mexico","belize","guatemala",
 
 # get outside icons used in maps
 # triangle markers for ex situ point data
-#triangle_black <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
-                        #iconWidth = 8, iconHeight = 8)
-#triangle_white <- makeIcon(iconUrl = "https://i.ibb.co/jyBBBdg/pngaaa-com-1992709.png",
-                        #iconWidth = 15, iconHeight = 15)
+triangle_black <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
+                        iconWidth = 7, iconHeight = 7)
+triangle_white <- makeIcon(iconUrl = "https://i.ibb.co/jyBBBdg/pngaaa-com-1992709.png",
+                        iconWidth = 7, iconHeight = 7)
 
 # cutoffs used for groupping exsitu data by number of individuals, for mapping
 #   three categories will be used:
@@ -451,10 +451,9 @@ for(sp in 1:length(target_sp)){
                                                   color = "black",fillOpacity = 0.3) %>%
                                                               
                                     ## in situ points
-                                    addCircleMarkers(data = insitu,
-                                        lng = ~decimalLongitude, lat = ~decimalLatitude,
-                                        #popup = ~paste("Source(s):", all_source_databases, UID),
-                                        radius = 3, fillOpacity = 1, stroke = F, color = "#e8f4f8") %>%
+                                      addMarkers(data = insitu,
+                                                 lng = ~decimalLongitude, lat = ~decimalLatitude,
+                                                 icon = triangle_white ) %>%
                                                               
                                       ## add scale bar
                                       addScaleBar(position = "bottomright",
@@ -464,12 +463,9 @@ for(sp in 1:length(target_sp)){
                                       ##	not perfect, but something! Used https://imgbb.com to host the buffer
                                       ##	PNG images! So you could do that for any shape you'd like
                                       addControl(
-                                      html = "<img src='https://i.ibb.co/j855sx6/black-circle.png'
-  		                                style='width:40px;height:40px;'> Species' estimated native distribution<br/>
-  		                                (50 km buffer around in situ occurrence points)<br/>
-  		                                <img src='https://i.ibb.co/bs97gRF/Pngtree-lake-blue-circle-clipart-5553164.png'
-  		                                style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
-  		                                (50 km buffer around wild provenance localities)",
+                                      html = "<img src='https://upload.wikimedia.org/wikipedia/commons/a/a0/Circle_-_black_simple.svg'
+  		                                style='width:40px;height:40px;'> Inferred native range<br/>
+  		                                (50 km buffer around in situ occurrence points)",
   		                                position = "bottomleft") %>%
                                                               
                                       ## Set view (long and lat) and zoom level, for when map initially opens
@@ -627,14 +623,14 @@ for(sp in 1:length(target_sp)){
                     smoothFactor = 0.5,	weight = 1.2, opacity = 1, color = "#1c1c1b",
                     fillOpacity = 0.3) %>%
         ## in situ points
-        addCircleMarkers(data = insitu,
+        addMarkers(data = insitu,
                          lng = ~decimalLongitude, lat = ~decimalLatitude,
-                         radius = 3, fillOpacity = 1, stroke = F, color = "#e8f4f8") %>%
+                         icon = triangle_white ) %>%
                         
         ## ex situ points
-        addCircleMarkers(data = exsitu,
+        addMarkers(data = exsitu,
                    lng = ~decimalLongitude, lat = ~decimalLatitude,
-                   radius = 3, fillOpacity = 1, stroke = F, color = "#1c1c1b") %>%
+                   icon = triangle_black) %>%
           
         ## add scale bar
           addScaleBar(position = "bottomright",
@@ -644,12 +640,16 @@ for(sp in 1:length(target_sp)){
           ##	PNG images! So you could do that for any shape you'd like
         
         addControl(
-          html = "<img src='https://i.ibb.co/j855sx6/black-circle.png'
-  		                                style='width:40px;height:40px;'> Species' estimated native distribution<br/>
+          html = "<img src='https://upload.wikimedia.org/wikipedia/commons/a/a0/Circle_-_black_simple.svg'
+  		                                style='width:40px;height:40px;'> Inferred native range<br/>
   		                                (50 km buffer around in situ occurrence points)<br/>
-  		                                <img src='https://i.ibb.co/bs97gRF/Pngtree-lake-blue-circle-clipart-5553164.png'
+  		                                <img src='https://upload.wikimedia.org/wikipedia/commons/f/fe/Wikisource_proofread_grey_circle.svg'
   		                                style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
-  		                                (50 km buffer around wild provenance localities)",
+  		                                (50 km buffer around wild provenance localities)<br/>
+                                      <img src='https://i.ibb.co/jyBBBdg/pngaaa-com-1992709.png'
+                                      style='width:40px;height:40px;'> Geolocated in situ occurrence point<br/>
+                                      <img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
+                                     style='width:40px;height:40px;'> Wild provenance source of ex situ living specimen(s)",
           position = "bottomleft") %>%
     
         ## Set view (long and lat) and zoom level, for when map initially opens
