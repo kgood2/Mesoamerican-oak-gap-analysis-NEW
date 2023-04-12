@@ -218,10 +218,10 @@ target_countries <- c("united states of america","mexico","belize","guatemala",
 
 # get outside icons used in maps
 # triangle markers for ex situ point data
-triangle_black <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
-                        iconWidth = 8, iconHeight = 8)
-triangle_white <- makeIcon(iconUrl = "https://i.ibb.co/jyBBBdg/pngaaa-com-1992709.png",
-                        iconWidth = 15, iconHeight = 15)
+#triangle_black <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
+                        #iconWidth = 8, iconHeight = 8)
+#triangle_white <- makeIcon(iconUrl = "https://i.ibb.co/jyBBBdg/pngaaa-com-1992709.png",
+                        #iconWidth = 15, iconHeight = 15)
 
 # cutoffs used for groupping exsitu data by number of individuals, for mapping
 #   three categories will be used:
@@ -355,9 +355,6 @@ for(sp in 1:length(target_sp)){
   hull_area <- expanse(hull_insitu)/1000000
   print(paste("EOO:",hull_area,"km²"))
   
-  ### CALCULATE PROTECTED AREA COVERAGE
-  
-  # !! needs to be added/edited from another script
   
   ### CREATE DATA SUBSET WITH EX SITU ONLY
   
@@ -424,8 +421,8 @@ for(sp in 1:length(target_sp)){
     ## MAP
     ## No exsitu points or buffers with this map
     eco_pal_colors <- createPalette(length(unique(eco_sel$ECO_ID)),
-                      seedcolors = c("#ba3c3c","#ba7d3c","#baab3c","#3ca7ba","#3c6aba","#573cba",
-                                  "#943cba","#ba3ca1","#ba3c55"),range = c(5,42), target = "normal", M=50000)
+                      seedcolors = c("#d58a8a","#d5b18a","#dcd59d","#b1dbe3","#b1c3e3","#bbb1e3",
+                                              "#d4b1e3","#dc9dd0","#f8ebee"),range = c(5,42), target = "normal", M=50000)
                                     swatch(eco_pal_colors)
                                     eco_pal_colors <- as.vector(eco_pal_colors)
                                     eco_pal <- colorFactor(eco_pal_colors,eco_sel$ECO_ID)
@@ -449,9 +446,9 @@ for(sp in 1:length(target_sp)){
                                         weight = 1.5, opacity = 0.3, color = "black") %>%
                                                               
                                     ## in situ buffers
-                                    addPolygons(data = insitu_buff,
-                                        smoothFactor = 0.5,	weight = 2, opacity = 1, color = "#e8f4f8",
-                                        fillOpacity = 0.3) %>%
+                                      addPolygons(data = insitu_buff,
+                                                  smoothFactor = 0.5,	weight = 1.2, opacity = 1, fillColor = "#e8f4f8",
+                                                  color = "black",fillOpacity = 0.3) %>%
                                                               
                                     ## in situ points
                                     addCircleMarkers(data = insitu,
@@ -623,21 +620,21 @@ for(sp in 1:length(target_sp)){
                     fillOpacity = 0, color = "#969696", weight = 1.2, opacity = 1) %>%
         ## in situ buffers
         addPolygons(data = insitu_buff,
-                    smoothFactor = 0.5,	weight = 2, opacity = 1, color = "#e8f4f8",
-                    fillOpacity = 0.3) %>%
+                    smoothFactor = 0.5,	weight = 1.2, opacity = 1, fillColor = "#e8f4f8",
+                    color = "black",fillOpacity = 0.3) %>%
         ## ex situ buffers
         addPolygons(data = exsitu_buff,
-                    smoothFactor = 0.5,	weight = 2, opacity = 1, color = "#1c1c1b",
+                    smoothFactor = 0.5,	weight = 1.2, opacity = 1, color = "#1c1c1b",
                     fillOpacity = 0.3) %>%
         ## in situ points
-        addMarkers(data = insitu,
+        addCircleMarkers(data = insitu,
                          lng = ~decimalLongitude, lat = ~decimalLatitude,
-                          icon = triangle_white) %>%
+                         radius = 3, fillOpacity = 1, stroke = F, color = "#e8f4f8") %>%
                         
         ## ex situ points
-        addMarkers(data = exsitu,
-                         lng = ~decimalLongitude, lat = ~decimalLatitude,
-                         icon = triangle_black) %>%
+        addCircleMarkers(data = exsitu,
+                   lng = ~decimalLongitude, lat = ~decimalLatitude,
+                   radius = 3, fillOpacity = 1, stroke = F, color = "#1c1c1b") %>%
           
         ## add scale bar
           addScaleBar(position = "bottomright",
