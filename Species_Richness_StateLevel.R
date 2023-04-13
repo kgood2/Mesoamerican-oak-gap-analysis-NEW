@@ -117,7 +117,7 @@ leaflet(data = new) %>%
   addPolygons(data = Mexico_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
   addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
-                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE)) %>%
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE, textsize = "10px", style = list("font-weight" = "bold"))) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#b2d8b2","#66b266","#008000","#004c00"),
             title = "Species richness",
@@ -177,6 +177,8 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Guatemala_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
+  addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE, textsize = "10px", style = list("font-weight" = "bold"))) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#b2d8b2","#66b266","#008000","#004c00"),
             title = "Species richness",
@@ -233,6 +235,8 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Honduras_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
+  addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE, textsize = "10px", style = list("font-weight" = "bold"))) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#66b266","#004c00"),
             title = "Species richness",
@@ -291,6 +295,8 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = CR_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
+  addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE, textsize = "10px", style = list("font-weight" = "bold"))) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#b2d8b2","#66b266","#004c00"),
             title = "Species richness",
@@ -349,6 +355,8 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = ES_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
+  addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE, textsize = "10px", style = list("font-weight" = "bold"))) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#b2d8b2","#66b266"),
             title = "Species richness",
@@ -407,6 +415,8 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Nicaragua_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
+  addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE, textsize = "10px", style = list("font-weight" = "bold"))) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#b2d8b2"),
             title = "Species richness",
@@ -465,6 +475,8 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Panama_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
+  addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE, textsize = "10px", style = list("font-weight" = "bold"))) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#b2d8b2","#66b266","#004c00"),
             title = "Species richness",
@@ -522,6 +534,8 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Belize_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
+  addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE, textsize = "10px", style = list("font-weight" = "bold"))) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#b2d8b2","#66b266"),
             title = "Species richness",
