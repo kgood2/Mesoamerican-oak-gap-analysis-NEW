@@ -219,9 +219,9 @@ target_countries <- c("united states of america","mexico","belize","guatemala",
 # get outside icons used in maps
 # triangle markers for ex situ point data
 triangle_black <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
-                        iconWidth = 7, iconHeight = 7)
+                        iconWidth = 8, iconHeight = 8)
 triangle_white <- makeIcon(iconUrl = "https://i.ibb.co/jyBBBdg/pngaaa-com-1992709.png",
-                        iconWidth = 7, iconHeight = 7)
+                        iconWidth = 8, iconHeight = 8)
 
 # cutoffs used for groupping exsitu data by number of individuals, for mapping
 #   three categories will be used:
@@ -243,10 +243,10 @@ taxon_list <- read.csv(file.path(main_dir, "inputs", "taxa_list",
                        header = T, na.strings = c("","NA"),colClasses = "character")
 head(taxon_list)
 
-## Add species here that have no occurrence points (Q. centenaria and Q. mexiae) and skipping
+## Add species here that have no occurrence points and skipping
 ## Q. gulielmi-treleasei for now. Is throwing an error. 
-no_occ <- c("Quercus centenaria","Quercus mexiae","Quercus gulielmi-treleasei")
-taxon_list <- subset(taxon_list,!(taxon_name_acc %in% no_occ))
+#no_occ <- c("Quercus centenaria","Quercus mexiae","Quercus gulielmi-treleasei")
+#taxon_list <- subset(taxon_list,!(taxon_name_acc %in% no_occ))
 
 
 target_sp <- unique(taxon_list$taxon_name_acc)
@@ -362,7 +362,7 @@ for(sp in 1:length(target_sp)){
   exsitu <- insitu %>% filter(database == "Ex_situ")
   # print number of individuals ex situ with lat-long data
   print(paste("Number of ex situ individuals:",
-              sum(as.numeric(exsitu$establishmentMeans))))
+              sum(as.numeric(exsitu$individualCount))))
   
   # check there are ex situ points, if not skip calculations and create Map 1 only without ex situ points
   if(nrow(exsitu) == 0){
@@ -647,9 +647,9 @@ for(sp in 1:length(target_sp)){
   		                                style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
   		                                (50 km buffer around wild provenance localities)<br/>
                                       <img src='https://i.ibb.co/jyBBBdg/pngaaa-com-1992709.png'
-                                      style='width:40px;height:40px;'> Geolocated in situ occurrence point<br/>
+                                      style='width:20px;height:20px;'> Geolocated in situ occurrence point<br/>
                                       <img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
-                                     style='width:40px;height:40px;'> Wild provenance source of ex situ living specimen(s)",
+                                     style='width:20px;height:20px;'> Wild provenance source of ex situ living specimen(s)",
           position = "bottomleft") %>%
     
         ## Set view (long and lat) and zoom level, for when map initially opens
