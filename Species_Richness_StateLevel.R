@@ -7,6 +7,7 @@
 library(sf)
 library(dplyr)
 library(leaflet)
+library(leaflet.extras)
 
 main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
@@ -115,6 +116,8 @@ leaflet(data = new) %>%
   addPolygons(fillColor = ~binpal(species_richness), stroke = FALSE, fillOpacity = 1) %>%
   addPolygons(data = Mexico_states,
               fillOpacity = 0, color = "black", weight = 2) %>%
+  addLabelOnlyMarkers(lng = ~longitude, lat = ~latitude, label = ~paste(species_richness),
+                      labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE)) %>%
   addLegend(values = ~species_richness,
             colors = c("#e5e5e5","#b2d8b2","#66b266","#008000","#004c00"),
             title = "Species richness",
