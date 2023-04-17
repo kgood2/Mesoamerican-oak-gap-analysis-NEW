@@ -344,7 +344,7 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                "Quercus_hintoniorum.csv"), header = T, na.strings=c("","NA"),
                                      colClasses="character")
 
-  new_Quercus_hintoniorum = subset(Quercus_hintoniorum,!(UID %in% "id00000757"))
+  new_Quercus_hintoniorum = subset(Quercus_hintoniorum,!(UID %in% c("id00000757","id00036813")))
 
   write.csv(new_Quercus_hintoniorum, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_hintoniorum_points_removed", ".csv")),row.names = F)
