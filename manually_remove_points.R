@@ -17,8 +17,11 @@
 # Set working directory
 ################################################################################
 
+#Apple
+#main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
-main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
+#Windows
+main_dir <- "G:/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
 # set up file structure within your main working directory
 data <- "occurrence_data"
