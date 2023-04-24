@@ -75,24 +75,20 @@ file_list <- list.files(file.path(main_dir,data,standard), pattern = ".csv",
                         full.names = T)
 file_dfs <- lapply(file_list, read.csv, header = T, na.strings = c("","NA"),
                    colClasses = "character")
-length(file_dfs) #14
+length(file_dfs) #23
 
 # stack all datasets using bind_rows, which keeps non-matching columns
 #   and fills with NA; 'Reduce' iterates through list and merges with previous.
 # this may take a few minutes if you have lots of data
 all_data_raw <- Reduce(bind_rows, file_dfs)
-nrow(all_data_raw) #347009
+nrow(all_data_raw) #348015
 names(all_data_raw) #37
 table(all_data_raw$database)
-#NOTE: two files have database as Maraicela (14 files, only 13 databases)
-#Base_Quercus   BIEN    El_Salvador   Ex_situ   FIA   GBIF    GT_USCG
-#258            855     76            7522      158   16656   1683
+# BIEN      CONABIO         CR          Ex_situ      Expert_Comm              FIA             GBIF 
+#  772        23320       1046             7260           10398              138            12492
 
-#Herbario_TEFH_Honduras   iDigBio     ICUN_RedList    Maricela    NorthAm_herbaria
-#179                      4143        128704          347         192454
-
-#PMA   
-#103    
+# iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos 
+# 4050           127759           192023              103              179              880
 
 # add unique identifier
 nms <- names(all_data_raw)
@@ -124,7 +120,7 @@ all_data <- all_data %>% dplyr::select(-genus)
 all_data <- left_join(all_data,taxon_list)
 # join again just by species name if no taxon match
 need_match <- all_data[which(is.na(all_data$taxon_name_status)),]
-nrow(need_match) #347009
+nrow(need_match) #319145
 # remove columns from first taxon name match
 need_match <- need_match[,1:(ncol(all_data)-ncol(taxon_list)+1)]
 # rename column for matching
@@ -161,12 +157,12 @@ rm(matched,need_match,taxon_list_add,still_no_match)
 # keep only rows for target taxa
 all_data <- all_data %>% 
   filter(!is.na(taxon_name_status) & !is.na(UID))
-nrow(all_data) #2512150
+nrow(all_data) #32263
 
 ### ! target taxa with no occurrence data:
 unique(taxon_list$taxon_name_acc)[
   !(unique(taxon_list$taxon_name_acc) %in% (unique(all_data$taxon_name_acc)))]
-# Quercus centenaria, Quercus mexiae
+# None!
 
 ################################################################################
 # Standardize/check some key columns
@@ -222,7 +218,8 @@ all_data <- all_data %>%
                              "72552" = "UNKNOWN",
                              "72554" = "UNKNOWN",
                              "UNKNOWNN" = "UNKNOWN",
-                             "69980" = "UNKNOWN"))
+                             "69980" = "UNKNOWN",
+                             "Colectado" = "PRESERVED_SPECIMEN"))
 # rename to fit standard
 
 # check establishment means
@@ -310,14 +307,7 @@ write.csv(locality_pts, file.path(main_dir,data,
 geo_pts <- all_data %>% filter(is.na(flag))
 nrow(geo_pts) #2184049
 table(geo_pts$database)
-# Base_Quercus    BIEN    Ex_situ     FIA       GBIF 
-#  13             708       262       138       6880 
 
-#GT_USCG    Herbario_TEFH_Honduras  iDigBio   IUCN_RedList  Maricela
-#295              2                   2215        3611        327
-
-#NorthAm_herbaria       PMA
-#2248                   10
 
 rm(all_data,geo_pts_spatial,land_pts,no_geo_pts,on_land,world_buff,land_id)
 
@@ -328,11 +318,11 @@ rm(all_data,geo_pts_spatial,land_pts,no_geo_pts,on_land,world_buff,land_id)
 # country name to 3 letter ISO code
 # fix some issues first (can add anything that is not matched unambiguously)
 geo_pts$country <- mgsub(geo_pts$country,
-                         c("méxico", "PAN", "Bolívia","Brasil","EE. UU.","ESTADOS UNIDOS DE AMERICA",
+                         c("Panamá","méxico", "PAN", "Bolívia","Brasil","EE. UU.","ESTADOS UNIDOS DE AMERICA",
                            "México","MÉXICO","Repubblica Italiana","U. S. A.","United Statese",
                            "America","Atats-Unis","CAN","ESP","MA(C)xico","MEX",
                            "MX","PER","Unknown","Cultivated"),
-                         c("Mexico","Panama","Bolivia","Brazil","United States","United States",
+                         c("Panama","Mexico","Panama","Bolivia","Brazil","United States","United States",
                            "Mexico","Mexico","Italy","United States","United States",
                            "United States","United States","Canada","Spain","Mexico","Mexico",
                            "Mexico","Peru",NA,NA))
@@ -398,12 +388,11 @@ add_again$taxon_name_acc <- gsub(" var\\.*\\s.+", "",
 unique(add_again$taxon_name_acc)
 geo_pts <- rbind(geo_pts,add_again)
 table(geo_pts$database)
-#Base_Quercus          BIEN                Ex_situ                    FIA                   GBIF 
-#13                    708                    262                    138                   6880 
-#GT_USCG Herbario_TEFH_Honduras             iDigBio           IUCN_RedList               Maricela 
-#295                      2                   2215                   3611                    327 
-#NorthAm_herbaria         PMA 
-#2248                     10 
+#BIEN          CONABIO               CR          Ex_situ      Expert_Comm              FIA             GBIF 
+#708             1197              173              262             1638              138             6880
+
+#iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos
+# 2215             3611             2248               10                2              767
 
 # create rounded latitude and longitude columns for removing duplicates;
 #   number of digits can be changed based on how dense you want data
@@ -442,9 +431,9 @@ geo_pts <- geo_pts %>% arrange(desc(year))
 # sort by source database
 unique(geo_pts$database)
 geo_pts$database <- factor(geo_pts$database,
-                           levels = c("GBIF","Ex_situ","NorthAm_herbaria","iDigBio",
-                                      "GT_USCG","FIA","Base_Quercus","IUCN_RedList",
-                                      "BIEN","PMA","Herbario_TEFH_Honduras","Maricela"))
+                           levels = c("NorthAm_herbaria","GBIF", "Ex_situ","Expert_Comm","iDigBio",
+                                      "CR","FIA","IUCN_RedList","BIEN","PMA","TEFH",
+                                      "Tropicos","CONABIO"))
 geo_pts <- geo_pts %>% arrange(database)
 
 # remove duplicates
@@ -462,6 +451,16 @@ nrow(geo_pts2) #366757
 # add ex situ data back in
 geo_pts2 <- full_join(geo_pts2,ex_situ)
 nrow(geo_pts2) #367559
+
+# Remove points where institutionCode = EB-BUAP 
+# This was per Allen's suggestion due to issues with Taxonomy not being updated
+# filter also removes NA's, which is why you need first part of this code. 
+
+geo_pts2 <- filter(geo_pts2,is.na(institutionCode) | institutionCode != "EB-BUAP")
+
+# Remove points with Human Observation as basis of record and where no names were listed as 
+# identifyer. These were all from FB-UMSNH. This was also per Allen's suggestion
+# geo_pts2 <- filter(geo_pts2,is.na(institutionCode) | is.na(basisOfRecord) | institutionCode != "FB-UMSNH" & basisOfRecord !="HUMAN_OBSERVATION")
 
 ## set header/column name order
 keep_col <- c( #data source and unique ID
@@ -494,12 +493,11 @@ geo_pts2 <- geo_pts2[,keep_col]
 head(as.data.frame(geo_pts2))
 nrow(geo_pts2) #367559
 table(geo_pts2$database)
-#Base_Quercus         BIEN                Ex_situ                    FIA                   GBIF 
-#9                     83                    262                     20                   4164 
-#GT_USCG Herbario_TEFH_Honduras       iDigBio           IUCN_RedList               Maricela 
-#84                      2              24                    847                     17 
-#NorthAm_herbaria       PMA 
-#624                      4 
+#  BIEN               CR          Ex_situ      Expert_Comm              FIA             GBIF
+# 82               14              262              184               20             4164
+
+# iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos 
+# 24              847              580                2                2               12 
 
 rm(geo_pts)
 
@@ -534,7 +532,7 @@ write.csv(summary, file.path(main_dir,data,
 ################################################################################
 
 # split records to create one CSV for each target taxon
-sp_split <- split(geo_pts2, as.factor(geo_pts2$taxon_name_accepted))
+sp_split <- split(geo_pts2, as.factor(geo_pts2$taxon_name_acc))
 names(sp_split) <- gsub(" ","_",names(sp_split))
 names(sp_split) <- gsub("\\.","",names(sp_split))
 
