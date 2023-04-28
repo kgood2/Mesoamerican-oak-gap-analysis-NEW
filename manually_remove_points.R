@@ -620,3 +620,27 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
 
   write.csv(new_Quercus_vicentensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_vicentensis_points_removed", ".csv")),row.names = F)
+  
+  #################################################################################################
+  # run below script if you want to combine all species files created above
+  # into one combined file 
+  #################################################################################################
+  # read in raw occurrence data
+  file_list <- list.files(file.path(main_dir,data,standard,"taxon_edited_points_removed"), pattern = ".csv", 
+                          full.names = T)
+  file_dfs <- lapply(file_list, read.csv, header = T, na.strings = c("","NA"),
+                     colClasses = "character")
+  length(file_dfs)
+  
+  #stack all datasets using bind_rows, which keeps non-matching columns
+  #   and fills with NA; 'Reduce' iterates through list and merges with previous.
+  # this may take a few minutes if you have lots of data
+  combined_taxon_edited_points <- Reduce(bind_rows, file_dfs)
+  
+  #create new .csv file and save
+  write.csv(combined_taxon_edited_points, file.path(main_dir,data, standard, "taxon_edited_points_removed",
+                                               paste0("Combined_taxon_edited_points", ".csv")),row.names = F)
+  
+  
+    
+                                              
