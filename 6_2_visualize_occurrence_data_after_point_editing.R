@@ -44,9 +44,11 @@ webshot::install_phantomjs()
 # Set working directory
 ################################################################################
 
+#Apple
+#main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
-main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
-
+#Windows
+main_dir <- "G:/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
 
 ################################################################################
@@ -111,7 +113,7 @@ for(i in 1:length(spp.all)){
   # create color palette
   # https://color-hex.org/palettes/popular
   colors <- c("#adbb3f","#5fbb9a","#6a9ebd","#7b83cc",
-                       "#3c2c7a","green","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
+                       "#3c2c7a","green","#FFBF00","#3475cc","#0152bf","#CC8400","#454B1B","#ffc0cb","#e04ce0")
                        database.pal <- colorFactor(palette=colors,
                                                    levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
                                                               "FIA","iDigBio","IUCN_RedList","PMA",
