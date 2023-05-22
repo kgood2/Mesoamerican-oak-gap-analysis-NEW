@@ -145,7 +145,7 @@ for(i in 1:length(spp.all)){
   
         addLegend(pal = database.pal, values = unique(spp.now$database),
                   #title = "Occurrence point</br>source database", position = "bottomright", opacity = 0.8)) 
-                  title = "puntos de ocurrencia</br>por base de datos", position = "bottomright", opacity = 0.8))
+                  title = "Puntos de ocurrencia</br>por base de datos", position = "bottomright", opacity = 0.8))
                        final_map
                        
                        #save image of map (png, pdf, or jpeg)
