@@ -1,6 +1,6 @@
 ###############################################################################
 # January 25, 2023
-# udated with new UIDs removed March 30, 2023
+# udated with new UIDs removed May 22, 2023
 # Kate Good
 
 # This script goes through each species and removes UIDs from the the species'
