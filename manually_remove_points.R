@@ -617,8 +617,9 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                                   "id00038160", "id00031833", "id00038830",
                                                                   "id00036322", "id00035796", "id00026342",
                                                                   "id00036323", "id00241592", "id00040596",
-                                                                  "id00035215", "id00037400", "id00036593",
-                                                                  "id00037376")))
+                                                                  "id00241591", "id00041294", "id00038974",
+                                                                  "id00038852", "id00035215", "id00037400",
+                                                                  "id00036593", "id00037376")))
 
   write.csv(new_Quercus_tomentella, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_tomentella_points_removed", ".csv")),row.names = F)
