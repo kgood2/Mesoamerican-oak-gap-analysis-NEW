@@ -226,7 +226,7 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
   new_Quercus_devia = subset(Quercus_devia,!(UID %in% c("id00000620", "id00243795", "id00096198",
                                                         "id00036865", "id00038041", "id00034605",
                                                         "id00043186", "id00034843", "id00043342",
-                                                        "id00035588")))
+                                                        "id00035588", "id00006982")))
   
 
   write.csv(new_Quercus_devia, file.path(main_dir,data, standard, "taxon_edited_points_removed",
