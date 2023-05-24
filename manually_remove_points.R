@@ -128,13 +128,9 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                          "Quercus_cedrosensis.csv"), header = T, na.strings=c("","NA"),
                                colClasses="character")
 
-<<<<<<< HEAD
-  new_Quercus_cedrosensis = subset(Quercus_cedrosensis,!(UID %in% c("id00035830", "id00025050", "id00000337", 
-                                                                    "id00156319")))
-=======
-  new_Quercus_cedrosensis = subset(Quercus_cedrosensis,!(UID %in% c("id00035830", "id00025050", "id00033363",
-                                                                    "id00270443", "id00270443", "id00033363")))
->>>>>>> ca2bb8c7e0cbe71f8e3fde94db2367b05f6f8154
+
+  new_Quercus_cedrosensis = subset(Quercus_cedrosensis,!(UID %in% c("id00035830", "id00025050", "id00000337",
+                                                                    "id00156319", "id00270443", "id00033363")))
 
   write.csv(new_Quercus_cedrosensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_cedrosensis_points_removed", ".csv")),row.names = F)
@@ -321,13 +317,9 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                           "Quercus_graciliformis.csv"), header = T, na.strings=c("","NA"),
                                 colClasses="character")
 
-<<<<<<< HEAD
+
   new_Quercus_graciliformis = subset(Quercus_graciliformis,!(UID %in% c("id00043920", "id00043276", "id00038374",
-                                                                        "id00024852")))
-=======
-  new_Quercus_graciliformis = subset(Quercus_graciliformis,!(UID %in% c("id00043920", "id00043276", "id00038374", 
-                                                                        "id00024850")))
->>>>>>> ca2bb8c7e0cbe71f8e3fde94db2367b05f6f8154
+                                                                        "id00024852", "id00024850", "id00024852")))
 
   write.csv(new_Quercus_graciliformis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_graciliformis_points_removed", ".csv")),row.names = F)
@@ -628,14 +620,11 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                                   "id00038160", "id00031833", "id00038830",
                                                                   "id00036322", "id00035796", "id00026342",
                                                                   "id00036323", "id00241592", "id00040596",
-<<<<<<< HEAD
                                                                   "id00241591", "id00041294", "id00038974", 
-                                                                  "id00038852")))
-=======
-                                                                  "id00241591", "id00041294", "id00038974",
+                                                                  "id00038852", "id00241591", "id00041294", "id00038974",
                                                                   "id00038852", "id00035215", "id00037400",
                                                                   "id00036593", "id00037376")))
->>>>>>> ca2bb8c7e0cbe71f8e3fde94db2367b05f6f8154
+
 
   write.csv(new_Quercus_tomentella, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_tomentella_points_removed", ".csv")),row.names = F)
@@ -643,8 +632,10 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
   Quercus_toumeyi<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points",
                              "Quercus_toumeyi.csv"), header = T, na.strings=c("","NA"),
                    colClasses="character")
-
-  write.csv(Quercus_toumeyi, file.path(main_dir,data, standard, "taxon_edited_points_removed",
+  
+  new_Quercus_toumeyi = subset(Quercus_toumeyi,!(UID %in% "id00072873"))
+  
+  write.csv(new_Quercus_toumeyi, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_toumeyi_points_removed", ".csv")),row.names = F)
 #60
   Quercus_toxicodendrifolia<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points",
