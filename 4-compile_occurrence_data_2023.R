@@ -499,6 +499,18 @@ table(geo_pts2$database)
 # iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos 
 # 24              847              580                2                2               12 
 
+
+#remove iNaturalist observations, except for certain species where iNaturalist 
+# coordiates are NOT obscured 
+
+#condition <- !(geo_pts2$datasetName %like% "iNaturalist research-grade observations") | geo_pts2$taxon_name_acc %in% 
+  #c("Quercus aerea", "Quercus engelmannii", "Quercus melissae","Quercus paxtalensis","Quercus porphyrogenita",
+    #"Quercus tinkhamii","Quercus toumeyi")
+
+#geo_pts2_filtered <- subset(geo_pts2, condition)
+
+
+
 rm(geo_pts)
 
 # write file if you'd like
