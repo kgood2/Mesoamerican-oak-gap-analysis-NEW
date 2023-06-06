@@ -284,7 +284,7 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                                 "id00056938", "id00033330", "id00056920",
                                                                 "id00033400", "id00056919", "id00032338",
                                                                 "id00031862", "id00056991", "id00056995",
-                                                                "id00033349", "id00033404")))
+                                                                "id00033349", "id00033404", "id00057263")))
   
   new_Quercus_dumosa4 = subset(new_Quercus_dumosa3,decimalLatitude <=35)
 
