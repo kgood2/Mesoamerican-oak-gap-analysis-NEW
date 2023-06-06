@@ -19,10 +19,10 @@
 ################################################################################
 
 #Apple
-main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
+#main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
 #Windows
-#main_dir <- "G:/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
+main_dir <- "G:/My Drive/Franklinia/Mesoamerican Oak Gap Analysis 2023/occurrence_points"
 
 # set up file structure within your main working directory
 data <- "occurrence_data"
@@ -244,12 +244,40 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                   "Quercus_dumosa.csv"), header = T, na.strings=c("","NA"),
                         colClasses="character")
 
-  new_Quercus_dumosa = subset(Quercus_dumosa,!(UID %in% c("id00039667", "id00031856", "id00056936",
-                                                          "id00033320", "id00007102", "id00037621",
-                                                          "id00056934", "id00057558", "id00057615",
-                                                          "id00032739", "id00238795", "id00238794")))
+  new_Quercus_dumosa = subset(Quercus_dumosa,!(database %in% "IUCN_RedList"))
+  
+  new_Quercus_dumosa2 = subset(new_Quercus_dumosa,!(datasetName %in% c("Hernando_Rodriguez_Correa", "iNaturalist research-grade observations")))
+  
+  new_Quercus_dumosa3 = subset(new_Quercus_dumosa2,!(UID %in% c("id00039667", "id00031856", "id00056936",
+                                                                "id00033320", "id00007102", "id00037621",
+                                                                "id00056934", "id00057558", "id00057615",
+                                                                "id00032739", "id00238795", "id00238794",
+                                                                "id00057564", "id00057611", "id00057612",
+                                                                "id00057628", "id00057609", "id00057293",
+                                                                "id00057012", "id00057751", "id00057232",
+                                                                "id00057318", "id00052700", "id00057689",
+                                                                "id00034171", "id00057750", "id00040825",
+                                                                "id00042645", "id00057208", "id00034172",
+                                                                "id00032595", "id00037104", "id00057666",
+                                                                "id00057319", "id00034173", "id00057302",
+                                                                "id00057015", "id00034170", "id00007094",
+                                                                "id00056993", "id00038912", "id00033236",
+                                                                "id00057135", "id00040765", "id00057641",
+                                                                "id00057789", "id00057253", "id00037589",
+                                                                "id00057610", "id00056957", "id00056946",
+                                                                "id00056945", "id00057142", "id00038498",
+                                                                "id00040597", "id00042572", "id00057145",
+                                                                "id00056947", "id00057063", "id00057023",
+                                                                "id00057786", "id00040595", "id00057213",
+                                                                "id00057787", "id00042575", "id00057157",
+                                                                "id00035509", "id00040766", "id00034164",
+                                                                "id00040764", "id00057148", "id00057681",
+                                                                "id00057081", "id00033130", "id00033160",
+                                                                "id00038133")))
+  
+  new_Quercus_dumosa4 = subset(new_Quercus_dumosa3,decimalLatitude <=35)
 
-  write.csv(new_Quercus_dumosa, file.path(main_dir,data, standard, "taxon_edited_points_removed",
+  write.csv(new_Quercus_dumosa4, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_dumosa_points_removed", ".csv")),row.names = F)
 
 #22
