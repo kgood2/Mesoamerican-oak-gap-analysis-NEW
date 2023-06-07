@@ -162,7 +162,7 @@ points_per_polygon <- points_in_polygons %>%
 points_per_polygon 
 
 # create a 5 km buffer around points 
-buff_points <- Gbuffer(xy = acherdophylla_sf, dist_m=5000)
+#buff_points <- Gbuffer(xy = acherdophylla_sf, dist_m=5000)
 
 
 ###############################################################################
@@ -180,8 +180,8 @@ leaflet() %>%
                   color = "blue", 
                   opacity = 1,
                   fillOpacity = 1) %>%
-  addPolygons(data = buff_points,
-              smoothFactor = 0.5,	weight = 2, fillOpacity = 0, color = "gray") %>%
+  #addPolygons(data = buff_points,
+              #smoothFactor = 0.5,	weight = 2, fillOpacity = 0, color = "gray") %>%
   addScaleBar(position = "bottomright",
             options = scaleBarOptions(maxWidth = 150)) %>%
   addControl(html = "<img src='https://i.ibb.co/WWfzSyw/square-png-25129.png'
