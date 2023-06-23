@@ -98,7 +98,7 @@ if(!dir.exists(output.maps)) dir.create(output.maps, recursive=T)
 
 # if you just want to make map for one species, find index of species in spp.all (for example,Quercus acutifolia 
 # is 2. Add i < - index number below, then run everything inside loop)
-#i <- 59
+i <- 56
 
 for(i in 1:length(spp.all)){
   
