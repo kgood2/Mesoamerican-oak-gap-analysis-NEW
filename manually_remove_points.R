@@ -237,9 +237,10 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
   new_Quercus_devia = subset(Quercus_devia,!(datasetName %in%  "iNaturalist research-grade observations"))
 
   new_Quercus_devia2 = subset(new_Quercus_devia,!(UID %in% c("id00000620", "id00243795", "id00096198",
-                                                        "id00036865", "id00038041", "id00034605",
-                                                        "id00043186", "id00034843", "id00043342",
-                                                        "id00035588", "id00006982")))
+                                                             "id00036865", "id00038041", "id00034605",
+                                                             "id00043186", "id00034843", "id00043342",
+                                                             "id00035588", "id00096207", "id00037482",
+                                                             "id00270542", "id00037184", "id00006982")))
   
 
   write.csv(new_Quercus_devia2, file.path(main_dir,data, standard, "taxon_edited_points_removed",
@@ -705,9 +706,11 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                                   "id00036322", "id00035796", "id00026342",
                                                                   "id00036323", "id00241592", "id00040596",
                                                                   "id00241591", "id00041294", "id00038974", 
-                                                                  "id00038852", "id00241591", "id00041294", "id00038974",
-                                                                  "id00038852", "id00035215", "id00037400",
-                                                                  "id00036593", "id00037376")))
+                                                                  "id00038852", "id00241591", "id00041294", 
+                                                                  "id00038974", "id00038852", "id00035215", 
+                                                                  "id00037400", "id00036593", "id00037376",
+                                                                  "id00036174", "id00033550", "id00042853", 
+                                                                  "id00036336", "id00032023")))
 
 
   write.csv(new_Quercus_tomentella, file.path(main_dir,data, standard, "taxon_edited_points_removed",
@@ -793,7 +796,8 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                                     "id00032000", "id00037941", "id00037855",
                                                                     "id00037936", "id00037935", "id00037925",
                                                                     "id00037923", "id00037934", "id00037931",
-                                                                    "id00032391", "id00037240", "id00032173")))
+                                                                    "id00032391", "id00037240", "id00032173",
+                                                                    "id00040241")))
 
   write.csv(new_Quercus_vicentensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_vicentensis_points_removed", ".csv")),row.names = F)
