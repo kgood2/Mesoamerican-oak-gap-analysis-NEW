@@ -139,8 +139,10 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
 
 
   new_Quercus_cedrosensis = subset(Quercus_cedrosensis,!(UID %in% c("id00035830", "id00025050", "id00000337",
-                                                                    "id00156319", "id00270443", "id00033363", 
-                                                                    "id00042635")))
+                                                                    "id00156319", "id00270443", "id00033363",
+                                                                    "id00042635", "id00241187", "id00270358",
+                                                                    "id00025046", "id00156399", "id00034187",
+                                                                    "id00038997", "id00270446")))
 
   write.csv(new_Quercus_cedrosensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_cedrosensis_points_removed", ".csv")),row.names = F)
@@ -346,7 +348,7 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                                     "id00028839", "id00238898", "id00032058",
                                                                     "id00036142", "id00033478", "id00044186",
                                                                     "id00238888", "id00238889", "id00028838", 
-                                                                    "id00028580")))
+                                                                    "id00028580", "id00273696", "id00038944")))
 
   write.csv(new_Quercus_engelmannii, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_engelmannii_points_removed", ".csv")),row.names = F)
@@ -495,7 +497,15 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                               "id00261599", "id00028368", "id00261617",
                                                               "id00000785", "id00225129", "id00038377", 
                                                               "id00037878", "id00041981", "id00037347",
-                                                              "id00261596", "id00032136", "id00249059")))
+                                                              "id00261596", "id00032136", "id00249059",
+                                                              "id00037541", "id00040039", "id00040051",
+                                                              "id00041184", "id00038113", "id00038323",
+                                                              "id00032195", "id00038891", "id00000782",
+                                                              "id00043873", "id00000882", "id00041236",
+                                                              "id00225130", "id00032171", "id00033054",
+                                                              "id00038110", "id00378405", "id00000862",
+                                                              "id00038254", "id00041242", "id00035612",
+                                                              "id00041575")))
 
   write.csv(new_Quercus_insignis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_insignis_points_removed", ".csv")),row.names = F)
