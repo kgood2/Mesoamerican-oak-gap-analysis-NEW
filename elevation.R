@@ -16,19 +16,19 @@ main_dir <- "/Volumes/GoogleDrive/My Drive/Franklinia/Mesoamerican Oak Gap Analy
 data <- "occurrence_data"
 standard <- "standardized_occurrence_data"
 
-install.packages(c("raster", "rgdal", "elevatr"))
+#install.packages(c("raster", "rgdal", "elevatr"))
 library(raster)
 library(rgdal)
 library(elevatr)
 
 
 #read in edited points removed file for species of interest
-insignis<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points_removed",
-                                         "Quercus_insignis_points_removed.csv"), header = T, na.strings=c("","NA"),
+vicentensis<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points_removed",
+                                         "Quercus_vicentensis_points_removed.csv"), header = T, na.strings=c("","NA"),
                                colClasses="character")
 
 # create an sf object of your coordinates
-sf_points <- st_as_sf(insignis, 
+sf_points <- st_as_sf(vicentensis, 
                       coords = c("decimalLongitude","decimalLatitude"),
                       crs = 4326)
 
@@ -41,11 +41,11 @@ add_elev <- get_elev_point(locations = sf_points,
                            src = "aws")
 
 # add elevation column to our main data frame
-insignis$elevationInMeters <- add_elev$elevation
+vicentensis$elevationInMeters <- add_elev$elevation
 
 # save file 
-write.csv(insignis, file.path(main_dir,data, standard, "elevation",
-                                             paste0("Quercus_insignis_elevation", ".csv")),row.names = F)
+write.csv(vicentensis, file.path(main_dir,data, standard, "elevation",
+                                             paste0("Quercus_vicentensis_elevation", ".csv")),row.names = F)
 
 
 
