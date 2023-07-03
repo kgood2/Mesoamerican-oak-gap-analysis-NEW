@@ -6,6 +6,9 @@
 # Provenance Types: W = wild, Z  = indirect wild, H = horticultural, 
 # U = unknown 
 
+## Per discussion with Emily (0621 office hours), when accession's provenance
+## type is NG or U but it is geolocated, recode provenance type to W/Z. 
+
 ################################################################################
 # Load libraries
 ################################################################################
@@ -39,7 +42,7 @@ ex_situ <- read.csv(file.path(main_dir,"occurrence_data","georeferencing","ExSit
 ex_situ2 <- ex_situ[,c(3,5,6,10)]
 
 #select target species. Edit this line for each species you are interested in 
-ex_situ3 <- ex_situ2[which(ex_situ2$taxon_name_accepted == "Quercus hintoniorum"),]
+ex_situ3 <- ex_situ2[which(ex_situ2$taxon_name_accepted == "Quercus ajoensis"),]
 
 # rename all "not given" provenance types as "unknown"
 ex_situ3["prov_type"][ex_situ3["prov_type"]=="NG"] <- "U"
@@ -53,6 +56,11 @@ ex_situ3["gps_det"][ex_situ3["gps_det"]=="S"] <- "X"
 # combine W and Z into one category 
 ex_situ3["prov_type"][ex_situ3["prov_type"]=="W"] <- "W/Z"
 ex_situ3["prov_type"][ex_situ3["prov_type"]=="Z"] <- "W/Z"
+
+# if provenance type is U but gps_det is G or L, change provenance
+# type to W/Z
+ex_situ3$prov_type[ex_situ3$prov_type =='U'& ex_situ3$gps_det == 'G'] <-"W/Z"
+
 
 # for provenance types that are H and U, change gps_det to NA
 ex_situ3$gps_det[ex_situ3$prov_type == "H"] <- "NA"
@@ -75,7 +83,7 @@ graph <- ggplot(ex_situ3, aes(x=prov_type, y=num_indiv)) +
   geom_col(aes(fill = gps_det)) +
   theme_minimal() +
   theme(legend.title=element_blank()) +
-  scale_y_continuous(breaks = seq(0, 15, 2)) +
+  scale_y_continuous(breaks = seq(0, 100, 10)) +
   scale_fill_manual(values=c("yellowgreen","skyblue2","lightsalmon","gray"))
 graph
 graph.labs <- graph + labs(x = "Provenance type", y = "Number of plants")
