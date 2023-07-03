@@ -1,8 +1,8 @@
 ##################################################################
 # Description 
 #################################################################
-# script to create stacked bar graphs in individual species profiles
-# graphs show number and origin of species in ex situ collections. 
+# script to create stacked bar graphs in individual species profiles.
+# Graphs show number and origin of species in ex situ collections. 
 # Provenance Types: W = wild, Z  = indirect wild, H = horticultural, 
 # U = unknown 
 
@@ -60,6 +60,7 @@ ex_situ3["prov_type"][ex_situ3["prov_type"]=="Z"] <- "W/Z"
 # if provenance type is U but gps_det is G or L, change provenance
 # type to W/Z
 ex_situ3$prov_type[ex_situ3$prov_type =='U'& ex_situ3$gps_det == 'G'] <-"W/Z"
+ex_situ3$prov_type[ex_situ3$prov_type =='U'& ex_situ3$gps_det == 'L'] <-"W/Z"
 
 
 # for provenance types that are H and U, change gps_det to NA
@@ -70,12 +71,10 @@ ex_situ3$gps_det[ex_situ3$prov_type == "U"] <- "NA"
 ex_situ3$num_indiv <-as.numeric(ex_situ3$num_indiv)
 
 
-
 # final rename of all gps_det
 ex_situ3$gps_det[ex_situ3$gps_det == "G"] <- "Coordinates provided"
 ex_situ3$gps_det[ex_situ3$gps_det == "L"] <- "Geolocated with locality notes"
 ex_situ3$gps_det[ex_situ3$gps_det == "X"] <- "Location data unknown"
-
 
 
 # graph it
