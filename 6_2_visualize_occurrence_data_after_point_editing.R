@@ -98,7 +98,8 @@ if(!dir.exists(output.maps)) dir.create(output.maps, recursive=T)
 
 # if you just want to make map for one species, find index of species in spp.all (for example,Quercus acutifolia 
 # is 2. Add i < - index number below, then run everything inside loop)
-i <- 56
+# visualize different baselayers here: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+i <- 21
 
 for(i in 1:length(spp.all)){
   
@@ -128,8 +129,8 @@ for(i in 1:length(spp.all)){
                        
                        # create map
                        try(final_map <- leaflet() %>%
-                             addProviderTiles(providers$CartoDB.Positron,
-                                              group = "CartoDB.Positron") %>%
+                             addProviderTiles(providers$Esri.WorldTopoMap,
+                                              group = "Esri.WorldTopoMap") %>%
                              addControl(paste0("<b>",spp.all[i]), position = "topright") %>%
                              
         addCircleMarkers(data = spp.now, ~decimalLongitude, ~decimalLatitude,
