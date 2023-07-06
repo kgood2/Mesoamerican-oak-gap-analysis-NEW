@@ -87,3 +87,89 @@ graph <- ggplot(ex_situ3, aes(x=prov_type, y=num_indiv)) +
 graph
 graph.labs <- graph + labs(x = "Provenance type", y = "Number of plants")
 graph.labs  
+
+
+###############################################################################
+# stacked bar graph of number of individuals in ex situ collections 
+# categorized by provenance type (Wild, Unknown, Horticultural). When provenance
+# type was listed as NA or U, but coordinates were given or it was geolocated, 
+# change to W. 
+###############################################################################
+
+ex_situ <- read.csv(file.path(main_dir,"occurrence_data","georeferencing","ExSitu_Compiled_Post-Geolocation_2023-05-18.csv"),
+                    header = T, colClasses="character")
+
+taxon_list <- read.csv(file.path(main_dir,"inputs","taxa_list",
+                                 "target_taxa_with_synonyms.csv"), 
+                       header = T, na.strings=c("","NA"),colClasses="character")
+
+# filter to only include target taxa. First, rename columns to match in both files
+colnames(ex_situ)[colnames(ex_situ) == "taxon_name_accepted"] ="taxon_name_acc"
+
+target_only <- dplyr::semi_join(ex_situ, taxon_list, by = "taxon_name_acc")
+
+#change num_indiv to numeric
+target_only$num_indiv <-as.numeric(target_only$num_indiv)
+
+#combine H? and H
+target_only["prov_type"][target_only["prov_type"]=="H?"] <- "H"
+
+#combine W and Z
+target_only["prov_type"][target_only["prov_type"]=="Z"] <- "W"
+
+#combine U and NG
+target_only["prov_type"][target_only["prov_type"]=="U"] <- "NG"
+
+# final rename for key
+target_only$prov_type[target_only$prov_type == "H"] <- "Horticultural"
+target_only$prov_type[target_only$prov_type == "NG"] <- "Unknown"
+target_only$prov_type[target_only$prov_type == "W"] <- "Wild"
+
+# if provenance type is U but gps_det is G or L, change provenance
+# type to W
+target_only$prov_type[target_only$prov_type =='U'& target_only$gps_det == 'G'] <-"W"
+target_only$prov_type[target_only$prov_type =='U'& target_only$gps_det == 'L'] <-"W"
+
+# Sort data frame in descending order based on number of individuals 
+target_only <- target_only[order(-target_only$num_indiv), ]
+
+
+# split data into two groups to make different graphs (big = >75, small = <75)
+species_sum <- aggregate(num_indiv ~ taxon_name_acc, target_only, sum)
+big <- subset(species_sum, num_indiv >=75)
+size <- "big"
+big$size <- size
+big
+
+small <- subset(species_sum, num_indiv <= 74)
+size <- "small"
+small$size <- size
+small
+
+#join dataframes together and add back into target_only
+combined <- rbind(big,small)
+target_only2 <- merge(target_only,combined,by = "taxon_name_acc", all = TRUE)
+
+# graph "big"
+big_only <- subset(target_only2, size == "big")
+graph_big <- ggplot(big_only, aes(x = taxon_name_acc, y=num_indiv.x)) +
+  geom_col(aes(fill = prov_type)) +
+  theme_minimal() +
+  theme(legend.title=element_blank()) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+graph_big
+graph.labs_big <- graph_big + labs(x = "Target mesoamerican taxa", y = "Number of plants")
+graph.labs_big  
+
+
+# graph "small"
+small_only <- subset(target_only2, size == "small")
+graph_small <- ggplot(small_only, aes(x = taxon_name_acc, y=num_indiv.x)) +
+  geom_col(aes(fill = prov_type)) +
+  theme_minimal() +
+  theme(legend.title=element_blank()) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+graph_small
+graph.labs_small <- graph_small + labs(x = "Target mesoamerican taxa", y = "Number of plants")
+graph.labs_small  
+
