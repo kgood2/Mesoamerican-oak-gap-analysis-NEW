@@ -76,7 +76,7 @@ target_taxa <- taxon_list %>%
                 # optionally, remove species with no SDM (list created manually above)
                         #& !(taxon_name_acc %in% no_sdm)
   )
-nrow(target_taxa) #87 // 96
+nrow(target_taxa) #65
 spp.all <- unique(gsub(" ","_",target_taxa$taxon_name_acc))
 spp.all
 # list of native countries for each target species
@@ -101,8 +101,8 @@ for(i in 1:length(spp.all)){
   ## palette based on database
   # set database as factor and order appropriately
   spp.now$database <- factor(spp.now$database,
-                             levels = c("GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
-                                        "FIA","iDigBio","IUCN_RedList","NorthAm_herbaria","PMA",
+                             levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
+                                        "FIA","iDigBio","IUCN_RedList","PMA",
                                         "TEFH","Tropicos"))
   spp.now <- spp.now %>% arrange(desc(database))
   # create color palette
@@ -110,8 +110,8 @@ for(i in 1:length(spp.all)){
   colors <- c("#adbb3f","#5fbb9a","#6a9ebd","#7b83cc",
                        "#3c2c7a","#c4c4c4","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
                        database.pal <- colorFactor(palette=colors,
-                                                   levels = c("GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
-                                                              "FIA","iDigBio","IUCN_RedList","NorthAm_herbaria","PMA",
+                                                   levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
+                                                              "FIA","iDigBio","IUCN_RedList","PMA",
                                                               "TEFH","Tropicos"))
                        
                        ## read in species distribution model and select color for mapping
