@@ -348,7 +348,8 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                                                     "id00028839", "id00238898", "id00032058",
                                                                     "id00036142", "id00033478", "id00044186",
                                                                     "id00238888", "id00238889", "id00028838", 
-                                                                    "id00028580", "id00273696", "id00038944")))
+                                                                    "id00028580", "id00273696", "id00038944", 
+                                                                    "id00238890", "id00238886")))
 
   write.csv(new_Quercus_engelmannii, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_engelmannii_points_removed", ".csv")),row.names = F)
@@ -552,8 +553,10 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
   Quercus_miquihuanensis<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points",
                                                "Quercus_miquihuanensis.csv"), header = T, na.strings=c("","NA"),
                                      colClasses="character")
-
-  write.csv(Quercus_miquihuanensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
+  
+  new_Quercus_miquihuanensis = subset(Quercus_miquihuanensis,!(UID %in% "id00000134"))
+  
+  write.csv(new_Quercus_miquihuanensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_miquihuanensis_points_removed", ".csv")),row.names = F)
 
 #43
