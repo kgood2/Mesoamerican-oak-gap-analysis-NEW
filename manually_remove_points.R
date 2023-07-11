@@ -129,7 +129,9 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
                                          "Quercus_carmenensis.csv"), header = T, na.strings=c("","NA"),
                                colClasses="character")
 
-  write.csv(Quercus_carmenensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
+  new_Quercus_carmenensis = subset(Quercus_carmenensis,!(UID %in% c("id00238471", "id00033795")))
+  
+  write.csv(new_Quercus_carmenensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_carmenensis_points_removed", ".csv")),row.names = F)
 
 #10
