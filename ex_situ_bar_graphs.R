@@ -120,15 +120,15 @@ target_only["prov_type"][target_only["prov_type"]=="Z"] <- "W"
 #combine U and NG
 target_only["prov_type"][target_only["prov_type"]=="U"] <- "NG"
 
-# final rename for key
-target_only$prov_type[target_only$prov_type == "H"] <- "Horticultural"
-target_only$prov_type[target_only$prov_type == "NG"] <- "Unknown"
-target_only$prov_type[target_only$prov_type == "W"] <- "Wild"
-
 # if provenance type is U but gps_det is G or L, change provenance
 # type to W
 target_only$prov_type[target_only$prov_type =='U'& target_only$gps_det == 'G'] <-"W"
 target_only$prov_type[target_only$prov_type =='U'& target_only$gps_det == 'L'] <-"W"
+
+# final rename for key
+target_only$prov_type[target_only$prov_type == "H"] <- "Horticultural"
+target_only$prov_type[target_only$prov_type == "NG"] <- "Unknown"
+target_only$prov_type[target_only$prov_type == "W"] <- "Wild"
 
 # Sort data frame in descending order based on number of individuals 
 target_only <- target_only[order(-target_only$num_indiv), ]
