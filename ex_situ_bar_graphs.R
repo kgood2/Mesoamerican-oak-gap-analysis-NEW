@@ -173,3 +173,31 @@ graph_small
 graph.labs_small <- graph_small + labs(x = "Target mesoamerican taxa", y = "Number of plants")
 graph.labs_small  
 
+###############################################################################
+# bar graph of number of ex situ institutions stacked by region
+###############################################################################
+
+ex_situ <- read.csv(file.path(main_dir,"occurrence_data","georeferencing","ExSitu_Compiled_Post-Geolocation_2023-05-18.csv"),
+                    header = T, colClasses="character")
+
+taxon_list <- read.csv(file.path(main_dir,"inputs","taxa_list",
+                                 "target_taxa_with_synonyms.csv"), 
+                       header = T, na.strings=c("","NA"),colClasses="character")
+
+# filter to only include target taxa. First, rename columns to match in both files
+colnames(ex_situ)[colnames(ex_situ) == "taxon_name_accepted"] ="taxon_name_acc"
+
+target_only <- dplyr::semi_join(ex_situ, taxon_list, by = "taxon_name_acc")
+
+
+
+# rename countries to the region they are found 
+
+unique(target_only$inst_country)
+
+target_only$inst_country <-mgsub(target_only$inst_country,
+                                 c("United States", "South Korea", "Spain", "Mexico", "France",
+                                   "Israel", "Australia", "Poland", "England", "Wales", 
+                                   "New Zealand", "Argentina", "NA", "Switzerland","Netherlands",
+                                   "Belgium","Germany"),
+                                 c("South America","Oceania"))
