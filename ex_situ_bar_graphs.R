@@ -57,10 +57,10 @@ ex_situ3["gps_det"][ex_situ3["gps_det"]=="S"] <- "X"
 ex_situ3["prov_type"][ex_situ3["prov_type"]=="W"] <- "W/Z"
 ex_situ3["prov_type"][ex_situ3["prov_type"]=="Z"] <- "W/Z"
 
-# if provenance type is U but gps_det is G or L, change provenance
+# If gps_det is G or L, change provenance
 # type to W/Z
-ex_situ3$prov_type[ex_situ3$prov_type =='U'& ex_situ3$gps_det == 'G'] <-"W/Z"
-ex_situ3$prov_type[ex_situ3$prov_type =='U'& ex_situ3$gps_det == 'L'] <-"W/Z"
+ex_situ3$prov_type[ex_situ3$gps_det == 'G'] <-"W/Z"
+ex_situ3$prov_type[ex_situ3$gps_det == 'L'] <-"W/Z"
 
 
 # for provenance types that are H and U, change gps_det to NA
@@ -120,10 +120,10 @@ target_only["prov_type"][target_only["prov_type"]=="Z"] <- "W"
 #combine U and NG
 target_only["prov_type"][target_only["prov_type"]=="U"] <- "NG"
 
-# if provenance type is U but gps_det is G or L, change provenance
+# If gps_det is G or L, change provenance
 # type to W
-target_only$prov_type[target_only$prov_type =='U'& target_only$gps_det == 'G'] <-"W"
-target_only$prov_type[target_only$prov_type =='U'& target_only$gps_det == 'L'] <-"W"
+target_only$prov_type[target_only$gps_det == 'G'] <-"W"
+target_only$prov_type[target_only$gps_det == 'L'] <-"W"
 
 # final rename for key
 target_only$prov_type[target_only$prov_type == "H"] <- "Horticultural"
@@ -177,7 +177,7 @@ graph.labs_small
 # bar graph of number of ex situ institutions stacked by region
 ###############################################################################
 
-ex_situ <- read.csv(file.path(main_dir,"occurrence_data","georeferencing","ExSitu_Compiled_Post-Geolocation_2023-05-18.csv"),
+ex_situ_region <- read.csv(file.path(main_dir,"occurrence_data","georeferencing","ExSitu_Compiled_Post-Geolocation_2023-05-18.csv"),
                     header = T, colClasses="character")
 
 taxon_list <- read.csv(file.path(main_dir,"inputs","taxa_list",
@@ -185,19 +185,35 @@ taxon_list <- read.csv(file.path(main_dir,"inputs","taxa_list",
                        header = T, na.strings=c("","NA"),colClasses="character")
 
 # filter to only include target taxa. First, rename columns to match in both files
-colnames(ex_situ)[colnames(ex_situ) == "taxon_name_accepted"] ="taxon_name_acc"
+colnames(ex_situ_region)[colnames(ex_situ_region) == "taxon_name_accepted"] ="taxon_name_acc"
 
-target_only <- dplyr::semi_join(ex_situ, taxon_list, by = "taxon_name_acc")
+target_only <- dplyr::semi_join(ex_situ_region, taxon_list, by = "taxon_name_acc")
 
 
 
 # rename countries to the region they are found 
-
 unique(target_only$inst_country)
 
+#The NA of Quercus ajoensis from Allen's data is in Arboretum des Pouyouleix, France
 target_only$inst_country <-mgsub(target_only$inst_country,
                                  c("United States", "South Korea", "Spain", "Mexico", "France",
                                    "Israel", "Australia", "Poland", "England", "Wales", 
                                    "New Zealand", "Argentina", "NA", "Switzerland","Netherlands",
                                    "Belgium","Germany"),
-                                 c("South America","Oceania"))
+                                 c("United States and Canada", "Asia", "Europe", "Mesoamerica", "Europe",
+                                   "Asia", "Oceania", "Europe", "Europe", "Europe",
+                                   "Oceania", "South America", "Europe", "Europe", "Europe", 
+                                   "Europe", "Europe"))
+
+inst_sum <- aggregate(inst_short ~ taxon_name_acc, target_only, sum)
+
+# graph it
+graph <- ggplot(target_only, aes(x=inst_country, y=num_indiv)) +
+  geom_col(aes(fill = gps_det)) +
+  theme_minimal() +
+  theme(legend.title=element_blank()) +
+  scale_y_continuous(breaks = seq(0, 100, 10)) +
+  scale_fill_manual(values=c("yellowgreen","skyblue2","lightsalmon","gray"))
+graph
+graph.labs <- graph + labs(x = "Provenance type", y = "Number of plants")
+graph.labs 
