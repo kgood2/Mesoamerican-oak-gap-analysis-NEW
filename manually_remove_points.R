@@ -54,8 +54,9 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
   Quercus_acutifolia <- read.csv(file.path(main_dir, data, standard,"taxon_edited_points",
                                             "Quercus_acutifolia.csv"), header = T, na.strings=c("","NA"),
                                   colClasses="character")
-
-  write.csv(Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edited_points_removed",
+  
+  new_Quercus_acutifolia = subset(Quercus_acutifolia,!(UID %in% c("id00000311", "id00038900", "id00040659", "id00032351", "id00038092", "id00243111", "id00117718", "id00033411", "id00038711", "id00278764", "id00043230", "id00037616", "id00031914", "id00117723", "id00278457", "id00278461", "id00039313", "id00037394", "id00278460", "id00278458", "id00278462", "id00278464", "id00000005", "id00041891", "id00000001", "id00033409", "id00105502", "id00105501", "id00033409", "id00000003", "id00000002", "id00105531", "id00278502", "id00033359", "id00278584", "id00043355", "id00036806", "id00036793", "id00033341", "id00028284", "id00105413", "id00105484", "id00033386", "id00105482", "id00033288", "id00105481", "id00105558", "id00105557", "id00105559", "id00105481", "id00105413", "id00039377", "id00043183", "id00037742", "id00024915", "id00028477", "id00043183", "id00001076", "id00039290", "id00034798", "id00035531", "id00278512", "id00241638", "id00043339", "id00105483", "id00038303", "id00278699", "id00037440", "id00036392", "id00037699", "id00039681", "id00117879", "id00032157", "id00039238", "id00035745", "id00038121", "id00040748", "id00024914", "id00027797", "id00278509", "id00043370", "id00033397", "id00043775", "id00278543", "id00033397", "id00105468", "id00278478", "id00043265", "id00041867", "id00004511", "id00043357", "id00243070", "id00032282", "id00278477", "id00032279", "id00040799", "id00278607", "id00278477", "d00043192", "id00278524", "id00043327", "id00043767", "id00034967", "id00278506", "id00039227", "id00278472", "id00040755", "id00278604", "id00043332", "id00040846", "id00033315", "id00043280", "id00033313", "id00043331", "id00117799", "id00043278", "id00043255", "id00278515", "id00043280", "id00033315", "id00040846", "id00043360", "id00043241", "id00043319", "id00043258", "id00043317", "id00027795", "id00043362", "id00043192", "id00043305", "id00278542", "id00278482", "id00043199", "id00278517", "id00105497", "id00037852", "id00043290", "id00278603", "id00278801", "id00105520", "id00105519", "id00043779", "id00034611", "id00105518", "id00278636", "id00105517", "id00105398", "id00033065", "id00043279","id00033305")))
+  write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_acutifolia_points_removed", ".csv")),row.names = F)
 
 #3
@@ -368,8 +369,11 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
   Quercus_furfuracea<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points",
                                        "Quercus_furfuracea.csv"), header = T, na.strings=c("","NA"),
                              colClasses="character")
+  
+  new_Quercus_furfuracea = subset(Quercus_furfuracea, !(UID %in% c("id00244248", "id00244247", "id00244246",
+                                                                   "id00000700", "id00036395")))
 
-  write.csv(Quercus_furfuracea, file.path(main_dir,data, standard, "taxon_edited_points_removed",
+  write.csv(new_Quercus_furfuracea, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_furfuracea_points_removed", ".csv")),row.names = F)
 #26
   Quercus_galeanensis<-read.csv(file.path(main_dir, data, standard,"taxon_edited_points",
