@@ -557,7 +557,9 @@ if(!dir.exists(file.path(main_dir,data,standard,"taxon_edited_points_removed")))
 
   new_Quercus_hintonii = subset(Quercus_hintonii,!(UID %in% c("id00044047", "id00044046", "id00036129",
                                                               "id00040578", "id00037334", "id00037874",
-                                                              "id00244376")))
+                                                              "id00244376", "id00036867", "id00040720",
+                                                              "id00221122", "id00032003", "id00036849",
+                                                              "id00038064", "id00034987", "id00036841")))
 
   write.csv(new_Quercus_hintonii, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_hintonii_points_removed", ".csv")),row.names = F)
