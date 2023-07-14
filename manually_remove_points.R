@@ -190,7 +190,8 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                         "Quercus_barrancana.csv"), header = T, na.strings=c("","NA"),
                               colClasses="character")
   
-  new_Quercus_barrancana <- subset(Quercus_barrancana,!(UID %in% c("id00224546", "id00380473"))& !(datasetName %in% "iNaturalist research-grade observations"))
+  new_Quercus_barrancana <- subset(Quercus_barrancana,!(UID %in% c("id00224546", "id00380473","id00224534",
+                                                                   "id00224536"))& !(datasetName %in% "iNaturalist research-grade observations"))
   
 
   write.csv(new_Quercus_barrancana, file.path(main_dir,data, standard, "taxon_edited_points_removed",
@@ -873,7 +874,30 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                                             "id00072713", "id00073094", "id00000989",
                                                             "id00029037", "id00024943", "id00072791",
                                                             "id00072789", "id00000960", "id00073204",
-                                                            "id00033422", "id00038870", "id00073163"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                            "id00033422", "id00038870", "id00073163",
+                                                            "id00072630", "id00038718", "id00037793",
+                                                            "id00038724", "id00033301", "id00073008",
+                                                            "id00072896", "id00072631", "id00073201",
+                                                            "id00073091", "id00072772", "id00072782",
+                                                            "id00072987", "id00072748", "id00035356",
+                                                            "id00035356", "id00073202", "id00073132",
+                                                            "id00072827", "id00072632", "id00035359",
+                                                            "id00072971", "id00035363", "id00072629",
+                                                            "id00034847", "id00072633", "id00035361",
+                                                            "id00240603", "id00240594", "id00072981",
+                                                            "id00072992", "id00072740", "id00072990",
+                                                            "id00072746", "id00240578", "id00240580",
+                                                            "id00240588", "id00072815", "id00240613",
+                                                            "id00033390", "id00072801", "id00072978",
+                                                            "id00072741", "id00072986", "id00039028",
+                                                            "id00072760", "id00072949", "id00072950",
+                                                            "id00038086", "id00073196", "id00072991",
+                                                            "id00072982", "id00240600", "id00072747",
+                                                            "id00240608", "id00043699", "id00073193",
+                                                            "id00073195", "id00039031", "id00039026",
+                                                            "id00039023", "id00032277", "id00032278",
+                                                            "id00240574", "id00039024", "id00039027",
+                                                            "id00032276", "id00073167", "id00072814"))& !(datasetName %in% "iNaturalist research-grade observations"))
   
   write.csv(new_Quercus_toumeyi, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_toumeyi_points_removed", ".csv")),row.names = F)
