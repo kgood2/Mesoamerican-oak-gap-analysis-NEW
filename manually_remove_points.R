@@ -170,7 +170,7 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                                               "id00001669", "id00376574", "id00024561",
                                                               "id00046037", "id00376587", "id00376588",
                                                               "id00376592", "id00376589", "id00376591",
-                                                              "id00076600"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                              "id00076600", "id00076589", "id00076688"))& !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_ajoensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_ajoensis_points_removed", ".csv")),row.names = F)
@@ -190,7 +190,7 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                         "Quercus_barrancana.csv"), header = T, na.strings=c("","NA"),
                               colClasses="character")
   
-  new_Quercus_barrancana <- subset(Quercus_barrancana,!(UID %in% c("id00224546", "id00380473","id00224534",
+  new_Quercus_barrancana <- subset(Quercus_barrancana,!(UID %in% c("id00224546", "id00380473", "id00224534",
                                                                    "id00224536"))& !(datasetName %in% "iNaturalist research-grade observations"))
   
 
@@ -497,7 +497,7 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                         "Quercus_galeanensis.csv"), header = T, na.strings=c("","NA"),
                               colClasses="character")
 
-  new_Quercus_galeanensis = subset(Quercus_galeanensis,!(UID %in% "id00038371")& !(datasetName %in% "iNaturalist research-grade observations"))
+  new_Quercus_galeanensis = subset(Quercus_galeanensis,!(UID %in% c("id00038371", "id00037763", "id00009057", "id00244249", "id00244256", "id00036498")) & !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_galeanensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_galeanensis_points_removed", ".csv")),row.names = F)
