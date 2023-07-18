@@ -103,16 +103,16 @@ for(i in 1:length(spp.all)){
   spp.now$database <- factor(spp.now$database,
                              levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
                                         "FIA","iDigBio","IUCN_RedList","PMA",
-                                        "TEFH","Tropicos"))
+                                        "TEFH","Tropicos", "Z_Final_Additions"))
   spp.now <- spp.now %>% arrange(desc(database))
   # create color palette
   # https://color-hex.org/palettes/popular
   colors <- c("#adbb3f","#5fbb9a","#6a9ebd","#7b83cc",
-                       "#3c2c7a","#c4c4c4","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0")
+                       "#3c2c7a","#c4c4c4","#ccdcf2","#3475cc","#0152bf","#CC8400","#EACD99","#ffc0cb","#e04ce0","#880808")
                        database.pal <- colorFactor(palette=colors,
                                                    levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
                                                               "FIA","iDigBio","IUCN_RedList","PMA",
-                                                              "TEFH","Tropicos"))
+                                                              "TEFH","Tropicos", "Z_Final_Additions"))
                        
                        ## read in species distribution model and select color for mapping
                        ## this is the old code for using SDMs from Khoury et al 2020 (PNAS):
