@@ -87,8 +87,8 @@ table(all_data_raw$database)
 # BIEN      CONABIO         CR          Ex_situ      Expert_Comm              FIA             GBIF 
 #  772        23320       1046             7260           10398              138            12492
 
-# iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos 
-# 4050           127759           192069              103              179              880
+# iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos Z_Final_Additions 
+# 4050           127759           192069              103              179              880     958
 
 # add unique identifier
 nms <- names(all_data_raw)
@@ -157,7 +157,7 @@ rm(matched,need_match,taxon_list_add,still_no_match)
 # keep only rows for target taxa
 all_data <- all_data %>% 
   filter(!is.na(taxon_name_status) & !is.na(UID))
-nrow(all_data) #32285
+nrow(all_data) #33187
 
 ### ! target taxa with no occurrence data:
 unique(taxon_list$taxon_name_acc)[
@@ -389,10 +389,10 @@ unique(add_again$taxon_name_acc)
 geo_pts <- rbind(geo_pts,add_again)
 table(geo_pts$database)
 #BIEN          CONABIO               CR          Ex_situ      Expert_Comm              FIA             GBIF 
-#708             1197              173              262             1638              138             6880
+#708             1197              173              301             1638              138             6880
 
-#iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos
-# 2215             3611             2248               10                2              767
+#iDigBio     IUCN_RedList NorthAm_herbaria              PMA             TEFH         Tropicos   Z_Final_Additions
+# 2215             3611             2330               10                2              767       858
 
 # create rounded latitude and longitude columns for removing duplicates;
 #   number of digits can be changed based on how dense you want data
@@ -433,7 +433,7 @@ unique(geo_pts$database)
 geo_pts$database <- factor(geo_pts$database,
                            levels = c("NorthAm_herbaria","GBIF", "Ex_situ","Expert_Comm","iDigBio",
                                       "CR","FIA","IUCN_RedList","BIEN","PMA","TEFH",
-                                      "Tropicos","CONABIO"))
+                                      "Tropicos","CONABIO", "Z_Final_Additions"))
 geo_pts <- geo_pts %>% arrange(database)
 
 # remove duplicates
