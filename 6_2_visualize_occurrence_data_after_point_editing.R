@@ -99,7 +99,7 @@ if(!dir.exists(output.maps)) dir.create(output.maps, recursive=T)
 # if you just want to make map for one species, find index of species in spp.all (for example,Quercus acutifolia 
 # is 2. Add i < - index number below, then run everything inside loop)
 # visualize different baselayers here: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
-i <- 21
+#i <- 6
 
 for(i in 1:length(spp.all)){
   
@@ -114,16 +114,16 @@ for(i in 1:length(spp.all)){
   spp.now$database <- factor(spp.now$database,
                              levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
                                         "FIA","iDigBio","IUCN_RedList","PMA",
-                                        "TEFH","Tropicos"))
+                                        "TEFH","Tropicos","Z_Final_Additions"))
   spp.now <- spp.now %>% arrange(desc(database))
   # create color palette
   # https://color-hex.org/palettes/popular
   colors <- c("#adbb3f","#5fbb9a","#6a9ebd","#7b83cc",
-                       "#3c2c7a","green","#FFBF00","#3475cc","#0152bf","#CC8400","#454B1B","#ffc0cb","#e04ce0")
+                       "#3c2c7a","green","#FFBF00","#3475cc","#0152bf","#CC8400","#454B1B","#ffc0cb","#e04ce0", "#880808")
                        database.pal <- colorFactor(palette=colors,
                                                    levels = c("NorthAm_herbaria","GBIF","BIEN","CONABIO","CR","Ex_situ","Expert_Comm",
                                                               "FIA","iDigBio","IUCN_RedList","PMA",
-                                                              "TEFH","Tropicos"))
+                                                              "TEFH","Tropicos", "Z_Final_Additions"))
       
                 
                        
