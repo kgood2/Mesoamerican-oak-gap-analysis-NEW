@@ -497,7 +497,10 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                         "Quercus_galeanensis.csv"), header = T, na.strings=c("","NA"),
                               colClasses="character")
 
-  new_Quercus_galeanensis = subset(Quercus_galeanensis,!(UID %in% c("id00038371", "id00037763", "id00009057", "id00244249", "id00244256", "id00036498")) & !(datasetName %in% "iNaturalist research-grade observations"))
+  new_Quercus_galeanensis = subset(Quercus_galeanensis,!(UID %in% c("id00038371", "id00037763", "id00009057",
+                                                                    "id00244249", "id00244256", "id00036498",
+                                                                    "id00244269", "id00037454", "id00225015",
+                                                                    "id00225039", "id00037484")) & !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_galeanensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_galeanensis_points_removed", ".csv")),row.names = F)
