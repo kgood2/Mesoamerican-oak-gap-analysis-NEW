@@ -173,7 +173,8 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                                               "id00001669", "id00376574", "id00024561",
                                                               "id00046037", "id00376587", "id00376588",
                                                               "id00376592", "id00376589", "id00376591",
-                                                              "id00076600", "id00076589", "id00076688"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                              "id00076600", "id00076589", "id00076688", 
+                                                              "id00076688", "id00076589", "id00076694"))& !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_ajoensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_ajoensis_points_removed", ".csv")),row.names = F)
@@ -488,7 +489,7 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                                                     "id00036142", "id00033478", "id00044186",
                                                                     "id00238888", "id00238889", "id00028838", 
                                                                     "id00028580", "id00273696", "id00038944", 
-                                                                    "id00238890", "id00238886"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                                    "id00238890", "id00238886", "id00036575"))& !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_engelmannii, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_engelmannii_points_removed", ".csv")),row.names = F)
@@ -507,7 +508,8 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                              colClasses="character")
   
   new_Quercus_furfuracea = subset(Quercus_furfuracea, !(UID %in% c("id00244248", "id00244247", "id00244246",
-                                                                   "id00000700", "id00036395"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                                   "id00000700", "id00036395", "id00224999",
+                                                                   "id00224998", "id00225000"))& !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_furfuracea, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_furfuracea_points_removed", ".csv")),row.names = F)
@@ -597,7 +599,8 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                                               "id00040578", "id00037334", "id00037874",
                                                               "id00244376", "id00036867", "id00040720",
                                                               "id00221122", "id00032003", "id00036849",
-                                                              "id00038064", "id00034987", "id00036841"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                              "id00038064", "id00034987", "id00036841", 
+                                                              "id00032183"))& !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_hintonii, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_hintonii_points_removed", ".csv")),row.names = F)
@@ -607,7 +610,7 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                      colClasses="character")
 
   new_Quercus_hintoniorum = subset(Quercus_hintoniorum,!(UID %in% c("id00000757", "id00036813", " id00012485",
-                                                                   "id00012485", "id00275737"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                                   "id00012485", "id00275737", "id00043314"))& !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_hintoniorum, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_hintoniorum_points_removed", ".csv")),row.names = F)
@@ -920,7 +923,8 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                                             "id00073195", "id00039031", "id00039026",
                                                             "id00039023", "id00032277", "id00032278",
                                                             "id00240574", "id00039024", "id00039027",
-                                                            "id00032276", "id00073167", "id00072814"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                            "id00032276", "id00073167", "id00072814", 
+                                                            "id00073200", "id00038728"))& !(datasetName %in% "iNaturalist research-grade observations"))
   
   write.csv(new_Quercus_toumeyi, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_toumeyi_points_removed", ".csv")),row.names = F)
