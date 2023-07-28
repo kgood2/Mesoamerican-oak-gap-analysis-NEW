@@ -243,7 +243,8 @@ write.csv(new_Quercus_acutifolia, file.path(main_dir,data, standard, "taxon_edit
                                                                     "id00042635", "id00241187", "id00270358",
                                                                     "id00025046", "id00156399", "id00034187",
                                                                     "id00038997", "id00270446", "id00156451",
-                                                                    "id00004260", "id00381179"))& !(datasetName %in% "iNaturalist research-grade observations"))
+                                                                    "id00004260", "id00381179", "id00380746",
+                                                                    "id00380743", "id00380741"))& !(datasetName %in% "iNaturalist research-grade observations"))
 
   write.csv(new_Quercus_cedrosensis, file.path(main_dir,data, standard, "taxon_edited_points_removed",
                                                paste0("Quercus_cedrosensis_points_removed", ".csv")),row.names = F)
