@@ -139,9 +139,9 @@ compare.ecoGlobal.count <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,b
   eco_exsitu <- intersect.eco.buff(exsitu,radius,pt_proj,buff_proj,eco,boundary)
   # count number of ecoregions under buffers
   print(paste("Based on ",radius/1000," km radius..."))
-  count_exsitu <- length(unique(eco_exsitu$ECO_ID_U))
+  count_exsitu <- length(unique(eco_exsitu$OBJECTID))
   print(paste0("Number of ecoregions under ex situ buffers: ",count_exsitu))
-  count_insitu <- length(unique(eco_insitu$ECO_ID_U))
+  count_insitu <- length(unique(eco_insitu$OBJECTID))
   print(paste0("Number of ecoregions under in situ buffers: ",count_insitu))
   # calculate difference in number of ecoregions
   eco_diff_percent <- (count_exsitu/count_insitu)*100
@@ -435,8 +435,8 @@ target_files <- unique(mgsub(taxon_list$taxon_name_acc,
 #   you'd like to use (download instructions in 1-prep_gis_layers.R)...
 ## Global terrestrial ecoregions from The Nature Conservancy
 # read in shapefile of global ecoregions
-ecoregions <- vect(file.path(main_dir,"gis_data",
-                             "terr-ecoregions-TNC","tnc_terr_ecoregions.shp"))
+ecoregions <- vect(file.path(main_dir,"inputs", "gis_data",
+                             "holdridge_life_zones","Zv_c","ZV_c.shp"))
 
 # read in world countries layer created in 1-prep_gis_layers.R
 # this will be used to clip buffers so they're not in the water
