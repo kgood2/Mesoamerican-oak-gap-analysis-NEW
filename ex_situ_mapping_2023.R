@@ -474,7 +474,7 @@ if(make_maps){
                        #eco_map$WWF_REALM2 == "Neotropic" ,]
   # the global ecoregions layer does not have major lakes cut out, so we'll do 
   #   that; takes a little while; you can skip if needed
-  #eco_map <- crop(eco_map,world_poly_clip)
+  eco_map <- crop(eco_map,world_poly_clip)
   # if you're using more than one realm and/or have concerns about the maps
   #   being too large, crop ecoregions by state layer as well
   #eco_map <- crop(eco_map,state_boundaries)
