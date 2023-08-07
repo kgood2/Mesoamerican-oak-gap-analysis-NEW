@@ -220,7 +220,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,ex_buff,ex1,ex2,ex3,in_pts){
     # if you want to use other ecoregion layer, you just need to change the 
     #   ECO_ID column to the equivalent ecoregion ID column in your layer
     addPolygons(
-      data = eco_now, fillColor = ~eco_pal(eco_now$ECO_ID),
+      data = eco_now, fillColor = ~eco_pal(eco_now$OBJECTID),
       fillOpacity = 0.8, color = "#757575", weight = 1.5, opacity = 0.8) %>%
     ## state boundaries
     addPolygons(
@@ -303,7 +303,7 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,in_pts){
     ## global ecoregions
     addPolygons(
       data = eco_now,
-      fillColor = ~eco_pal(eco_now$ECO_ID),
+      fillColor = ~eco_pal(eco_now$OBJECTID),
       fillOpacity = 0.8, color = "#757575", weight = 1.5, opacity = 0.8) %>%
     ## state boundaries
     addPolygons(
@@ -470,14 +470,14 @@ if(make_maps){
   #   OPTIONS:
   #     "Australasia" "Antarctic"   "Afrotropic"  "Indo-Malay"  "Nearctic"   
   #     "Neotropic"   "Oceania"     "Palearctic" 
-  eco_map <- eco_map[eco_map$WWF_REALM2 == "Nearctic" | 
-                       eco_map$WWF_REALM2 == "Neotropic" ,]
+  #eco_map <- eco_map[eco_map$WWF_REALM2 == "Nearctic" | 
+                       #eco_map$WWF_REALM2 == "Neotropic" ,]
   # the global ecoregions layer does not have major lakes cut out, so we'll do 
   #   that; takes a little while; you can skip if needed
-  eco_map <- crop(eco_map,world_poly_clip)
+  #eco_map <- crop(eco_map,world_poly_clip)
   # if you're using more than one realm and/or have concerns about the maps
   #   being too large, crop ecoregions by state layer as well
-  eco_map <- crop(eco_map,state_boundaries)
+  #eco_map <- crop(eco_map,state_boundaries)
   # make sf object instead of terra, for input into leaflet
   eco_map <- st_as_sf(eco_map)
   
@@ -485,14 +485,14 @@ if(make_maps){
   # every time you run this section it creates a new palette; if you
   #   want the same color ecoregions for every taxon, run them all in one go;
   #   if you don't like the ecoregion colors, run this again or edit it
-  eco_pal_colors <- createPalette(length(unique(eco_map$ECO_ID)),
+  eco_pal_colors <- createPalette(length(unique(eco_map$OBJECTID)),
                                   seedcolors = c("#ba3c3c","#ba7d3c","#baab3c",
                                                           "#3ca7ba","#3c6aba","#573cba",
                                                           "#943cba","#ba3ca1","#ba3c55"),
                                                           range = c(5,45), target = "normal", M=50000)
   swatch(eco_pal_colors)
   eco_pal_colors <- as.vector(eco_pal_colors)
-  eco_pal <- colorFactor(eco_pal_colors,eco_map$ECO_ID)
+  eco_pal <- colorFactor(eco_pal_colors,eco_map$OBJECTID)
   
 }
 
