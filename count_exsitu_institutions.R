@@ -22,7 +22,7 @@ ex_situ <- read.csv(file.path(main_dir,"ExSitu_Compiled_Post-Geolocation_2023-01
                     header = T, na.strings=c("","NA"),colClasses="character")
 
 # update script with species name you are interested in 
-new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus acutifolia"),]
+new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus vicentensis"),]
 
 
 # identify and count number of ex situ institutions with species 
@@ -94,10 +94,10 @@ ex_situ <- read.csv(file.path(main_dir,"ExSitu_Compiled_Post-Geolocation_2023-01
                     header = T, na.strings=c("","NA"),colClasses="character")
 
 # update script with species name you are interested in 
-new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus acutifolia"),]
+new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus toxicodendrifolia"),]
 
-#new2 <- new[new$UID != "ArbBergerette~added0033~NG~Quercus cedrosensis", ]
-new2 <- new[!(new$UID %in% c("ChenesPlantesArb~LB97-0076~W~Quercus acutifolia", "ChenesPlantesArb~LB97-0075~W~Quercus acutifolia", "ChenesPlantesArb~LB97-0062~W~Quercus acutifolia", "ArbBergerette~added0071~NG~Quercus acutifolia","ArbBergerette~added0022~NG~Quercus acutifolia","ChevithorneBarton~added0068~NG~Quercus acutifolia","BGItirraran~added0070~NG~Quercus acutifolia")), ]
+new2 <- new[new$UID != "ArbPouyouleix~added0120~NG~Quercus toxicodendrifolia", ]
+#new2 <- new[!(new$UID %in% c("SirHarloldHillierG~2001.0561~NG~Quercus toumeyi","ArbPouyouleix~added0117~NG~Quercus toumeyi","SanDiegoBG~2019.0350.1003~W~Quercus toumeyi","SanDiegoBG~2019.0350.1002~W~Quercus toumeyi","SanDiegoBG~2019.0350.1001~W~Quercus toumeyi")), ]
 
 # identify and count number of ex situ institutions with species 
 unique(new2[c("inst_short")])
