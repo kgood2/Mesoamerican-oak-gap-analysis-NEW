@@ -170,6 +170,8 @@ world_polygons <- ne_countries(scale = 50, type = "countries",
 taxon_list <- read.csv(file.path(main_dir,"inputs","taxa_metadata", "target_taxa_with_synonyms_for_richness.csv"), 
                        header=T, colClasses="character",na.strings=c("","NA"))
 
+taxon_list <- taxon_list %>% filter(taxon_name_status == "Accepted")
+
 # Filter out taxa you do not want to include
 taxon_list_final <- taxon_list %>% 
   filter(!taxon_name_accepted %in% c("Quercus hinckleyi","Quercus robusta","Quercus tardifolia",
@@ -196,29 +198,33 @@ ctry_richness_all <- ctry_richness_all %>%
 ## title text for map
 my_title <- "Taxon Richness"
 ## text for legend title
-my_legend_title <- paste0("Number of native","<br/>"," target taxa")
+my_legend_title <- paste0("Number of native","<br/>"," taxa")
 ## color bins and labels
 # can look at distribution of data to inform bins
 hist(ctry_richness_all$Freq,breaks=20,xlim=c(0,50),ylim=c(0,25))
 # BASED ON YOUR DATA, assign bin breaks and labels 
 #   most color palettes work will with max of 9 bins (not counting Inf)
 # you'll need to decide if you want to use natural breaks, even, exponential, etc.
-bins <- c(0,1,11,21,31,41,51,Inf)
-my_legend_labels <- c("0","1-10","11-20","21-30","31-40","41-50","51+")
+bins <- c(1,6,11,16,21,26,31,36,Inf)
+my_legend_labels <- c("1-5","6-10","11-15","16-20","21-25","26-30", "31-35", "36+")
 # create color palette
 #   see palette options by running display.brewer.all()
-my_palette <- colorBin(palette = "PuRd", bins = bins,
+my_palette <- colorBin(palette = "YlOrRd", bins = bins,
                        domain = ctry_richness_all$Freq, 
                        reverse = F, na.color = "white")
 ## create map
-map_richness_all <- map.countries(ctry_richness_all,my_title,my_legend_title,
+map_richness_all <- map.countries(ctry_richness_all,my_title,
+                                  my_legend_title,
                                   my_legend_labels,my_palette)
 ## view map
 map_richness_all
+
 ## save map
 htmlwidgets::saveWidget(map_richness_all,
                         file.path(main_dir,analysis_dir,data_out,
                                   "country-level_taxon_richness_ALL.html"))
+
+
 
 ####
 ## country-level richness for THREATENED taxa
