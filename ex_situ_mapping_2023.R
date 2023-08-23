@@ -139,9 +139,9 @@ compare.ecoGlobal.count <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,b
   eco_exsitu <- intersect.eco.buff(exsitu,radius,pt_proj,buff_proj,eco,boundary)
   # count number of ecoregions under buffers
   print(paste("Based on ",radius/1000," km radius..."))
-  count_exsitu <- length(unique(eco_exsitu$OBJECTID))
+  count_exsitu <- length(unique(eco_exsitu$HLZ_ID))
   print(paste0("Number of ecoregions under ex situ buffers: ",count_exsitu))
-  count_insitu <- length(unique(eco_insitu$OBJECTID))
+  count_insitu <- length(unique(eco_insitu$HLZ_ID))
   print(paste0("Number of ecoregions under in situ buffers: ",count_insitu))
   # calculate difference in number of ecoregions
   eco_diff_percent <- (count_exsitu/count_insitu)*100
@@ -220,7 +220,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,ex_buff,ex1,ex2,ex3,in_pts){
     # if you want to use other ecoregion layer, you just need to change the 
     #   ECO_ID column to the equivalent ecoregion ID column in your layer
     addPolygons(
-      data = eco_now, fillColor = ~eco_pal(eco_now$OBJECTID),
+      data = eco_now, fillColor = ~eco_pal(eco_now$HLZ_ID),
       fillOpacity = 0.8, color = "#757575", weight = 1.5, opacity = 0.8) %>%
     ## state boundaries
     addPolygons(
@@ -303,7 +303,7 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,in_pts){
     ## global ecoregions
     addPolygons(
       data = eco_now,
-      fillColor = ~eco_pal(eco_now$OBJECTID),
+      fillColor = ~eco_pal(eco_now$HLZ_ID),
       fillOpacity = 0.8, color = "#757575", weight = 1.5, opacity = 0.8) %>%
     ## state boundaries
     addPolygons(
@@ -435,8 +435,7 @@ target_files <- unique(mgsub(taxon_list$taxon_name_acc,
 #   you'd like to use (download instructions in 1-prep_gis_layers.R)...
 ## Global terrestrial ecoregions from The Nature Conservancy
 # read in shapefile of global ecoregions
-ecoregions <- vect(file.path(main_dir,"inputs", "gis_data",
-                             "holdridge_life_zones","Zv_c","ZV_c.shp"))
+ecoregions <- vect(file.path("/Volumes/GoogleDrive/My Drive/Holdridge Life Zones/MesoamericanHLZ_HolesFilled_Final/MesoamericanHLZ_Final_HolesFilled.shp"))
 
 # read in world countries layer created in 1-prep_gis_layers.R
 # this will be used to clip buffers so they're not in the water
@@ -485,14 +484,14 @@ if(make_maps){
   # every time you run this section it creates a new palette; if you
   #   want the same color ecoregions for every taxon, run them all in one go;
   #   if you don't like the ecoregion colors, run this again or edit it
-  eco_pal_colors <- createPalette(length(unique(eco_map$OBJECTID)),
+  eco_pal_colors <- createPalette(length(unique(eco_map$HLZ_ID)),
                                   seedcolors = c("#ba3c3c","#ba7d3c","#baab3c",
                                                           "#3ca7ba","#3c6aba","#573cba",
                                                           "#943cba","#ba3ca1","#ba3c55"),
                                                           range = c(5,45), target = "normal", M=50000)
   swatch(eco_pal_colors)
   eco_pal_colors <- as.vector(eco_pal_colors)
-  eco_pal <- colorFactor(eco_pal_colors,eco_map$OBJECTID)
+  eco_pal <- colorFactor(eco_pal_colors,eco_map$HLZ_ID)
   
 }
 
