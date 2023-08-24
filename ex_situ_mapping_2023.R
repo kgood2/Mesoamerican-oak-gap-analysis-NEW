@@ -225,12 +225,12 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     ## state boundaries
     addPolygons(
       data = states, fillColor = "transparent",
-      weight = 1.5, opacity = 0.3, color = "black") %>%
+      weight = 0, opacity = 0.3, color = "#939799") %>%
     ## in situ buffers
     addPolygons(
       data = in_buff,
       fillColor = "#a3a3a3", fillOpacity = 0.45,
-      weight = 1.3, opacity = 0.9, color = "black",
+      weight = 2.7, opacity = 0.9, color = "black",
       smoothFactor = 0) %>%
     ## ex situ buffers
     addPolygons(
@@ -298,12 +298,12 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     addPolygons(
       data = states,
       fillColor = "transparent",
-      weight = 1.5, opacity = 0.3, color = "#939799") %>%
+      weight = 0, opacity = 0.3, color = "#939799") %>%
     ## in situ buffers
     addPolygons(
       data = in_buff,
       fillColor = "#a3a3a3", fillOpacity = 0.45,
-      weight = 5.0, opacity = 0.9, color = "black",
+      weight = 2.7, opacity = 0.9, color = "black",
       smoothFactor = 0) %>%
     ## in situ points
     # can remove if you don't want these!
@@ -479,11 +479,11 @@ if(make_maps){
   #"#943cba","#ba3ca1","#ba3c55"),
   #range = c(5,45), target = "normal", M=50000)
   eco_pal_colors <- c("#ffb6c1","#7b68ee","#ff1493","#90ee90","#b0e0e6",
-                               "#fa8072","#1e90ff","#ff00ff","#da70d6","#0000ff",
-                               "#00ffff","#dc143c","#00ff7f","#8a2be2","#deb887",
-                               "#7cfc00","#ffff00","#ffa500","#b03060","#800080",
+                               "#fa8072","#1e90ff","#ff00ff","#da70d6","#247777",
+                               "#4F7942","#dc143c","#00ff7f","#8a2be2","#deb887",
+                               "#228b22","#E4D00A","#ffa500","#b03060","#800080",
                                "#8fbc8f","#00008b","#9acd32","#d2691e","#4682b4",
-                               "#008b8b","#483d8b","#808000","#7f0000","#228b22")
+                               "#097969","#483d8b","#808000","#7f0000","#7cfc00")
                                
   swatch(eco_pal_colors)
   eco_pal_colors <- as.vector(eco_pal_colors)
