@@ -230,7 +230,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     addPolygons(
       data = in_buff,
       fillColor = "#a3a3a3", fillOpacity = 0.45,
-      weight = 1.3, opacity = 0.9, color = "#c4c4c4",
+      weight = 1.3, opacity = 0.9, color = "black",
       smoothFactor = 0) %>%
     ## ex situ buffers
     addPolygons(
@@ -298,12 +298,12 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     addPolygons(
       data = states,
       fillColor = "transparent",
-      weight = 1.5, opacity = 0.3, color = "black") %>%
+      weight = 1.5, opacity = 0.3, color = "#939799") %>%
     ## in situ buffers
     addPolygons(
       data = in_buff,
       fillColor = "#a3a3a3", fillOpacity = 0.45,
-      weight = 1.3, opacity = 0.9, color = "#5A5A5A",
+      weight = 5.0, opacity = 0.9, color = "black",
       smoothFactor = 0) %>%
     ## in situ points
     # can remove if you don't want these!
