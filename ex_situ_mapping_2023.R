@@ -204,7 +204,7 @@ clip.pt.by.boundary <- function(pts,pt_proj,boundary){
 }
 
 # function to create ex situ coverage map, with ecoregions, buffers, and points
-map.exsitu <- function(taxon,eco_now,states,in_buff,ex_buff,ex1,ex2,ex3,in_pts){
+map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu_pts){
   # you can set the "maxZoom" to the level you'd like, or remove; used to 
   #   protect locations of rare wild plants
   map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
@@ -221,7 +221,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,ex_buff,ex1,ex2,ex3,in_pts){
     #   ECO_ID column to the equivalent ecoregion ID column in your layer
     addPolygons(
       data = eco_now, fillColor = ~eco_pal(eco_now$HLZ_ID),
-      fillOpacity = 0.8, color = "#757575", weight = 1.5, opacity = 0.8) %>%
+      fillOpacity = 0.8, color = "#757575", weight = 0.8, opacity = 0.8) %>%
     ## state boundaries
     addPolygons(
       data = states, fillColor = "transparent",
@@ -234,27 +234,20 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,ex_buff,ex1,ex2,ex3,in_pts){
       smoothFactor = 0) %>%
     ## ex situ buffers
     addPolygons(
-      data = ex_buff,
+      data = exsitu_buff,
       fillColor = "white", fillOpacity = 0.52,
       weight = 1.3, color = "white", opacity = 0,
       smoothFactor = 0) %>%
     ## ex situ points; three different sizes based on number of individuals
-    addMarkers(data = ex1,
-               lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_sm,
-               popup = ex1$inst_short) %>%
-    addMarkers(data = ex2,
-               lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_md,
-               popup = ex2$inst_short) %>%
-    addMarkers(data = ex3,
-               lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_lg,
-               popup = ex3$inst_short) %>%
+    addMarkers(data = exsitu_pt,
+               lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_sm) %>%
     ## in situ points
     # can remove if you don't want these! remember to remove from legend too below
     addCircleMarkers(
-      data = in_pts, lng = ~decimalLongitude, lat = ~decimalLatitude,
+      data = insitu_pts, lng = ~decimalLongitude, lat = ~decimalLatitude,
       color = "#dedcd7", stroke = F,  fillOpacity = 1,
       # you may want to change the radius
-      radius = 1.5) %>%
+      radius = 3) %>%
     ## add scale bar
     addScaleBar(position = "bottomright",
                 options = scaleBarOptions(maxWidth = 150)) %>%
@@ -272,13 +265,9 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,ex_buff,ex1,ex2,ex3,in_pts){
       position = "bottomleft") %>%
     # ex situ triangles
     addControl(
-      html = "Source locality and number of wild provenance<br/>individuals in ex situ collections<br/>
-      		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
-      		style='width:8px;height:8px;'> 1-9
-      		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
-      		style='width:15px;height:15px;'> 10-25
-      		<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
-      		style='width:22px;height:22px;'> 30+",
+      html = "<img src='https://www.freeiconspng.com/uploads/triangle-png-28.png'
+      style='width:8px;height:8px;'> Source locality of wild provenance<br/>
+      individuals in ex situ collections",
       position = "bottomleft") %>%
     # in situ occurrence points
     addControl(
@@ -292,7 +281,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,ex_buff,ex1,ex2,ex3,in_pts){
 }
 
 # function to create map for taxa with no ex situ points
-map.no.exsitu <- function(taxon,eco_now,states,in_buff,in_pts){
+map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
   # you can set the "maxZoom" to the level you'd like, or remove; used to 
   #   protect locations of rare wild plants
   map <- leaflet(options = leafletOptions(maxZoom = 9)) %>%
@@ -304,7 +293,7 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,in_pts){
     addPolygons(
       data = eco_now,
       fillColor = ~eco_pal(eco_now$HLZ_ID),
-      fillOpacity = 0.8, color = "#757575", weight = 1.5, opacity = 0.8) %>%
+      fillOpacity = 0.8, color = "#757575", weight = 0.8, opacity = 0.8) %>%
     ## state boundaries
     addPolygons(
       data = states,
@@ -314,11 +303,11 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,in_pts){
     addPolygons(
       data = in_buff,
       fillColor = "#a3a3a3", fillOpacity = 0.45,
-      weight = 1.3, opacity = 0.9, color = "#c4c4c4",
+      weight = 1.3, opacity = 0.9, color = "#5A5A5A",
       smoothFactor = 0) %>%
     ## in situ points
     # can remove if you don't want these!
-    addCircleMarkers(data = in_pts,
+    addCircleMarkers(data = insitu_pts,
                      lng = ~decimalLongitude, lat = ~decimalLatitude,
                      color = "#dedcd7", 
                      # you may want to change the radius
@@ -385,16 +374,16 @@ if(make_maps){
   # CHOOSE cutoffs used for grouping ex situ data by number of individuals in maps;
   #   three categories will be created: 
   #   1) x < few_indiv   2) x >= few_indiv & x < many_indiv   3) x >= many_indiv
-  few_indiv <- 10
-  many_indiv <- 30
+  #few_indiv <- 10
+  #many_indiv <- 30
   
   # get icons used to mark number of ex situ individuals on maps 
   triangle_sm <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
                           iconWidth = 8, iconHeight = 8)
-  triangle_md <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
-                          iconWidth = 15, iconHeight = 15)
-  triangle_lg <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
-                          iconWidth = 22, iconHeight = 22)
+  #triangle_md <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
+  #iconWidth = 15, iconHeight = 15)
+  #triangle_lg <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
+  #iconWidth = 22, iconHeight = 22)
   
   # SELECT target countries (countries with taxa you're mapping); these are
   #   for getting state boundaries from rnaturalearth package
@@ -470,7 +459,7 @@ if(make_maps){
   #     "Australasia" "Antarctic"   "Afrotropic"  "Indo-Malay"  "Nearctic"   
   #     "Neotropic"   "Oceania"     "Palearctic" 
   #eco_map <- eco_map[eco_map$WWF_REALM2 == "Nearctic" | 
-                       #eco_map$WWF_REALM2 == "Neotropic" ,]
+  #eco_map$WWF_REALM2 == "Neotropic" ,]
   # the global ecoregions layer does not have major lakes cut out, so we'll do 
   #   that; takes a little while; you can skip if needed
   eco_map <- crop(eco_map,world_poly_clip)
@@ -484,11 +473,18 @@ if(make_maps){
   # every time you run this section it creates a new palette; if you
   #   want the same color ecoregions for every taxon, run them all in one go;
   #   if you don't like the ecoregion colors, run this again or edit it
-  eco_pal_colors <- createPalette(length(unique(eco_map$HLZ_ID)),
-                                  seedcolors = c("#ba3c3c","#ba7d3c","#baab3c",
-                                                          "#3ca7ba","#3c6aba","#573cba",
-                                                          "#943cba","#ba3ca1","#ba3c55"),
-                                                          range = c(5,45), target = "normal", M=50000)
+  #eco_pal_colors <- createPalette(length(unique(eco_map$HLZ_ID)),
+  #seedcolors = c("#ba3c3c","#ba7d3c","#baab3c",
+  #"#3ca7ba","#3c6aba","#573cba",
+  #"#943cba","#ba3ca1","#ba3c55"),
+  #range = c(5,45), target = "normal", M=50000)
+  eco_pal_colors <- c("#ffb6c1","#7b68ee","#ff1493","#90ee90","#b0e0e6",
+                               "#fa8072","#1e90ff","#ff00ff","#da70d6","#0000ff",
+                               "#00ffff","#dc143c","#00ff7f","#8a2be2","#deb887",
+                               "#7cfc00","#ffff00","#ffa500","#b03060","#800080",
+                               "#8fbc8f","#00008b","#9acd32","#d2691e","#4682b4",
+                               "#008b8b","#483d8b","#808000","#7f0000","#228b22")
+                               
   swatch(eco_pal_colors)
   eco_pal_colors <- as.vector(eco_pal_colors)
   eco_pal <- colorFactor(eco_pal_colors,eco_map$HLZ_ID)
@@ -638,19 +634,19 @@ for(i in 1:length(target_taxa)){
                                              pt.proj,pt.proj,world_poly_clip))
       
       # split ex situ data by number of individuals, to use different symbols
-      exsitu1 <- exsitu_pt %>% arrange(individualCount) %>%
-        filter(individualCount < few_indiv)
-      exsitu2 <- exsitu_pt %>% arrange(individualCount) %>%
-        filter(individualCount >= few_indiv & individualCount < many_indiv)
-      exsitu3 <- exsitu_pt %>% arrange(individualCount) %>%
-        filter(individualCount >= many_indiv)
+      #exsitu1 <- exsitu_pt %>% arrange(individualCount) %>%
+      #filter(individualCount < few_indiv)
+      #exsitu2 <- exsitu_pt %>% arrange(individualCount) %>%
+      #filter(individualCount >= few_indiv & individualCount < many_indiv)
+      #exsitu3 <- exsitu_pt %>% arrange(individualCount) %>%
+      #33filter(individualCount >= many_indiv)
       
       # create buffers around in situ points, for mapping
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
       map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-                        exsitu_buff,exsitu1,exsitu2,exsitu3,insitu_pt); map
+                        exsitu_buff,exsitu_pt,insitu_pt); map
       # save map
       htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
                                             paste0(target_files[i],
