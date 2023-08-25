@@ -132,7 +132,7 @@ intersect.eco.buff <- function(df,radius,pt_proj,buff_proj,eco,boundary){
 
 # create data frame with ecoregion data extracted for area covered by buffers,
 #		for both in situ and ex situ points, then compare count of ecoregions.
-#   uses the *global terrestrial ecoregions TNC* layer
+#   uses the *HOLDRIDGE LIFE ZONES* layer
 compare.ecoGlobal.count <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,boundary){
   # create data frame of ecoregion-buffer intersection
   eco_insitu <- intersect.eco.buff(insitu,radius,pt_proj,buff_proj,eco,boundary)
@@ -230,7 +230,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     addPolygons(
       data = in_buff,
       fillColor = "#a3a3a3", fillOpacity = 0.45,
-      weight = 2.7, opacity = 0.9, color = "black",
+      weight = 2.3, opacity = 0.9, color = "black",
       smoothFactor = 0) %>%
     ## ex situ buffers
     addPolygons(
@@ -256,9 +256,9 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     ##	PNG images! So you could do that for any shape you'd like
     # in situ and ex situ buffers
     addControl(
-      html = "<img src='https://i.ibb.co/1dW95pC/Insitu-buffer.png'
+      html = "<img src='https://i.ibb.co/pLbq1n4/In-situ-buffer.png'
       		style='width:40px;height:40px;'> Taxon's estimated native distribution<br/>
-      		(50 km buffer around in situ occurrence points)<br/>
+      		(50 km buffer around wild occurrence points)<br/>
       		<img src='https://i.ibb.co/SR71N6k/Exsitu-buffer.png'
       		style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
       		(50 km buffer around wild provenance localities)",
@@ -272,7 +272,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     # in situ occurrence points
     addControl(
       html = "<img src='https://www.freeiconspng.com/uploads/grey-circle-icon-8.png'
-        		style='width:9px;height:9px;'> In situ occurrence points",
+        		style='width:9px;height:9px;'> Wild occurrence point",
       position = "bottomleft") %>%
     ## set view (long and lat) and zoom level, for when map initially opens
     setView(-96, 40, zoom = 5)
@@ -303,7 +303,7 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     addPolygons(
       data = in_buff,
       fillColor = "#a3a3a3", fillOpacity = 0.45,
-      weight = 2.7, opacity = 0.9, color = "black",
+      weight = 2.3, opacity = 0.9, color = "black",
       smoothFactor = 0) %>%
     ## in situ points
     # can remove if you don't want these!
@@ -320,14 +320,14 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     ##	PNG images! So you could do that for any shape you'd like
     # in situ buffers
     addControl(
-      html = "<img src='https://i.ibb.co/1dW95pC/Insitu-buffer.png'
+      html = "<img src='https://i.ibb.co/pLbq1n4/In-situ-buffer.png'
       		style='width:40px;height:40px;'> Taxon's estimated native distribution<br/>
-      		(50 km buffer around in situ occurrence points)",
+      		(50 km buffer around wild occurrence points)",
       position = "bottomleft") %>%
     # in situ occurrence points
     addControl(
       html = "<img src='https://www.freeiconspng.com/uploads/grey-circle-icon-8.png'
-          		style='width:9px;height:9px;'> In situ occurrence points",
+          		style='width:9px;height:9px;'> Wild occurrence point",
       position = "bottomleft") %>%
     ## set view (long and lat) and zoom level, for when map initially opens
     setView(-96, 40, zoom = 4)
@@ -478,9 +478,9 @@ if(make_maps){
   #"#3ca7ba","#3c6aba","#573cba",
   #"#943cba","#ba3ca1","#ba3c55"),
   #range = c(5,45), target = "normal", M=50000)
-  eco_pal_colors <- c("white","#ffb6c1","#7b68ee","#ff1493","#90ee90","#b0e0e6",
-                               "#fa8072","#1e90ff","#ff00ff","#da70d6","#247777",
-                               "#4F7942","#dc143c","#00ff7f","#8a2be2","#deb887",
+  eco_pal_colors <- c("white","#ffb6c1","#7b68ee","#ff1493","#90ee90","#7F7D9C",
+                               "#fa8072","#1e90ff","#ff00ff","#D37DA5","#247777",
+                               "#4F7942","#dc143c","#00ff7f","#884070","#deb887",
                                "#228b22","#E4D00A","#d2691e","#b03060","#800080",
                                "#8fbc8f","#00008b","#9acd32","#ffa500","#4682b4",
                                "#097969","#483d8b","#808000","#7f0000","#7cfc00")
