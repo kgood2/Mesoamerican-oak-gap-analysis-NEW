@@ -383,6 +383,9 @@ map_input <- data.frame(
 # currently a separate map is created for each country; if you'd like one
 #   map for all countries, could add a section in the loop that joins the  
 #   country features so all can be visualized together.
+
+i <- 2
+
 for(i in 1:nrow(map_input)){
   
   # read in shapefile for the country, with state boundaries; we use the 
@@ -396,7 +399,7 @@ for(i in 1:nrow(map_input)){
   state_richness_df <- pts_state %>%
     group_by(name,taxon_name_acc) %>%
     count() %>% ungroup() %>%
-    group_by(name) %>%
+    group_by(name) #%>%
     summarize(Freq = n_distinct(taxon_name_acc))
   
   # rejoin this this richness data with the states shapefile
