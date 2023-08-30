@@ -150,6 +150,24 @@ compare.ecoGlobal.count <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,b
   return(txt)
 }
 
+# Function to list HLZ_ID under in situ and ex situ buffers
+#   uses the *HOLDRIDGE LIFE ZONES* layer
+compare.ecoGlobal.NAME <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,boundary){
+  # create data frame of ecoregion-buffer intersection
+  eco_insitu <- intersect.eco.buff(insitu,radius,pt_proj,buff_proj,eco,boundary)
+  eco_exsitu <- intersect.eco.buff(exsitu,radius,pt_proj,buff_proj,eco,boundary)
+  # count number of ecoregions under buffers
+  print(paste("Based on ",radius/1000," km radius..."))
+  name_exsitu <- unique(eco_exsitu$HLZ_ID)
+  name_insitu <- unique(eco_insitu$HLZ_ID)
+  
+  exsitu_message <- paste("Name of ecoregions under ex situ buffers:", paste(name_exsitu, collapse = ", "))
+  insitu_message <- paste("Name of ecoregions under in situ buffers:", paste(name_insitu, collapse = ", "))
+  
+  print(exsitu_message)
+  print(insitu_message)
+}
+
 # create data frame with ecoregion data extracted for area covered by buffers,
 #		for both in situ and ex situ points, then compare count of ecoregions.
 #   uses the *North American Level III EPA* ecoregions layer
@@ -482,7 +500,7 @@ if(make_maps){
                                "#fa8072","#1e90ff","#ff00ff","#D37DA5","#247777",
                                "#4F7942","#dc143c","#00ff7f","#884070","#deb887",
                                "#228b22","#E4D00A","#d2691e","#b03060","#800080",
-                               "#8fbc8f","#00008b","#9acd32","#ffa500","#4682b4",
+                               "#8fbc8f","#964B00","#9acd32","#ffa500","#4682b4",
                                "#097969","#483d8b","#808000","#7f0000","#7cfc00")
                                
   swatch(eco_pal_colors)
@@ -504,7 +522,7 @@ if(make_maps){
 summary_tbl <- data.frame(
   taxon = "start",
   geo_sm = "start", geo_md = "start",	geo_lg = "start",
-  eco_sm = "start", eco_md = "start", eco_lg = "start",
+  eco_sm = "start",eco_sm_nm = "start", eco_md = "start",eco_md_nm = "start", eco_lg = "start", eco_lg_nm = "start",
   EOO = "start",
   stringsAsFactors=F)
 
@@ -554,7 +572,7 @@ for(i in 1:length(target_taxa)){
     summary_add <- data.frame(
       taxon = target_taxa[i],
       geo_sm = "0%", geo_md = "0%",	geo_lg = "0%",
-      eco_sm = "0%", eco_md = "0%", eco_lg = "0%",
+      eco_sm = "0%", eco_sm_nm = "0%", eco_md = "0%", eco_md_nm = "0%", eco_lg = "0%", eco_lg_nm = "0%",
       EOO = round(hull_area,0),
       stringsAsFactors=F)
     summary_tbl[i,] <- summary_add
@@ -601,14 +619,31 @@ for(i in 1:length(target_taxa)){
     eco_coverage_lg <- compare.ecoGlobal.count(insitu_pt,exsitu_pt,large_buff,
                                                pt.proj,calc.proj,ecoregions,
                                                world_poly_clip)
+    #name ecoregions under large buffers
+    eco_coverage_lg_name <- compare.ecoGlobal.NAME(insitu_pt,exsitu_pt,large_buff,
+                                                   pt.proj,calc.proj,ecoregions,
+                                                   world_poly_clip)
+    
     # count ecoregions under medium buffers
     eco_coverage_md <- compare.ecoGlobal.count(insitu_pt,exsitu_pt,med_buff,
                                                pt.proj,calc.proj,ecoregions,
                                                world_poly_clip)
+    
+    #name ecoregions under medium buffers
+    eco_coverage_md_name <- compare.ecoGlobal.NAME(insitu_pt,exsitu_pt,med_buff,
+                                                   pt.proj,calc.proj,ecoregions,
+                                                   world_poly_clip)
+    
     # count ecoregions under small buffers
     eco_coverage_sm <- compare.ecoGlobal.count(insitu_pt,exsitu_pt,small_buff,
                                                pt.proj,calc.proj,ecoregions,
                                                world_poly_clip)
+    
+    #name ecoregions under large buffers
+    eco_coverage_sm_name <- compare.ecoGlobal.NAME(insitu_pt,exsitu_pt,small_buff,
+                                                   pt.proj,calc.proj,ecoregions,
+                                                   world_poly_clip)
+    
     
     ## Summary Table
     # add text results to summary table
@@ -618,8 +653,11 @@ for(i in 1:length(target_taxa)){
       geo_md = geo_coverage_md,
       geo_lg = geo_coverage_lg,
       eco_sm = eco_coverage_sm,
+      eco_sm_nm = eco_coverage_sm_name,
       eco_md = eco_coverage_md,
+      eco_md_nm = eco_coverage_md_name,
       eco_lg = eco_coverage_lg,
+      eco_lg_nm = eco_coverage_lg_name,
       EOO = round(hull_area,0),
       stringsAsFactors=F)
     summary_tbl[i,] <- summary_add
