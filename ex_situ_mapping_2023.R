@@ -546,7 +546,7 @@ for(i in 1:length(target_taxa)){
   
   ## can test with one taxon first if you'd like - skip loop line above and
   ##  uncomment next line
-  #i <- 8
+  #i <- 36
   
   # print progress
   cat("\nStarting", target_taxa[i], "\n")
