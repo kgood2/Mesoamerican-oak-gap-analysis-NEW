@@ -168,6 +168,20 @@ compare.ecoGlobal.NAME <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,bo
   print(insitu_message)
 }
 
+# Function to list HLZ_ID under in situ buffers ONLY
+#   uses the *HOLDRIDGE LIFE ZONES* layer
+compare.ecoGlobal.NAME.insitu <- function(insitu,radius,pt_proj,buff_proj,eco,boundary){
+  # create data frame of ecoregion-buffer intersection
+  eco_insitu <- intersect.eco.buff(insitu,radius,pt_proj,buff_proj,eco,boundary)
+  # count number of ecoregions under buffers
+  print(paste("Based on ",radius/1000," km radius..."))
+  name_insitu <- unique(eco_insitu$HLZ_ID)
+  
+  insitu_message <- paste("Name of ecoregions under in situ buffers:", paste(name_insitu, collapse = ", "))
+  
+  print(insitu_message)
+}
+
 # create data frame with ecoregion data extracted for area covered by buffers,
 #		for both in situ and ex situ points, then compare count of ecoregions.
 #   uses the *North American Level III EPA* ecoregions layer
@@ -256,7 +270,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
       fillColor = "white", fillOpacity = 0.52,
       weight = 1.3, color = "white", opacity = 0,
       smoothFactor = 0) %>%
-    ## ex situ points; three different sizes based on number of individuals
+    ## ex situ points
     addMarkers(data = exsitu_pt,
                lng = ~decimalLongitude, lat = ~decimalLatitude, icon = triangle_sm) %>%
     ## in situ points
@@ -497,12 +511,12 @@ if(make_maps){
   #"#943cba","#ba3ca1","#ba3c55"),
   #range = c(5,45), target = "normal", M=50000)
   eco_pal_colors <- c("white","#ffb6c1","#7b68ee","#ff1493","#90ee90","#7F7D9C",
-                               "#fa8072","#1e90ff","#ff00ff","#D37DA5","#247777",
-                               "#4F7942","#dc143c","#00ff7f","#884070","#deb887",
-                               "#228b22","#E4D00A","#d2691e","#b03060","#800080",
-                               "#8fbc8f","#964B00","#9acd32","#ffa500","#4682b4",
-                               "#097969","#483d8b","#808000","#7f0000","#7cfc00")
-                               
+                             "#fa8072","#1e90ff","#ff00ff","#D37DA5","#247777",
+                             "#4F7942","#dc143c","#00ff7f","#884070","#deb887",
+                             "#228b22","#E4D00A","#d2691e","#b03060","#800080",
+                             "#8fbc8f","#964B00","#9acd32","#ffa500","#4682b4",
+                             "#097969","#483d8b","#808000","#7f0000","#7cfc00")
+                             
   swatch(eco_pal_colors)
   eco_pal_colors <- as.vector(eco_pal_colors)
   eco_map <- eco_map[order(eco_map$HLZ_ID),]
@@ -532,7 +546,7 @@ for(i in 1:length(target_taxa)){
   
   ## can test with one taxon first if you'd like - skip loop line above and
   ##  uncomment next line
-  # i <- 1
+  #i <- 8
   
   # print progress
   cat("\nStarting", target_taxa[i], "\n")
@@ -568,11 +582,26 @@ for(i in 1:length(target_taxa)){
   if(nrow(exsitu_pt) == 0){
     print("No ex situ points; skipping buffer calculations")
     
+    #name ecoregions under large buffers
+    eco_coverage_lg_name <- compare.ecoGlobal.NAME.insitu(insitu_pt,large_buff,
+                                                          pt.proj,calc.proj,ecoregions,
+                                                          world_poly_clip)
+    
+    #name ecoregions under medium buffers
+    eco_coverage_md_name <- compare.ecoGlobal.NAME.insitu(insitu_pt,med_buff,
+                                                          pt.proj,calc.proj,ecoregions,
+                                                          world_poly_clip)
+    
+    #name ecoregions under large buffers
+    eco_coverage_sm_name <- compare.ecoGlobal.NAME.insitu(insitu_pt,small_buff,
+                                                          pt.proj,calc.proj,ecoregions,
+                                                          world_poly_clip)
+    
     # add text results to summary table
     summary_add <- data.frame(
       taxon = target_taxa[i],
       geo_sm = "0%", geo_md = "0%",	geo_lg = "0%",
-      eco_sm = "0%", eco_sm_nm = "0%", eco_md = "0%", eco_md_nm = "0%", eco_lg = "0%", eco_lg_nm = "0%",
+      eco_sm = "0%", eco_sm_nm = eco_coverage_sm_name, eco_md = "0%", eco_md_nm = eco_coverage_md_name, eco_lg = "0%", eco_lg_nm = eco_coverage_lg_name,
       EOO = round(hull_area,0),
       stringsAsFactors=F)
     summary_tbl[i,] <- summary_add
@@ -582,13 +611,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-                           insitu_pt); map
+      #map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      #insitu_pt); map
       # save map
-      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-                                            paste0(target_files[i],
-                                                   "__exsitu_coverage_map",
-                                                   ".html")))
+      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      #paste0(target_files[i],
+      #"__exsitu_coverage_map",
+      #".html")))
     }
   } else {
     
@@ -684,17 +713,16 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-                        exsitu_buff,exsitu_pt,insitu_pt); map
+      #map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      #exsitu_buff,exsitu_pt,insitu_pt); map
       # save map
-      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-                                            paste0(target_files[i],
-                                                   "__exsitu_coverage_map",
-                                                   ".html")))
+      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      #paste0(target_files[i],
+      #"__exsitu_coverage_map",
+      #".html")))
     } 
   }
 }
-
 ## write summary table
 summary_tbl
 write.csv(summary_tbl, file.path(main_dir,analysis_dir,
