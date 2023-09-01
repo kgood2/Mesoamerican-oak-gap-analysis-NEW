@@ -728,3 +728,72 @@ summary_tbl
 write.csv(summary_tbl, file.path(main_dir,analysis_dir,
                                  paste0("exsitu_coverage_",Sys.Date(),".csv")),
           row.names = F)  
+
+
+################################################################################
+#Run this part of script to read in CSV file with HLZ ID's, and replace ID numbers
+# with HLZ names. Save a new CSV file. 
+################################################################################
+
+HLZ <- read.csv(file.path(main_dir, analysis_dir, "HLZ_coverage.csv"), 
+                       header=T, colClasses="character",na.strings=c("","NA"))
+
+head(HLZ)
+
+#create a new column that identifies the life zones that are in the in situ 
+#column but not in the ex situ column. Also makes columns numeric and trims trailing white space
+find_non_conserved <- function(hlz_insitu, hlz_exsitu) {
+  insitu_numbers <- strsplit(trimws(hlz_insitu), ",")[[1]]
+  exsitu_numbers <- strsplit(trimws(hlz_exsitu), ",")[[1]]
+  insitu_numbers <- as.numeric(insitu_numbers)
+  exsitu_numbers <- as.numeric(exsitu_numbers)
+  non_conserved <- setdiff(insitu_numbers, exsitu_numbers)
+  return(paste(non_conserved, collapse = ","))
+}
+
+HLZ <- HLZ %>%
+  mutate(NotConserved = mapply(find_non_conserved, hlz_insitu, hlz_exsitu))
+
+#add a space back in between commas and numbers in NonConserved column 
+HLZ$NotConserved <- gsub(",", ", ", HLZ$NotConserved)
+
+
+# sub HLZ id numbers with their life zone name in ex_situ column. 
+HLZ$hlz_exsitu <- mgsub(HLZ$hlz_exsitu,
+                        c("1","2","3","4","5",
+                          "6","7","8","9","10",
+                          "11","12","13","14","15",
+                          "16","17","18","19","20",
+                          "21","22","23","24","25",
+                          "26","27","28","29","30"),
+                        c("Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
+                          "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
+                          "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Subtropical desert","Subtropical desert scrub",
+                          "Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest","Subtropical rain forest",
+                          "Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest","Tropical dry forest",
+                          "Tropical moist forest","Tropical wet forest","Subtropical humid forest","Warm temperate rain forest","Subalpine pluvial paramo"))
+
+# sub HLZ id numbers with their life zone name in in_situ column. 
+
+HLZ$hlz_insitu <- mgsub(HLZ$hlz_insitu,
+                        c("1","2","3","4","5",
+                          "6","7","8","9","10",
+                          "11","12","13","14","15",
+                          "16","17","18","19","20",
+                          "21","22","23","24","25",
+                          "26","27","28","29","30"),
+                        c("Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
+                          "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
+                          "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Subtropical desert","Subtropical desert scrub",
+                          "Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest","Subtropical rain forest",
+                          "Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest","Tropical dry forest",
+                          "Tropical moist forest","Tropical wet forest","Subtropical humid forest","Warm temperate rain forest","Subalpine pluvial paramo"))
+
+
+
+
+
+#write csv
+write.csv(HLZ, file.path(main_dir,analysis_dir,
+                                 paste0("HLZ_with_names",Sys.Date(),".csv")),
+          row.names = F)  
