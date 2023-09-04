@@ -300,3 +300,6 @@ for (i in 1:length(taxon_list)){
 # write summary table
 write.csv(summary_tbl, file.path(main_dir,data,
                                  paste0("summary_of_output_points_", Sys.Date(), ".csv")),row.names = F)
+
+##NOTE: The ex situ occurence point for Q. opaca was mis-identified and it should be 
+# Q. porphyrogenita. In the final "edited points removed" file, I re-name it. 
