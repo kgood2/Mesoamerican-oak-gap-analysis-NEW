@@ -456,7 +456,8 @@ target_files <- unique(mgsub(taxon_list$taxon_name_acc,
 #   you'd like to use (download instructions in 1-prep_gis_layers.R)...
 ## Global terrestrial ecoregions from The Nature Conservancy
 # read in shapefile of global ecoregions
-ecoregions <- vect(file.path("/Volumes/GoogleDrive/My Drive/Holdridge Life Zones/MesoamericanHLZ_HolesFilled_Final/MesoamericanHLZ_Final_HolesFilled.shp"))
+#this shapefile has what used to be HLZID 28 merged with 18. They should be the same name. 
+ecoregions <- vect(file.path("/Volumes/GoogleDrive/My Drive/Holdridge Life Zones/MesoamericanHLZ_HolesFilled_Final/MesoamericannHLZ_Final_HolesFilled_bhP_merged.shp"))
 
 # read in world countries layer created in 1-prep_gis_layers.R
 # this will be used to clip buffers so they're not in the water
