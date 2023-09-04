@@ -253,7 +253,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     #   ECO_ID column to the equivalent ecoregion ID column in your layer
     addPolygons(
       data = eco_now, fillColor = ~eco_pal(eco_now$HLZ_ID),
-      fillOpacity = 0.8, color = "#757575", weight = 0.8, opacity = 0.8) %>%
+      fillOpacity = 0.8, color = "#757575", weight = 0.8, opacity = 1) %>%
     ## state boundaries
     addPolygons(
       data = states, fillColor = "transparent",
@@ -277,7 +277,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     # can remove if you don't want these! remember to remove from legend too below
     addCircleMarkers(
       data = insitu_pts, lng = ~decimalLongitude, lat = ~decimalLatitude,
-      color = "#dedcd7", stroke = F,  fillOpacity = 1,
+      color = "black", fillColor = "white", stroke = T,  fillOpacity = 1, weight = 1,
       # you may want to change the radius
       radius = 3) %>%
     ## add scale bar
@@ -289,10 +289,10 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     # in situ and ex situ buffers
     addControl(
       html = "<img src='https://i.ibb.co/pLbq1n4/In-situ-buffer.png'
-      		style='width:40px;height:40px;'> Taxon's estimated native distribution<br/>
+      		style='width:40px;height:40px;'> Species' estimated native distribution<br/>
       		(50 km buffer around wild occurrence points)<br/>
       		<img src='https://i.ibb.co/SR71N6k/Exsitu-buffer.png'
-      		style='width:40px;height:40px;'> Estimated capture of ex situ collections<br/>
+      		style='width:40px;height:40px;'> Estimated representation of ex situ collections<br/>
       		(50 km buffer around wild provenance localities)",
       position = "bottomleft") %>%
     # ex situ triangles
@@ -325,7 +325,7 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     addPolygons(
       data = eco_now,
       fillColor = ~eco_pal(eco_now$HLZ_ID),
-      fillOpacity = 0.8, color = "#757575", weight = 0.8, opacity = 0.8) %>%
+      fillOpacity = 0.8, color = "#757575", weight = 0.8, opacity = 1) %>%
     ## state boundaries
     addPolygons(
       data = states,
@@ -341,9 +341,9 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     # can remove if you don't want these!
     addCircleMarkers(data = insitu_pts,
                      lng = ~decimalLongitude, lat = ~decimalLatitude,
-                     color = "#dedcd7", 
+                     color = "black", fillColor = "white", weight = 1,
                      # you may want to change the radius
-                     radius = 3, fillOpacity = 1, stroke = F) %>%
+                     radius = 3, fillOpacity = 1, stroke = T) %>%
     ## add scale bar
     addScaleBar(position = "bottomright",
                 options = scaleBarOptions(maxWidth = 150)) %>%
@@ -353,7 +353,7 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     # in situ buffers
     addControl(
       html = "<img src='https://i.ibb.co/pLbq1n4/In-situ-buffer.png'
-      		style='width:40px;height:40px;'> Taxon's estimated native distribution<br/>
+      		style='width:40px;height:40px;'> Species' estimated native distribution<br/>
       		(50 km buffer around wild occurrence points)",
       position = "bottomleft") %>%
     # in situ occurrence points
@@ -411,7 +411,7 @@ if(make_maps){
   
   # get icons used to mark number of ex situ individuals on maps 
   triangle_sm <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
-                          iconWidth = 8, iconHeight = 8)
+                          iconWidth = 9, iconHeight = 9)
   #triangle_md <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
   #iconWidth = 15, iconHeight = 15)
   #triangle_lg <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
@@ -611,13 +611,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      #map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-      #insitu_pt); map
+      map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      insitu_pt); map
       # save map
-      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-      #paste0(target_files[i],
-      #"__exsitu_coverage_map",
-      #".html")))
+      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      paste0(target_files[i],
+      "__exsitu_coverage_map",
+      ".html")))
     }
   } else {
     
@@ -713,13 +713,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      #map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-      #exsitu_buff,exsitu_pt,insitu_pt); map
+      map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      exsitu_buff,exsitu_pt,insitu_pt); map
       # save map
-      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-      #paste0(target_files[i],
-      #"__exsitu_coverage_map",
-      #".html")))
+      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      paste0(target_files[i],
+      "__exsitu_coverage_map",
+      ".html")))
     } 
   }
 }
@@ -760,13 +760,13 @@ HLZ$NotConserved <- gsub(",", ", ", HLZ$NotConserved)
 
 # sub HLZ id numbers with their life zone name in ex_situ column. 
 HLZ$hlz_exsitu <- mgsub(HLZ$hlz_exsitu,
-                        c("1","2","3","4","5",
+                        c("0","1","2","3","4","5",
                           "6","7","8","9","10",
                           "11","12","13","14","15",
                           "16","17","18","19","20",
                           "21","22","23","24","25",
                           "26","27","28","29","30"),
-                        c("Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
+                        c("LAKE_DELETE","Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
                           "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
                           "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Subtropical desert","Subtropical desert scrub",
                           "Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest","Subtropical rain forest",
@@ -774,15 +774,14 @@ HLZ$hlz_exsitu <- mgsub(HLZ$hlz_exsitu,
                           "Tropical moist forest","Tropical wet forest","Subtropical humid forest","Warm temperate rain forest","Subalpine pluvial paramo"))
 
 # sub HLZ id numbers with their life zone name in in_situ column. 
-
 HLZ$hlz_insitu <- mgsub(HLZ$hlz_insitu,
-                        c("1","2","3","4","5",
+                        c("0","1","2","3","4","5",
                           "6","7","8","9","10",
                           "11","12","13","14","15",
                           "16","17","18","19","20",
                           "21","22","23","24","25",
                           "26","27","28","29","30"),
-                        c("Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
+                        c("LAKE_DELETE","Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
                           "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
                           "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Subtropical desert","Subtropical desert scrub",
                           "Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest","Subtropical rain forest",
@@ -790,8 +789,20 @@ HLZ$hlz_insitu <- mgsub(HLZ$hlz_insitu,
                           "Tropical moist forest","Tropical wet forest","Subtropical humid forest","Warm temperate rain forest","Subalpine pluvial paramo"))
 
 
-
-
+# sub HLZ id numbers with their life zone name in NotConserved column. 
+HLZ$NotConserved <- mgsub(HLZ$NotConserved,
+                        c("0","1","2","3","4","5",
+                          "6","7","8","9","10",
+                          "11","12","13","14","15",
+                          "16","17","18","19","20",
+                          "21","22","23","24","25",
+                          "26","27","28","29","30"),
+                        c("LAKE_DELETE","Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
+                          "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
+                          "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Subtropical desert","Subtropical desert scrub",
+                          "Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest","Subtropical rain forest",
+                          "Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest","Tropical dry forest",
+                          "Tropical moist forest","Tropical wet forest","Subtropical humid forest","Warm temperate rain forest","Subalpine pluvial paramo"))
 
 #write csv
 write.csv(HLZ, file.path(main_dir,analysis_dir,
