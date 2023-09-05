@@ -22,7 +22,7 @@ ex_situ <- read.csv(file.path(main_dir,"ExSitu_Compiled_Post-Geolocation_2023-01
                     header = T, na.strings=c("","NA"),colClasses="character")
 
 # update script with species name you are interested in 
-new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus acherdophylla"),]
+new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus engelmannii"),]
 
 #write.csv(new, file.path(main_dir,
           #paste0("QUERCUS ACHER TO CHECK", ".csv")),row.names = F)
@@ -64,6 +64,7 @@ new$gps_det[new$gps_det == 'S'] <-"X"
 
 # If gps_det is G or L, change provenance
 # type to W
+# Note: this will change what was Z to W, but since they are combined in report it should not matter
 new$prov_type[new$gps_det == 'G'] <-"W"
 new$prov_type[new$gps_det == 'L'] <-"W"
 
@@ -108,8 +109,7 @@ ex_situ <- read.csv(file.path(main_dir,"ExSitu_Compiled_Post-Geolocation_2023-01
 new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus toxicodendrifolia"),]
 
 new2 <- new[new$UID != "ArbPouyouleix~added0120~NG~Quercus toxicodendrifolia", ]
-#new2 <- new[!(new$UID %in% c("SirHarloldHillierG~2001.0561~NG~Quercus toumeyi","ArbPouyouleix~added0117~NG~Quercus toumeyi","SanDiegoBG~2019.0350.1003~W~Quercus toumeyi","SanDiegoBG~2019.0350.1002~W~Quercus toumeyi","SanDiegoBG~2019.0350.1001~W~Quercus toumeyi")), ]
-
+#new2 <- new[!(new$UID %in% c("GreenWood~S15-297~H~Quercus graciliformis", "GreenWood~S15-298~H~Quercus graciliformis" )),]
 # identify and count number of ex situ institutions with species 
 unique(new2[c("inst_short")])
 nrow(unique(new2[c("inst_short")]))
@@ -140,9 +140,18 @@ avg <- aggregate(num_indiv ~ inst_short, data = new2, sum)
 avg
 mean(avg$num_indiv)
 
-#if prov_type is NG or U but gps_det is G or L, change prov_type to W
-new2$prov_type <- ifelse((new2$prov_type == "NG" | new2$prov_type == "U") & (new2$gps_det == "G" | new2$gps_det == "L"), "W", new2$prov_type)
+#If gps_det is S, change to X
+new2$gps_det[new2$gps_det == 'S'] <-"X"
 
+
+# If gps_det is G or L, change provenance
+# type to W
+# Note: this will change what was Z to W, but since they are combined in report it should not matter
+new2$prov_type[new2$gps_det == 'G'] <-"W"
+new2$prov_type[new2$gps_det == 'L'] <-"W"
+
+# if gps_det is NA, change it to X
+new2$gps_det[is.na(new2$gps_det)] <- "X"
 
 # number of plants of wild origin 
 wild <-aggregate(new2$num_indiv,list(new2$prov_type),sum)
