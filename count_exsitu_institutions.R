@@ -22,7 +22,11 @@ ex_situ <- read.csv(file.path(main_dir,"ExSitu_Compiled_Post-Geolocation_2023-01
                     header = T, na.strings=c("","NA"),colClasses="character")
 
 # update script with species name you are interested in 
-new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus vicentensis"),]
+new <- ex_situ[which(ex_situ$taxon_name_accepted == "Quercus acherdophylla"),]
+
+#write.csv(new, file.path(main_dir,
+          #paste0("QUERCUS ACHER TO CHECK", ".csv")),row.names = F)
+
 
 
 # identify and count number of ex situ institutions with species 
@@ -32,17 +36,17 @@ nrow(unique(new[c("inst_short")]))
 # institution countries holding species. Re-names countries based on region and then 
 # count frequency of regions represented in collections
 #new$inst_country <-mgsub(new$inst_country,
-                  #c("United States","Spain","Honduras","Mexico","England","Belgium","France",
+                 # c("United States","Spain","Honduras","Mexico","England","Belgium","France",
                    #"Germany","Sweden","Australia","Canada","Scotland","NA","Argentina",
-                    #"Wales","Norway","Czech Republic","Netherlands","Finland","Denmark",
-                    #"Switzerland","South Korea","New Zealand","Israel","Poland","Georgia","Estonia"),
+                   # "Wales","Norway","Czech Republic","Netherlands","Finland","Denmark",
+                   # "Switzerland","South Korea","New Zealand","Israel","Poland","Georgia","Estonia"),
                   #c("United States and Canada","Europe","Mesoamerica","Mesoamerica","Europe","Europe","Europe",
                    #"Europe","Europe","Oceania","United States and Canada","Europe","NA","South America",
-                    #"Europe","Europe","Europe","Europe","Europe","Europe",
-                    #"Europe","Asia","Oceania","Asia","Europe","Europe","Europe"))
-Country <- unique(new[c("inst_short","inst_country")])
-Country %>%
-  count(inst_country, name = "Country_Frequency")
+                   # "Europe","Europe","Europe","Europe","Europe","Europe",
+                   # "Europe","Asia","Oceania","Asia","Europe","Europe","Europe"))
+#Country <- unique(new[c("inst_short","inst_country")])
+#Country %>%
+  #count(inst_country, name = "Country_Frequency")
 
 # count number of individuals
 new$num_indiv <- as.numeric(new$num_indiv)
@@ -55,9 +59,16 @@ avg <- aggregate(num_indiv ~ inst_short, data = new, sum)
 avg
 mean(avg$num_indiv)
 
-#if prov_type is NG or U but gps_det is G or L, change prov_type to W
-new$prov_type <- ifelse((new$prov_type == "NG" | new$prov_type == "U") & (new$gps_det == "G" | new$gps_det == "L"), "W", new$prov_type)
+#If gps_det is S, change to X
+new$gps_det[new$gps_det == 'S'] <-"X"
 
+# If gps_det is G or L, change provenance
+# type to W
+new$prov_type[new$gps_det == 'G'] <-"W"
+new$prov_type[new$gps_det == 'L'] <-"W"
+
+# if gps_det is NA, change it to X
+new$gps_det[is.na(new$gps_det)] <- "X"
 
 # number of plants of wild origin 
 wild <-aggregate(new$num_indiv,list(new$prov_type),sum)
