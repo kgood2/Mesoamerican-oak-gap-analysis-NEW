@@ -277,9 +277,9 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     # can remove if you don't want these! remember to remove from legend too below
     addCircleMarkers(
       data = insitu_pts, lng = ~decimalLongitude, lat = ~decimalLatitude,
-      color = "black", fillColor = "white", stroke = T,  fillOpacity = 1, weight = 1,
+      color = "black", fillColor = "white", stroke = T,  fillOpacity = 1, weight = 1.5,
       # you may want to change the radius
-      radius = 3) %>%
+      radius = 4) %>%
     ## add scale bar
     addScaleBar(position = "bottomright",
                 options = scaleBarOptions(maxWidth = 150)) %>%
@@ -341,9 +341,9 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     # can remove if you don't want these!
     addCircleMarkers(data = insitu_pts,
                      lng = ~decimalLongitude, lat = ~decimalLatitude,
-                     color = "black", fillColor = "white", weight = 1,
+                     color = "black", fillColor = "white", weight = 1.5,
                      # you may want to change the radius
-                     radius = 3, fillOpacity = 1, stroke = T) %>%
+                     radius = 4, fillOpacity = 1, stroke = T) %>%
     ## add scale bar
     addScaleBar(position = "bottomright",
                 options = scaleBarOptions(maxWidth = 150)) %>%
@@ -411,7 +411,7 @@ if(make_maps){
   
   # get icons used to mark number of ex situ individuals on maps 
   triangle_sm <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
-                          iconWidth = 9, iconHeight = 9)
+                          iconWidth = 11, iconHeight = 11)
   #triangle_md <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
   #iconWidth = 15, iconHeight = 15)
   #triangle_lg <- makeIcon(iconUrl = "https://www.freeiconspng.com/uploads/triangle-png-28.png",
