@@ -11,17 +11,17 @@ library("grid")
 ####################INICIO###############################
 main_dir <- "/Volumes/GoogleDrive/My Drive/Holdridge Life Zones/WorldClim"
 # Read necessary data
-ap<- raster(file.path(main_dir,"wc2.1_2.5m_bio_12.tif")) ##Raster precipitation (mm) bio_12
-at <-raster(file.path(main_dir,"wc2.1_2.5m_bio_1.tif")) #annual mean temperature bio_01
+ap<- raster(file.path(main_dir,"wc2.1_30s_bio_12.tif")) ##Raster precipitation (mm) bio_12
+at <-raster(file.path(main_dir,"wc2.1_30s_bio_1.tif")) #annual mean temperature bio_01
 
 dir.create("Presente_1980-2009_ZVH")
 
 # Explore data
 summary(at)
-plot(at)
+#plot(at)
 
 summary(ap)
-plot(ap)
+#plot(ap)
 
 
 ## Do same proyecting and extent ##Case Mexico
@@ -51,10 +51,10 @@ lat<- raster("Presente_1980-2009_ZVH/lat.tif") ##Raster latitude
 
 biotTem <- at ##Create a new file from the original
 biotTem [biotTem < 0.0] <- 0 ##Classify data below to 0 into 0
-plot(biotTem)
+#plot(biotTem)
 biotTem [biotTem > 30.0] <- 0 ##Classify data up  to 30.0 into 0
 bio0to30 <- biotTem ##Create a file with all the classified data
-plot(bio0to30)
+#plot(bio0to30)
 
 ##The data up to 24.0 need a correction: biot = temperature - [3 * latitudegrade/100) * (temperature - 24)^2
 
@@ -321,6 +321,6 @@ raster1[raster1 == 	37	] <-	778
 raster1[raster1 == 	38	] <-	789
 
 writeRaster(raster1, filename="Presente_1980-2009_ZVH/zvh.tif", format="GTiff", overwrite = TRUE)
-plot(raster1)
+#plot(raster1)
 
 ##END
