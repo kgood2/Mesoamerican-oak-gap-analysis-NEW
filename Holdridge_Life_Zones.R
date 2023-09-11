@@ -23,18 +23,33 @@ summary(at)
 summary(ap)
 #plot(ap)
 
+#clip ap raster so it is only North America and Central America
+ymin <- 3.8
+ymax <- 37
+xmin <- -125
+xmax <- -76
+ext <- extent(xmin, xmax, ymin, ymax)
+clipped_ap <- crop(ap, ext)
 
-## Do same proyecting and extent ##Case Mexico
-at <- projectRaster(at,ap,method="ngb")
-extent(at) <- extent(ap)
+#clip at raster so it is only North America and Central America
+ymin <- 3.8
+ymax <- 37
+xmin <- -125
+xmax <- -76
+ext <- extent(xmin, xmax, ymin, ymax)
+clipped_at <- crop(at, ext)
+
+## Do same projecting and extent ##Case Mexico
+clipped_at <- projectRaster(clipped_at,clipped_ap,method="ngb")
+extent(clipped_at) <- extent(clipped_ap)
 
 ##Verify if data and extent are the same ##Answer must be TRUE
-compareRaster(at, ap)
+compareRaster(clipped_at, clipped_ap)
 
 ##Save the new files
 
-writeRaster(at, filename="Presente_1980-2009_ZVH/at.tif", format="GTiff", overwrite=TRUE)
-writeRaster(ap, filename="Presente_1980-2009_ZVH/ap.tif", format="GTiff", overwrite=TRUE)
+writeRaster(clipped_at, filename="Presente_1980-2009_ZVH/at.tif", format="GTiff", overwrite=TRUE)
+writeRaster(clipped_ap, filename="Presente_1980-2009_ZVH/ap.tif", format="GTiff", overwrite=TRUE)
 
 ##Calculate lat 
 
@@ -49,7 +64,7 @@ lat<- raster("Presente_1980-2009_ZVH/lat.tif") ##Raster latitude
 
 ##Calculate biotemperature with temperature and latitude grade
 
-biotTem <- at ##Create a new file from the original
+biotTem <- clipped_at ##Create a new file from the original
 biotTem [biotTem < 0.0] <- 0 ##Classify data below to 0 into 0
 #plot(biotTem)
 biotTem [biotTem > 30.0] <- 0 ##Classify data up  to 30.0 into 0
@@ -74,7 +89,7 @@ writeRaster(pet, filename="Presente_1980-2009_ZVH/pet.tif", format="GTiff", over
 
 ##Calculate potencial evapotranspiration ratio
 
-per <- pet/ap
+per <- pet/clipped_ap
 writeRaster(per, filename="Presente_1980-2009_ZVH/per.tif", format="GTiff", overwrite=TRUE)
 
 ## Calculate categories of annual precipitation (mm)
@@ -89,7 +104,7 @@ writeRaster(per, filename="Presente_1980-2009_ZVH/per.tif", format="GTiff", over
 ## [8]  >8000.0
 
 
-apCat <- ap
+apCat <- clipped_ap
 apCat[apCat <= 125.0] <- 1
 apCat[apCat >=  125.0 & apCat <=  250.0] <- 2
 apCat[apCat >=  250.0 & apCat <=  500.0] <- 3
