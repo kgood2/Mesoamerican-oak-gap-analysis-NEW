@@ -511,13 +511,13 @@ if(make_maps){
   #"#3ca7ba","#3c6aba","#573cba",
   #"#943cba","#ba3ca1","#ba3c55"),
   #range = c(5,45), target = "normal", M=50000)
-  eco_pal_colors <- c("white","#ffb6c1","#7b68ee","#ff1493","#90ee90","#7F7D9C",
-                             "#fa8072","#1e90ff","#ff00ff","#D37DA5","#247777",
-                             "#4F7942","#dc143c","#00ff7f","#884070","#deb887",
-                             "#228b22","#E4D00A","#d2691e","#b03060","#800080",
-                             "#8fbc8f","#964B00","#9acd32","#ffa500","#4682b4",
-                             "#097969","#483d8b","#808000","#7f0000","#7cfc00")
-                             
+  eco_pal_colors <- c("#ffb6c1","#7b68ee","#ff1493","#90ee90","#7f7d9c",
+                               "#fa8072","#1e90ff","#ff00ff","#d37da5","#247777",
+                               "#4f7942","#dc143c","#00ff7f","#884070","#deb887",
+                               "#228b22","#e4d00a","#d2691e","#b03060","#800080",
+                               "#8fbc8f","#799943","#9acd32","#ebad56","#4682b4",
+                               "#097969","#483d8b","#808000","#bf0a30","#c8f0d6",
+                               "#6a77ec","#964754","#ce5f77","#8a927f")
   swatch(eco_pal_colors)
   eco_pal_colors <- as.vector(eco_pal_colors)
   eco_map <- eco_map[order(eco_map$DN),]
