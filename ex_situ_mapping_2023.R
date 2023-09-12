@@ -139,9 +139,9 @@ compare.ecoGlobal.count <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,b
   eco_exsitu <- intersect.eco.buff(exsitu,radius,pt_proj,buff_proj,eco,boundary)
   # count number of ecoregions under buffers
   print(paste("Based on ",radius/1000," km radius..."))
-  count_exsitu <- length(unique(eco_exsitu$HLZ_ID))
+  count_exsitu <- length(unique(eco_exsitu$DN))
   print(paste0("Number of ecoregions under ex situ buffers: ",count_exsitu))
-  count_insitu <- length(unique(eco_insitu$HLZ_ID))
+  count_insitu <- length(unique(eco_insitu$DN))
   print(paste0("Number of ecoregions under in situ buffers: ",count_insitu))
   # calculate difference in number of ecoregions
   eco_diff_percent <- (count_exsitu/count_insitu)*100
@@ -150,7 +150,7 @@ compare.ecoGlobal.count <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,b
   return(txt)
 }
 
-# Function to list HLZ_ID under in situ and ex situ buffers
+# Function to list DN under in situ and ex situ buffers
 #   uses the *HOLDRIDGE LIFE ZONES* layer
 compare.ecoGlobal.NAME <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,boundary){
   # create data frame of ecoregion-buffer intersection
@@ -158,8 +158,8 @@ compare.ecoGlobal.NAME <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,bo
   eco_exsitu <- intersect.eco.buff(exsitu,radius,pt_proj,buff_proj,eco,boundary)
   # count number of ecoregions under buffers
   print(paste("Based on ",radius/1000," km radius..."))
-  name_exsitu <- unique(eco_exsitu$HLZ_ID)
-  name_insitu <- unique(eco_insitu$HLZ_ID)
+  name_exsitu <- unique(eco_exsitu$DN)
+  name_insitu <- unique(eco_insitu$DN)
   
   exsitu_message <- paste("Name of ecoregions under ex situ buffers:", paste(name_exsitu, collapse = ", "))
   insitu_message <- paste("Name of ecoregions under in situ buffers:", paste(name_insitu, collapse = ", "))
@@ -168,14 +168,14 @@ compare.ecoGlobal.NAME <- function(insitu,exsitu,radius,pt_proj,buff_proj,eco,bo
   print(insitu_message)
 }
 
-# Function to list HLZ_ID under in situ buffers ONLY
+# Function to list DN under in situ buffers ONLY
 #   uses the *HOLDRIDGE LIFE ZONES* layer
 compare.ecoGlobal.NAME.insitu <- function(insitu,radius,pt_proj,buff_proj,eco,boundary){
   # create data frame of ecoregion-buffer intersection
   eco_insitu <- intersect.eco.buff(insitu,radius,pt_proj,buff_proj,eco,boundary)
   # count number of ecoregions under buffers
   print(paste("Based on ",radius/1000," km radius..."))
-  name_insitu <- unique(eco_insitu$HLZ_ID)
+  name_insitu <- unique(eco_insitu$DN)
   
   insitu_message <- paste("Name of ecoregions under in situ buffers:", paste(name_insitu, collapse = ", "))
   
@@ -252,7 +252,7 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     # if you want to use other ecoregion layer, you just need to change the 
     #   ECO_ID column to the equivalent ecoregion ID column in your layer
     addPolygons(
-      data = eco_now, fillColor = ~eco_pal(eco_now$HLZ_ID),
+      data = eco_now, fillColor = ~eco_pal(eco_now$DN),
       fillOpacity = 0.8, color = "#757575", weight = 0.8, opacity = 1) %>%
     ## state boundaries
     addPolygons(
@@ -324,7 +324,7 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     ## global ecoregions
     addPolygons(
       data = eco_now,
-      fillColor = ~eco_pal(eco_now$HLZ_ID),
+      fillColor = ~eco_pal(eco_now$DN),
       fillOpacity = 0.8, color = "#757575", weight = 0.8, opacity = 1) %>%
     ## state boundaries
     addPolygons(
@@ -457,7 +457,7 @@ target_files <- unique(mgsub(taxon_list$taxon_name_acc,
 ## Global terrestrial ecoregions from The Nature Conservancy
 # read in shapefile of global ecoregions
 #this shapefile has what used to be HLZID 28 merged with 18. They should be the same name. 
-ecoregions <- vect(file.path("/Volumes/GoogleDrive/My Drive/Holdridge Life Zones/MesoamericanHLZ_HolesFilled_Final/MesoamericannHLZ_Final_HolesFilled_bhP_merged.shp"))
+ecoregions <- vect(file.path("/Volumes/GoogleDrive/My Drive/Holdridge Life Zones/Final_30s/HLZ_30s.shp"))
 
 # read in world countries layer created in 1-prep_gis_layers.R
 # this will be used to clip buffers so they're not in the water
@@ -506,7 +506,7 @@ if(make_maps){
   # every time you run this section it creates a new palette; if you
   #   want the same color ecoregions for every taxon, run them all in one go;
   #   if you don't like the ecoregion colors, run this again or edit it
-  #eco_pal_colors <- createPalette(length(unique(eco_map$HLZ_ID)),
+  #eco_pal_colors <- createPalette(length(unique(eco_map$DN)),
   #seedcolors = c("#ba3c3c","#ba7d3c","#baab3c",
   #"#3ca7ba","#3c6aba","#573cba",
   #"#943cba","#ba3ca1","#ba3c55"),
@@ -520,8 +520,8 @@ if(make_maps){
                              
   swatch(eco_pal_colors)
   eco_pal_colors <- as.vector(eco_pal_colors)
-  eco_map <- eco_map[order(eco_map$HLZ_ID),]
-  eco_pal <- colorFactor(eco_pal_colors,eco_map$HLZ_ID)
+  eco_map <- eco_map[order(eco_map$DN),]
+  eco_pal <- colorFactor(eco_pal_colors,eco_map$DN)
   
 }
 
@@ -761,49 +761,54 @@ HLZ$NotConserved <- gsub(",", ", ", HLZ$NotConserved)
 
 # sub HLZ id numbers with their life zone name in ex_situ column. 
 HLZ$hlz_exsitu <- mgsub(HLZ$hlz_exsitu,
-                        c("0","1","2","3","4","5",
-                          "6","7","8","9","10",
-                          "11","12","13","14","15",
-                          "16","17","18","19","20",
-                          "21","22","23","24","25",
-                          "26","27","28","29","30"),
-                        c("LAKE_DELETE","Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
+                        c("117","216","238","315","337",
+                          "348","359","425","436","447",
+                          "458","469","513","524","535",
+                          "546","557","568","579","613",
+                          "624","635","646","657","668",
+                          "679","712","723","734","745",
+                          "756","767","778","789"),
+                        c("Polar desert","Subpolar dry tundra","Subpolar wet tundra","Boreal desert","Boreal moist forest",
+                          "Boreal wet forest","Boreal rain forest","Cool temperate desert scrub","Cool temperate steppe","Cool temperate moist forest",
                           "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
-                          "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Subtropical desert","Subtropical desert scrub",
-                          "Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest","Subtropical rain forest",
-                          "Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest","Tropical dry forest",
-                          "Tropical moist forest","Tropical wet forest","Subtropical humid forest","Warm temperate rain forest","Subalpine pluvial paramo"))
-
+                          "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Warm temperate rain forest","Subtropical desert",
+                          "Subtropical desert scrub","Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest",
+                          "Subtropical rain forest","Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest",
+                          "Tropical dry forest","Tropical moist forest","Tropical wet forest","Tropical wet forest"))
+                        
 # sub HLZ id numbers with their life zone name in in_situ column. 
 HLZ$hlz_insitu <- mgsub(HLZ$hlz_insitu,
-                        c("0","1","2","3","4","5",
-                          "6","7","8","9","10",
-                          "11","12","13","14","15",
-                          "16","17","18","19","20",
-                          "21","22","23","24","25",
-                          "26","27","28","29","30"),
-                        c("LAKE_DELETE","Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
+                        c("117","216","238","315","337",
+                          "348","359","425","436","447",
+                          "458","469","513","524","535",
+                          "546","557","568","579","613",
+                          "624","635","646","657","668",
+                          "679","712","723","734","745",
+                          "756","767","778","789"),
+                        c("Polar desert","Subpolar dry tundra","Subpolar wet tundra","Boreal desert","Boreal moist forest",
+                          "Boreal wet forest","Boreal rain forest","Cool temperate desert scrub","Cool temperate steppe","Cool temperate moist forest",
                           "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
-                          "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Subtropical desert","Subtropical desert scrub",
-                          "Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest","Subtropical rain forest",
-                          "Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest","Tropical dry forest",
-                          "Tropical moist forest","Tropical wet forest","Subtropical humid forest","Warm temperate rain forest","Subalpine pluvial paramo"))
-
+                          "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Warm temperate rain forest","Subtropical desert",
+                          "Subtropical desert scrub","Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest",
+                          "Subtropical rain forest","Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest",
+                          "Tropical dry forest","Tropical moist forest","Tropical wet forest","Tropical wet forest"))
 
 # sub HLZ id numbers with their life zone name in NotConserved column. 
 HLZ$NotConserved <- mgsub(HLZ$NotConserved,
-                        c("0","1","2","3","4","5",
-                          "6","7","8","9","10",
-                          "11","12","13","14","15",
-                          "16","17","18","19","20",
-                          "21","22","23","24","25",
-                          "26","27","28","29","30"),
-                        c("LAKE_DELETE","Polar desert","Subpolar dry tundra","Boreal rain forest","Cool temperate steppe","Cool temperate moist forest",
-                          "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
-                          "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Subtropical desert","Subtropical desert scrub",
-                          "Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest","Subtropical rain forest",
-                          "Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest","Tropical dry forest",
-                          "Tropical moist forest","Tropical wet forest","Subtropical humid forest","Warm temperate rain forest","Subalpine pluvial paramo"))
+                          c("117","216","238","315","337",
+                            "348","359","425","436","447",
+                            "458","469","513","524","535",
+                            "546","557","568","579","613",
+                            "624","635","646","657","668",
+                            "679","712","723","734","745",
+                            "756","767","778","789"),
+                          c("Polar desert","Subpolar dry tundra","Subpolar wet tundra","Boreal desert","Boreal moist forest",
+                            "Boreal wet forest","Boreal rain forest","Cool temperate desert scrub","Cool temperate steppe","Cool temperate moist forest",
+                            "Cool temperate wet forest","Cool temperate rain forest","Warm temperate desert","Warm temperate desert scrub","Warm temperate thorn scrub",
+                            "Warm temperate dry forest","Warm temperate moist forest","Warm temperate wet forest","Warm temperate rain forest","Subtropical desert",
+                            "Subtropical desert scrub","Subtropical thorn woodland","Subtropical dry forest","Subtropical moist forest","Subtropical wet forest",
+                            "Subtropical rain forest","Tropical desert","Tropical desert scrub","Tropical thorn woodland","Tropical very dry forest",
+                            "Tropical dry forest","Tropical moist forest","Tropical wet forest","Tropical wet forest"))
 
 #write csv
 write.csv(HLZ, file.path(main_dir,analysis_dir,
