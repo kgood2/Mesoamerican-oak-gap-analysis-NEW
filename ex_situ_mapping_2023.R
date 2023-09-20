@@ -485,7 +485,7 @@ if(make_maps){
   
   # prep ecoregions for mapping
   # transform ecoregion polygons to point projection, for mapping
-  eco_map <- project(ecoregions,pt.proj)
+  eco_map <- terra::project(ecoregions,pt.proj)
   # select realm of interest; keep only ecoregions in that realm; this helps
   # with the mapping palette and size of output map
   #   OPTIONS:
@@ -495,7 +495,7 @@ if(make_maps){
   #eco_map$WWF_REALM2 == "Neotropic" ,]
   # the global ecoregions layer does not have major lakes cut out, so we'll do 
   #   that; takes a little while; you can skip if needed
-  eco_map <- crop(eco_map,world_poly_clip)
+  #eco_map <- crop(eco_map,world_poly_clip)
   # if you're using more than one realm and/or have concerns about the maps
   #   being too large, crop ecoregions by state layer as well
   #eco_map <- crop(eco_map,state_boundaries)
@@ -516,7 +516,7 @@ if(make_maps){
                                "#4f7942","#dc143c","#00ff7f","#884070","#deb887",
                                "#228b22","#e4d00a","#d2691e","#b03060","#800080",
                                "#8fbc8f","#799943","#9acd32","#ebad56","#4682b4",
-                               "#097969","#483d8b","#808000","#bf0a30","#c8f0d6",
+                               "#097969","#483d8b","#808000","#bf0a30","#964e02",
                                "#6a77ec","#964754","#ce5f77","#8a927f")
   swatch(eco_pal_colors)
   eco_pal_colors <- as.vector(eco_pal_colors)
@@ -612,13 +612,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-      insitu_pt); map
+      #map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      #insitu_pt); map
       # save map
-      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-      paste0(target_files[i],
-      "__exsitu_coverage_map",
-      ".html")))
+      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      #paste0(target_files[i],
+      #"__exsitu_coverage_map",
+      #".html")))
     }
   } else {
     
@@ -714,13 +714,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-      exsitu_buff,exsitu_pt,insitu_pt); map
+      #map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      #exsitu_buff,exsitu_pt,insitu_pt); map
       # save map
-      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-      paste0(target_files[i],
-      "__exsitu_coverage_map",
-      ".html")))
+      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      #paste0(target_files[i],
+      #"__exsitu_coverage_map",
+      #".html")))
     } 
   }
 }
