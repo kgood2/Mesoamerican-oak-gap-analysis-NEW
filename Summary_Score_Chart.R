@@ -108,9 +108,9 @@ SummaryScoresChart <- function(df,out_path){
                                       guide  = ggplot2::guide_legend(override.aes = list(size = 8,
                                                                                          shape = 18,
                                                                                          colour = "red")))
+  p <- p + ggplot2::coord_cartesian(ylim = c(0, 63), clip = "off") #EBB: make room at top for labels.
   
-  p <- p + ggplot2::coord_cartesian(ylim = c(0, 97), clip = "off") #EBB: make room at top for labels
-  
+
   p <- p + ggplot2::annotate("text",
                              x      = c(12.5, 37.5, 62.5, 87.5),
                              y      = nrow(df) + 1.9, # 13.7
@@ -132,4 +132,4 @@ final_chart <- SummaryScoresChart(FCSc_all)
 ggsave(file.path(main_dir,"Report","Tables for Designer","All-GapAnalysis-Scores-Chart.png"),
        plot = final_chart, device = "png", units = "in", width = 10, 
        # you need to adjust the height depending on how many taxa you have
-       height = 16, dpi = 320)##########################################################
+       height = 13, dpi = 320)##########################################################
