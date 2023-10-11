@@ -175,7 +175,7 @@ taxon_list <- taxon_list %>% filter(taxon_name_status == "Accepted")
 # Filter out taxa you do not want to include
 taxon_list_final <- taxon_list %>% 
   filter(!taxon_name_accepted %in% c("Quercus hinckleyi","Quercus robusta","Quercus tardifolia",
-                              "Quercus edwardsiae","Quercus alpescens"))
+                              "Quercus edwardsiae","Quercus alpescens", "Quercus furfuracea"))
 
 
 ### calculate and map country-level taxon richness using functions we created above
@@ -209,7 +209,7 @@ bins <- c(1,6,11,16,21,26,31,36,Inf)
 my_legend_labels <- c("1-5","6-10","11-15","16-20","21-25","26-30", "31-35", "36+")
 # create color palette
 #   see palette options by running display.brewer.all()
-my_palette <- colorBin(palette = "YlOrRd", bins = bins,
+my_palette <- colorBin(palette = "Greens", bins = bins,
                        domain = ctry_richness_all$Freq, 
                        reverse = F, na.color = "white")
 ## create map
@@ -243,7 +243,7 @@ if(nrow(threatened_taxa)>0){
   hist(ctry_richness_threatened$Freq,breaks=20,xlim=c(0,50),ylim=c(0,25))
   bins <- c(1,2,3,4,5,6,10,15,Inf)
   my_legend_labels <- c("1","2","3","4","5","6-9","10-14","15+")
-  my_palette <- colorBin(palette = "PuRd", bins = bins,
+  my_palette <- colorBin(palette = "Greens", bins = bins,
                          domain = ctry_richness_threatened$Freq, 
                          reverse = F, na.color = "white")
   map_richness_threatened <- map.countries(ctry_richness_threatened,my_title,
@@ -307,7 +307,7 @@ all_pts <- all_pts %>%
 # remove species you do not want to include in maps 
 all_pts <- all_pts %>% 
   filter(!taxon_name_acc %in% c("Quercus hinckleyi","Quercus robusta","Quercus tardifolia",
-                              "Quercus edwardsiae","Quercus alpescens"))
+                              "Quercus edwardsiae","Quercus alpescens", "Quercus furfuracea"))
 
 # note that we are just creating a map that includes all target taxa; if you 
 #   want threatened, endemic, etc. you'll need to filter for that here and run 
@@ -384,7 +384,7 @@ map_input <- data.frame(
 #   map for all countries, could add a section in the loop that joins the  
 #   country features so all can be visualized together.
 
-i <- 2
+#i <- 2
 
 for(i in 1:nrow(map_input)){
   
@@ -399,7 +399,7 @@ for(i in 1:nrow(map_input)){
   state_richness_df <- pts_state %>%
     group_by(name,taxon_name_acc) %>%
     count() %>% ungroup() %>%
-    group_by(name) #%>%
+    group_by(name) %>%
     summarize(Freq = n_distinct(taxon_name_acc))
   
   # rejoin this this richness data with the states shapefile
