@@ -231,29 +231,29 @@ htmlwidgets::saveWidget(map_richness_all,
 ####
 
 # select IUCN Red List Threatened taxa
-threatened_taxa <- taxon_list_final %>%
-  filter(rl_category == "Critically Endangered" | 
-           rl_category == "Endangered" |
-           rl_category == "Vulnerable")
-if(nrow(threatened_taxa)>0){
+#threatened_taxa <- taxon_list_final %>%
+  #filter(rl_category == "Critically Endangered" | 
+           #rl_category == "Endangered" |
+           #rl_category == "Vulnerable")
+#if(nrow(threatened_taxa)>0){
   # reference comments in first section as needed; removed here since the same process
-  ctry_richness_threatened <- richness.countries(threatened_taxa,world_polygons)
-  my_title <- "Example taxon richness map"
-  my_legend_title <- paste0("Number of native,","<br/>","threatened target taxa")
-  hist(ctry_richness_threatened$Freq,breaks=20,xlim=c(0,50),ylim=c(0,25))
-  bins <- c(1,2,3,4,5,6,10,15,Inf)
-  my_legend_labels <- c("1","2","3","4","5","6-9","10-14","15+")
-  my_palette <- colorBin(palette = "Greens", bins = bins,
-                         domain = ctry_richness_threatened$Freq, 
-                         reverse = F, na.color = "white")
-  map_richness_threatened <- map.countries(ctry_richness_threatened,my_title,
-                                           my_legend_title,my_legend_labels,
-                                           my_palette)
-  map_richness_threatened
-  htmlwidgets::saveWidget(map_richness_threatened,
-                          file.path(main_dir,analysis_dir,data_out,
-                                    "country-level_taxon_richness_THREATENED.html"))
-} else { print("You have no IUCN Red List Threatened taxa") }
+  #ctry_richness_threatened <- richness.countries(threatened_taxa,world_polygons)
+  #my_title <- "Example taxon richness map"
+  #my_legend_title <- paste0("Number of native,","<br/>","threatened target taxa")
+  #hist(ctry_richness_threatened$Freq,breaks=20,xlim=c(0,50),ylim=c(0,25))
+  #bins <- c(1,2,3,4,5,6,10,15,Inf)
+  #my_legend_labels <- c("1","2","3","4","5","6-9","10-14","15+")
+  #my_palette <- colorBin(palette = "Greens", bins = bins,
+                         #domain = ctry_richness_threatened$Freq, 
+                         #reverse = F, na.color = "white")
+  #map_richness_threatened <- map.countries(ctry_richness_threatened,my_title,
+                                           #my_legend_title,my_legend_labels,
+                                           #my_palette)
+  #map_richness_threatened
+  #htmlwidgets::saveWidget(map_richness_threatened,
+                          #file.path(main_dir,analysis_dir,data_out,
+                                    #"country-level_taxon_richness_THREATENED.html"))
+#} else { print("You have no IUCN Red List Threatened taxa") }
 
 
 ####
@@ -261,26 +261,26 @@ if(nrow(threatened_taxa)>0){
 ####
 
 # select endemic taxa (only in one country)
-endemic_taxa <- taxon_list_final %>% filter(nchar(all_native_dist_iso2) == 2)
-if(nrow(endemic_taxa)>0){
+#endemic_taxa <- taxon_list_final %>% filter(nchar(all_native_dist_iso2) == 2)
+#if(nrow(endemic_taxa)>0){
   # reference comments in first section as needed; removed here since the same process
-  ctry_richness_endemic <- richness.countries(endemic_taxa,world_polygons)
-  my_title <- "Example taxon richness map"
-  my_legend_title <- paste0("Number of endemic","<br/>","target taxa")
-  hist(ctry_richness_endemic$Freq,breaks=20,xlim=c(0,50),ylim=c(0,25))
-  bins <- c(1,2,3,4,5,6,7,8,10,Inf)
-  my_legend_labels <- c("1","2","3","4","5","6","7","8-9","10+")
-  my_palette <- colorBin(palette = "PuRd", bins = bins,
-                         domain = ctry_richness_endemic$Freq, 
-                         reverse = F, na.color = "white")
-  map_richness_endemic <- map.countries(ctry_richness_endemic,my_title,
-                                        my_legend_title,my_legend_labels,
-                                        my_palette)
-  map_richness_endemic
-  htmlwidgets::saveWidget(map_richness_endemic,
-                          file.path(main_dir,analysis_dir,data_out,
-                                    "country-level_taxon_richness_ENDEMIC.html"))
-} else { print("You have no endemic taxa") }
+  #ctry_richness_endemic <- richness.countries(endemic_taxa,world_polygons)
+  #my_title <- "Example taxon richness map"
+  #my_legend_title <- paste0("Number of endemic","<br/>","target taxa")
+  #hist(ctry_richness_endemic$Freq,breaks=20,xlim=c(0,50),ylim=c(0,25))
+  #bins <- c(1,2,3,4,5,6,7,8,10,Inf)
+  #my_legend_labels <- c("1","2","3","4","5","6","7","8-9","10+")
+  #my_palette <- colorBin(palette = "PuRd", bins = bins,
+                         #domain = ctry_richness_endemic$Freq, 
+                         #reverse = F, na.color = "white")
+  #map_richness_endemic <- map.countries(ctry_richness_endemic,my_title,
+                                        #my_legend_title,my_legend_labels,
+                                        #my_palette)
+  #map_richness_endemic
+  #htmlwidgets::saveWidget(map_richness_endemic,
+                          #file.path(main_dir,analysis_dir,data_out,
+                                    #"country-level_taxon_richness_ENDEMIC.html"))
+#} else { print("You have no endemic taxa") }
 
 
 
