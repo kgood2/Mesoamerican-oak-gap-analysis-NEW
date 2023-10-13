@@ -290,10 +290,10 @@ map.exsitu <- function(taxon,eco_now,states,in_buff,exsitu_buff,exsitu_pt,insitu
     addControl(
       html = "<img src='https://i.ibb.co/pLbq1n4/In-situ-buffer.png'
       		style='width:40px;height:40px;'> Species' estimated native distribution<br/>
-      		(50 km buffer around wild occurrence points)<br/>
+      		(20 km buffer around wild occurrence points)<br/>
       		<img src='https://i.ibb.co/SR71N6k/Exsitu-buffer.png'
       		style='width:40px;height:40px;'> Estimated representation of ex situ collections<br/>
-      		(50 km buffer around wild provenance localities)",
+      		(20 km buffer around wild provenance localities)",
       position = "bottomleft") %>%
     # ex situ triangles
     addControl(
@@ -354,7 +354,7 @@ map.no.exsitu <- function(taxon,eco_now,states,in_buff,insitu_pts){
     addControl(
       html = "<img src='https://i.ibb.co/pLbq1n4/In-situ-buffer.png'
       		style='width:40px;height:40px;'> Species' estimated native distribution<br/>
-      		(50 km buffer around wild occurrence points)",
+      		(20 km buffer around wild occurrence points)",
       position = "bottomleft") %>%
     # in situ occurrence points
     addControl(
@@ -392,9 +392,9 @@ analysis_dir <- "analysis"
 # note you could also make this into a list and update the calc section further 
 #   down (note added) so it loops through each element, making the number of 
 #   different-sized buffers flexible
-large_buff <- 100000  # 100 km
-med_buff <- 50000     # 50 km
-small_buff <- 20000   # 20 km
+large_buff <- 50000  # 50 km
+med_buff <-  20000    # 20 km
+small_buff <- 10000   # 10 km
 
 ## DECIDE if you'd like to make maps, or run calculations only
 #   no maps = FALSE
@@ -547,7 +547,7 @@ for(i in 1:length(target_taxa)){
   
   ## can test with one taxon first if you'd like - skip loop line above and
   ##  uncomment next line
-  #i <- 36
+  #i <- 14
   
   # print progress
   cat("\nStarting", target_taxa[i], "\n")
@@ -593,7 +593,7 @@ for(i in 1:length(target_taxa)){
                                                           pt.proj,calc.proj,ecoregions,
                                                           world_poly_clip)
     
-    #name ecoregions under large buffers
+    #name ecoregions under small buffers
     eco_coverage_sm_name <- compare.ecoGlobal.NAME.insitu(insitu_pt,small_buff,
                                                           pt.proj,calc.proj,ecoregions,
                                                           world_poly_clip)
@@ -612,13 +612,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      #map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-      #insitu_pt); map
+      map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      insitu_pt); map
       # save map
-      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-      #paste0(target_files[i],
-      #"__exsitu_coverage_map",
-      #".html")))
+      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      paste0(target_files[i],
+      "__exsitu_coverage_map",
+      ".html")))
     }
   } else {
     
@@ -669,7 +669,7 @@ for(i in 1:length(target_taxa)){
                                                pt.proj,calc.proj,ecoregions,
                                                world_poly_clip)
     
-    #name ecoregions under large buffers
+    #name ecoregions under small buffers
     eco_coverage_sm_name <- compare.ecoGlobal.NAME(insitu_pt,exsitu_pt,small_buff,
                                                    pt.proj,calc.proj,ecoregions,
                                                    world_poly_clip)
@@ -714,13 +714,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      #map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-      #exsitu_buff,exsitu_pt,insitu_pt); map
+      map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      exsitu_buff,exsitu_pt,insitu_pt); map
       # save map
-      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-      #paste0(target_files[i],
-      #"__exsitu_coverage_map",
-      #".html")))
+      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      paste0(target_files[i],
+      "__exsitu_coverage_map",
+      ".html")))
     } 
   }
 }
