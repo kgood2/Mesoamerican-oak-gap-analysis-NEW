@@ -612,13 +612,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-      insitu_pt); map
+      #map <- map.no.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      #insitu_pt); map
       # save map
-      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-      paste0(target_files[i],
-      "__exsitu_coverage_map",
-      ".html")))
+      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      #paste0(target_files[i],
+      #"__exsitu_coverage_map",
+      #".html")))
     }
   } else {
     
@@ -714,13 +714,13 @@ for(i in 1:length(target_taxa)){
       insitu_buff <- sf::st_as_sf(create.buffers(insitu_pt,med_buff,pt.proj,
                                                  pt.proj,world_poly_clip))
       # create map
-      map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
-      exsitu_buff,exsitu_pt,insitu_pt); map
+      #map <- map.exsitu(target_taxa[i],eco_map,state_boundaries,insitu_buff,
+      #exsitu_buff,exsitu_pt,insitu_pt); map
       # save map
-      htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
-      paste0(target_files[i],
-      "__exsitu_coverage_map",
-      ".html")))
+      #htmlwidgets::saveWidget(map,file.path(main_dir,analysis_dir,maps_out,
+      #paste0(target_files[i],
+      #"__exsitu_coverage_map",
+      #".html")))
     } 
   }
 }
