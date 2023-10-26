@@ -9,13 +9,33 @@ library("rgdal")
 library("sp")
 library("grid")
 
-####################INICIO###############################
+# Select main directory and files to load below depending on if you are 
+# mapping current HLZ's or those predicted under different climate change 
+# scenarios 
+
+#### set up directory and read in main files for Current HLZs###################
 main_dir <- "/Volumes/GoogleDrive/My Drive/Holdridge Life Zones/WorldClim"
+
 # Read necessary data
-ap<- raster(file.path(main_dir,"wc2.1_30s_bio_12.tif")) ##Raster precipitation (mm) bio_12
-at <-raster(file.path(main_dir,"wc2.1_30s_bio_1.tif")) #annual mean temperature bio_01
+ap<- raster(file.path(main_dir,"Presente_1980-2009_ZVH", "wc2.1_30s_bio_12.tif")) ##Raster precipitation (mm) bio_12
+at <-raster(file.path(main_dir, "Presente_1980-2009_ZVH","wc2.1_30s_bio_1.tif")) #annual mean temperature bio_01
 
 dir.create("Presente_1980-2009_ZVH")
+
+################################################################################
+
+              # or 
+
+#### set up directory and read in main files for Current HLZs###################
+main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Conservation Gap Analysis - MESOAMERICAN OAKS/HLZ_Climate Scenarios /2061_2080_30seconds"
+
+# Read necessary data
+ap<- raster(file.path(main_dir, "ssp245", "ACCESS-CM2", "ACCESS_CM2_12.tif")) ##Raster precipitation (mm) bio_12
+at <-raster(file.path(main_dir, "ssp245", "ACCESS-CM2", "ACCESS_CM2_11.tif")) #annual mean temperature bio_01 
+
+dir.create("Future_2061-2080_HLZ")
+
+################################################################################
 
 # Explore data
 summary(at)
@@ -49,18 +69,18 @@ compareRaster(clipped_at, clipped_ap)
 
 ##Save the new files
 
-writeRaster(clipped_at, filename="Presente_1980-2009_ZVH/at.tif", format="GTiff", overwrite=TRUE)
-writeRaster(clipped_ap, filename="Presente_1980-2009_ZVH/ap.tif", format="GTiff", overwrite=TRUE)
+writeRaster(clipped_at, filename="Future_2061-2080_HLZ/at.tif", format="GTiff", overwrite=TRUE)
+writeRaster(clipped_ap, filename="Future_2061-2080_HLZ/ap.tif", format="GTiff", overwrite=TRUE)
 
 ##Calculate lat 
 
-x<-readGDAL("Presente_1980-2009_ZVH/at.tif")
+x<-readGDAL("Future_2061-2080_HLZ/at.tif")
 coor<-coordinates(x) #extrae coordenadas x,y del raster
 lat<-coor[,2] #extrae coordenada y
 x_lat<-x #raster de latitud
 x_lat$band1<-lat #sustitucion de values por latitud
-writeGDAL(x_lat,"Presente_1980-2009_ZVH/lat.tif",drivername='GTiff') #raster de latitud
-lat<- raster("Presente_1980-2009_ZVH/lat.tif") ##Raster latitude
+writeGDAL(x_lat,"Future_2061-2080_HLZ/lat.tif",drivername='GTiff') #raster de latitud
+lat<- raster("Future_2061-2080_HLZ/lat.tif") ##Raster latitude
 
 
 ##Calculate biotemperature with temperature and latitude grade
@@ -81,17 +101,17 @@ is.na (biotTem) <- biotTem <= 23.9
 bio24to30 <- biotTem
 bioupto24 <- (bio24to30 - (((3.0 * lat) / 100) * ((bio24to30 - 24.0)^2)))
 biot <- merge(bioupto24,bio0to24)
-writeRaster(biot, filename="Presente_1980-2009_ZVH/biot.tif", format="GTiff", overwrite=TRUE)
+writeRaster(biot, filename="Future_2061-2080_HLZ/biot.tif", format="GTiff", overwrite=TRUE)
 
 ##Calculate evapotranspiration (pet)
 
 pet <- biot * 58.93
-writeRaster(pet, filename="Presente_1980-2009_ZVH/pet.tif", format="GTiff", overwrite=TRUE)
+writeRaster(pet, filename="Future_2061-2080_HLZ/pet.tif", format="GTiff", overwrite=TRUE)
 
 ##Calculate potencial evapotranspiration ratio
 
 per <- pet/clipped_ap
-writeRaster(per, filename="Presente_1980-2009_ZVH/per.tif", format="GTiff", overwrite=TRUE)
+writeRaster(per, filename="Future_2061-2080_HLZ/per.tif", format="GTiff", overwrite=TRUE)
 
 ## Calculate categories of annual precipitation (mm)
 
@@ -115,7 +135,7 @@ apCat[apCat >= 2000.0 & apCat <= 4000.0] <- 6
 apCat[apCat >= 4000.0 & apCat <= 8000.0] <- 7
 apCat[apCat >= 8000] <- 8
 
-writeRaster(apCat, filename="Presente_1980-2009_ZVH/apCat.tif", format="GTiff", overwrite=TRUE)
+writeRaster(apCat, filename="Future_2061-2080_HLZ/apCat.tif", format="GTiff", overwrite=TRUE)
 
 ## Calculate latitudinal regions with biot
 ## Classification of regions
@@ -136,7 +156,7 @@ latr[latr >= 12.0 & latr <= 18.0] <- 5
 latr[latr >= 18.0 & latr <= 24.0] <- 6
 latr[latr >= 24.0] <- 7
 
-writeRaster(latr, filename="Presente_1980-2009_ZVH/latr.tif", format="GTiff", overwrite=TRUE)
+writeRaster(latr, filename="Future_2061-2080_HLZ/latr.tif", format="GTiff", overwrite=TRUE)
 
 ## Calculate humidity provinces with potencial evapotranspiration ratio
 ## Classification of provinces
@@ -162,7 +182,7 @@ provhum[provhum >=  8000 & provhum <= 16000] <- 3
 provhum[provhum >= 16000 & provhum <= 32000] <- 2
 provhum[provhum >= 32000] <- 1
 
-writeRaster(provhum, filename="Presente_1980-2009_ZVH/provhum.tif", format="GTiff", overwrite=TRUE)
+writeRaster(provhum, filename="Future_2061-2080_HLZ/provhum.tif", format="GTiff", overwrite=TRUE)
 
 ##Create life zone Holdridge
 
@@ -206,8 +226,8 @@ writeRaster(provhum, filename="Presente_1980-2009_ZVH/provhum.tif", format="GTif
 ## [38] Tropical rain forest
 
 
-raster1 <- raster("Presente_1980-2009_ZVH/latr.tif") 
-raster2 <- raster("Presente_1980-2009_ZVH/apCat.tif")
+raster1 <- raster("Future_2061-2080_HLZ/latr.tif") 
+raster2 <- raster("Future_2061-2080_HLZ/apCat.tif")
 
 raster1[raster1 == 	1	 & raster2 == 	1	] <-	1
 raster1[raster1 == 	1	 & raster2 == 	2	] <-	1
@@ -251,7 +271,7 @@ raster1[raster1 == 	7	 & raster2 == 	6	] <-	36
 raster1[raster1 == 	7	 & raster2 == 	7	] <-	37
 raster1[raster1 == 	7	 & raster2 == 	8	] <-	38
 
-raster3 <- raster("Presente_1980-2009_ZVH/provHum.tif")
+raster3 <- raster("Future_2061-2080_HLZ/provHum.tif")
 
 raster1[raster1 == 	1	 & raster3 == 	7	] <-	1
 raster1[raster1 == 	1	 & raster3 == 	8	] <-	1
@@ -336,7 +356,7 @@ raster1[raster1 == 	36	] <-	767
 raster1[raster1 == 	37	] <-	778
 raster1[raster1 == 	38	] <-	789
 
-writeRaster(raster1, filename="Presente_1980-2009_ZVH/zvh.tif", format="GTiff", overwrite = TRUE)
-#plot(raster1)
+writeRaster(raster1, filename="Future_2061-2080_HLZ/zvh.tif", format="GTiff", overwrite = TRUE)
+plot(raster1)
 
 ##END
