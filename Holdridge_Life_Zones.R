@@ -30,18 +30,18 @@ dir.create("Presente_1980-2009_ZVH")
 main_dir <- "/Volumes/GoogleDrive/Shared drives/Global Tree Conservation Program/4. GTCP_Projects/Gap Analyses/Conservation Gap Analysis - MESOAMERICAN OAKS/HLZ_Climate Scenarios /2061_2080_30seconds"
 
 # Read necessary data
-ap<- raster(file.path(main_dir, "ssp245", "ACCESS-CM2", "ACCESS_CM2_12.tif")) ##Raster precipitation (mm) bio_12
-at <-raster(file.path(main_dir, "ssp245", "ACCESS-CM2", "ACCESS_CM2_11.tif")) #annual mean temperature bio_01 
+ap <- raster(file.path(main_dir, "ssp370","UKESM1-0-LL","UKESM1_0_LL_12.tif")) ##Raster precipitation (mm) bio_12
+at <- raster(file.path(main_dir, "ssp370","UKESM1-0-LL","UKESM1_0_LL_1.tif")) #annual mean temperature bio_01 
 
 dir.create("Future_2061-2080_HLZ")
 
 ################################################################################
 
 # Explore data
-summary(at)
+#summary(at)
 #plot(at)
 
-summary(ap)
+#summary(ap)
 #plot(ap)
 
 #clip ap raster so it is only North America and Central America
