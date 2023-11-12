@@ -55,7 +55,8 @@ SummaryScoresChart <- function(df,out_path){
   df <- df %>% dplyr::rename(FCScmean = FCSc_mean)
   df$Taxon <- gsub("_"," ",df$Taxon)
   
-  p <- ggplot2::ggplot(data=df, aes(x=FCScmean, y=reorder(Taxon,rev(FCScmean)), fill = "final"), colour="black") + ggplot2::theme_bw()
+  p <- ggplot2::ggplot(data=df, aes(x=FCScmean, y=reorder(Taxon,FCScmean), fill = "final"), colour="black") + ggplot2::theme_bw()
+  p <- p + ggplot2::scale_y_discrete(limits=rev)
   
   p <- p + ggplot2::xlim(0,10) + ggplot2::geom_blank()
   
@@ -114,7 +115,7 @@ SummaryScoresChart <- function(df,out_path){
   p <- p + ggplot2::annotate("text",
                              x      = c(12.5, 37.5, 62.5, 87.5),
                              y      = nrow(df) + 1.9, # 13.7
-                             label  = c("Urgent Priority","High Priority","Medium Priority","Low Priority"),
+                             label  = c("1","2","3","4"),
                              colour = "black",
                              size   = 4,
                              fontface = 2)
